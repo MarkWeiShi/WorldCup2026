@@ -1,0 +1,8 @@
+BGM assets used in this demo
+─────────────────────────────
+theme.ogg    · "8-Bit Battle Loop" by Wolfgang_ (Theodore Kerr) · CC0 · OpenGameArt.org
+                https://opengameart.org/content/8-bit-battle-loop
+stadium.mp3  · "Strong cheering and strong rhythmic cheering" · Gregor Quendel · CC-BY 4.0
+                https://opengameart.org/content/free-crowd-cheering-sounds
+room.mp3     · "Soft cheering and chatter"                     · Gregor Quendel · CC-BY 4.0
+                https://opengameart.org/content/free-crowd-cheering-sounds

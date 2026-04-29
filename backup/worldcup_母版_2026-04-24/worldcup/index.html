@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HelloTalk 2026 世界杯 · 像素风 H5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background:
+      radial-gradient(circle at 20% 20%, #1d3a2a 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, #2d1a3e 0%, transparent 50%),
+      #0e0e18;
+    /* 彻底锁死背景：position:fixed + overscroll-behavior 防 iOS 橡皮筋 */
+    position: fixed;
+    inset: 0;
+    width: 100%; height: 100dvh;   /* dvh 响应 Safari URL 栏 */
+    overflow: hidden;
+    overscroll-behavior: none;
+    font-family: 'PingFang SC', 'Press Start 2P', system-ui, sans-serif;
+    color: #1A1A3E;     /* 默认 PX.night，避免白底卡片上浅字看不清；深底区域各自覆盖 */
+    image-rendering: pixelated;
+    -webkit-font-smoothing: none;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* 布局尺寸变量 —— 用 dvh 让 iOS Safari URL 栏变化时自适应 */
+  :root {
+    --nav-w: 172px;
+    --gap-w: 28px;
+    --pad-x: 26px;
+    --reserved-bottom: 78px;    /* DebugNav + 呼吸空间 */
+    --ww-avail: calc(100vw - var(--nav-w) - var(--gap-w) - var(--pad-x) * 2);
+    --vh-avail: calc(100dvh - var(--reserved-bottom));
+    --phone-h: min(940px, var(--vh-avail), calc(var(--ww-avail) * 2.168));
+    --phone-w: calc(var(--phone-h) / 2.168);
+  }
+  @media (max-width: 720px) {
+    :root {
+      --nav-w: 100px;
+      --gap-w: 10px;
+      --pad-x: 8px;
+      --reserved-bottom: 18px;   /* 小屏不留 DebugNav 位，DebugNav 小屏隐藏 */
+    }
+    /* 小屏隐藏 DebugNav —— NavPanel 已覆盖所有页面 */
+    .debug-nav-wrap { display: none !important; }
+  }
+  .phone-frame {
+    width: var(--phone-w);
+    height: var(--phone-h);
+  }
+
+  /* 布局锁定：手机靠左，右侧导航板，body 不滚动 */
+  .app-wrap {
+    height: 100dvh; width: 100vw;
+    display: flex; align-items: center; justify-content: flex-start;
+    padding: 10px var(--pad-x);
+    overflow: hidden;
+  }
+  @media (max-width: 720px) {
+    .app-wrap {
+      align-items: flex-start;   /* 小屏顶对齐，避免上方留白 */
+      padding: 6px var(--pad-x);
+    }
+  }
+
+  /* ── 右侧导航面板 ─────────────────────────────────────── */
+  .nav-panel {
+    flex-shrink: 0;
+    width: var(--nav-w);
+    margin-left: auto;   /* 推到右侧，与手机隔开 */
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
+    overflow-x: hidden;          /* 只允许上下滑 */
+    overscroll-behavior: contain; /* 滑到尽头不传给外层 */
+    background: #1A1A3E;
+    border: 3px solid #FFD700;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .nav-panel::-webkit-scrollbar { width: 4px; }
+  .nav-panel::-webkit-scrollbar-track { background: transparent; }
+  .nav-panel::-webkit-scrollbar-thumb { background: #FFD700; }
+  .nav-panel-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px; color: #FFD700;
+    text-align: center;
+    padding: 2px 0 8px;
+    border-bottom: 2px dashed rgba(255,215,0,0.35);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .nav-btn {
+    padding: 9px 6px;
+    background: #FFF8E7; color: #1A1A3E;
+    border: 2px solid #1A1A3E;
+    box-shadow: 2px 2px 0 #FFD700;
+    cursor: pointer;
+    font-family: 'PingFang SC', sans-serif;
+    font-weight: 700; font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    transition: transform 80ms steps(2, end), box-shadow 80ms steps(2, end);
+    user-select: none;
+    white-space: nowrap;         /* 活动名不换行 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .nav-btn:hover { background: #FFD700; }
+  .nav-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 #FFD700; }
+  .nav-btn.is-current {
+    background: #FF4444; color: #fff;
+    border-color: #1A1A3E;
+    box-shadow: 2px 2px 0 #fff;
+  }
+  .nav-btn.is-spec {
+    background: #FFC107;
+    color: #1A1A3E;
+    border: 3px solid #1A1A3E;
+    box-shadow: 2px 2px 0 #FFD700;
+    font-weight: 700;
+  }
+  .nav-btn.is-spec:hover { background: #FF9800; color: #fff; }
+
+  /* 模块头 · 深红 · 白字 · 像素大号 */
+  .nav-module {
+    background: #C62828;
+    color: #FFFFFF;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    line-height: 1.45;
+    padding: 10px 8px;
+    border: 2px solid #1A1A3E;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.55);
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    margin-top: 6px;
+    user-select: none;
+    transition: background 120ms steps(2,end), transform 80ms steps(2,end);
+  }
+  .nav-module:first-of-type { margin-top: 0; }
+  .nav-module:hover { background: #D63A3A; }
+  .nav-module:active { transform: translate(2px, 2px); box-shadow: 0 0 0 rgba(0,0,0,0.55); }
+  .nav-module.is-ht { border-left: 4px solid #FFD700; }
+  .nav-module.is-current {
+    background: #FFD700;
+    color: #1A1A3E;
+    box-shadow: 2px 2px 0 #FFFFFF;
+  }
+
+  /* 子项 · 白底 · 夜蓝字 · 左内阴影做色条 */
+  .nav-subitem {
+    background: #FFFFFF;
+    color: #1A1A3E;
+    font-family: 'PingFang SC', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 8px 8px 8px 12px;
+    border: 2px solid #1A1A3E;
+    /* box-shadow 由 inline style 动态设置，包含 inset 色条 + 外部硬阴影 */
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background 120ms steps(2,end), transform 80ms steps(2,end);
+  }
+  .nav-subitem:hover { background: #FFF8E7; color: #D32F2F; }
+  .nav-subitem.is-current {
+    background: #FFD700;
+    color: #1A1A3E;
+    font-weight: 800;
+  }
+
+  /* 分隔条 · 灰细线 + 金色小字 */
+  .nav-divider {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: rgba(255, 215, 0, 0.65);
+    letter-spacing: 2px;
+    text-align: center;
+    padding: 10px 4px 4px;
+    border-top: 1px dashed rgba(255, 215, 0, 0.25);
+    margin-top: 8px;
+    user-select: none;
+  }
+
+  /* 小屏：模块头 + 子项缩一圈 */
+  @media (max-width: 720px) {
+    .nav-module {
+      font-size: 8px;
+      padding: 7px 6px;
+    }
+    .nav-subitem {
+      font-size: 10px;
+      padding: 6px 6px 6px 10px;
+      margin-left: 6px;
+    }
+    .nav-divider {
+      font-size: 7px;
+      padding: 7px 4px 3px;
+    }
+  }
+
+  /* 小屏：面板略紧凑，保留完整中文活动名 */
+  @media (max-width: 720px) {
+    .nav-panel {
+      padding: 6px 4px;
+      max-height: calc(100dvh - 12px);
+    }
+    .nav-panel-title { font-size: 7px; padding: 1px 0 6px; margin-bottom: 3px; }
+    .nav-btn {
+      padding: 7px 4px;
+      font-size: 10px;
+    }
+    .nav-btn .label { line-height: 1.15; }
+  }
+
+  /* ── 左上角主页按钮（固定，唯一触发 onboarding 的入口） ─ */
+  .home-btn {
+    position: fixed;
+    top: 10px; left: 122px;          /* 让在 MUTE 按钮右侧并排 */
+    z-index: 46;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px 4px 4px;
+    background: #FFF8E7;
+    color: #1A1A3E;
+    border: 2px solid #1A1A3E;
+    box-shadow: 2px 2px 0 #1A1A3E;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    line-height: 1;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    user-select: none;
+    opacity: 0.92;
+    transition: opacity 120ms steps(2, end), transform 80ms steps(2, end), box-shadow 80ms steps(2, end), background 120ms steps(2, end);
+  }
+  .home-btn:hover { opacity: 1; background: #FFD700; }
+  .home-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 #1A1A3E; }
+  @media (max-width: 720px) {
+    .home-btn {
+      top: 6px; left: 96px;
+      padding: 3px 6px 3px 3px;
+      font-size: 7px;
+      gap: 4px;
+    }
+  }
+
+  /* ── 左上角静音按钮（固定，像素风） ─────────────────── */
+  .mute-btn {
+    position: fixed;
+    top: 10px; left: 10px;
+    z-index: 45;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: #FFF8E7;
+    color: #1A1A3E;
+    border: 2px solid #1A1A3E;
+    box-shadow: 2px 2px 0 #1A1A3E;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    line-height: 1;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    user-select: none;
+    opacity: 0.82;
+    transition: opacity 120ms steps(2, end), transform 80ms steps(2, end), box-shadow 80ms steps(2, end);
+  }
+  .mute-btn:hover { opacity: 1; background: #FFD700; }
+  .mute-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 #1A1A3E; }
+  .mute-btn.is-muted {
+    background: #FF4444;
+    color: #fff;
+    opacity: 1;
+    box-shadow: 2px 2px 0 #1A1A3E;
+  }
+  /* 像素小喇叭（用 4 个方块拼出筒身 + 一个三角形嘴） */
+  .mute-btn .spk {
+    display: inline-grid;
+    grid-template-columns: 2px 2px 2px 2px;
+    grid-template-rows: repeat(6, 2px);
+    gap: 0;
+    line-height: 0;
+  }
+  .mute-btn .spk i {
+    display: block;
+    width: 2px; height: 2px;
+    background: currentColor;
+  }
+  @media (max-width: 720px) {
+    .mute-btn {
+      top: 6px; left: 6px;
+      padding: 5px 7px;
+      font-size: 7px;
+      gap: 4px;
+    }
+  }
+
+  /* ── 闪烁红（6 下，50% 像素色块，3 秒总时长） ─────────── */
+  @keyframes flashRed2 {
+    0%, 30%, 60%, 100% { opacity: 0; }
+    15%, 45% { opacity: 1; }
+  }
+  @keyframes flashRed6x {
+    0%, 14%, 17%, 31%, 34%, 48%, 51%, 65%, 68%, 82%, 85%, 100% { opacity: 0; }
+    7%, 24%, 41%, 58%, 75%, 92% { opacity: 1; }
+  }
+  .flash-red { position: relative; }
+  .flash-red::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: rgba(255, 68, 68, 0.5);
+    border: 3px solid #FF4444;
+    pointer-events: none;
+    animation: flashRed6x 3000ms steps(1, end);
+    z-index: 50;
+  }
+
+  /* Keep html overall pixelated but let smooth strokes (svg lines) render */
+  svg, img { image-rendering: pixelated; }
+
+  /* Scrollbars inside phone */
+  .phone-scroll::-webkit-scrollbar { width: 0; }
+  .phone-scroll { overflow-x: hidden !important; overscroll-behavior: contain; }
+  .h-scroll::-webkit-scrollbar { display: none; }
+  .h-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Button press */
+  .pixel-btn { transition: transform 80ms steps(2, end), box-shadow 80ms steps(2, end); }
+  .pixel-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #1A1A3E !important;
+  }
+
+  /* LIVE pulse (stepped frames) */
+  @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0.2; } }
+  .live-blink { animation: blink 900ms steps(2, end) infinite; }
+
+  /* Halo pulse */
+  @keyframes haloPulse {
+    0% { opacity: 0.55; transform: scale(0.9); }
+    50%{ opacity: 1;    transform: scale(1.12); }
+    100%{ opacity: 0.55; transform: scale(0.9); }
+  }
+  .halo-pulse { animation: haloPulse 1.6s steps(8, end) infinite; }
+
+  /* Cloud drift */
+  @keyframes cloudDrift {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(520px); }
+  }
+  .cloud-drift      { animation: cloudDrift 16s linear infinite; }
+  .cloud-drift-slow { animation: cloudDrift 26s linear infinite; }
+
+  /* Ball roll */
+  @keyframes ballRoll {
+    0%   { transform: translateX(0) rotate(0); }
+    100% { transform: translateX(500px) rotate(720deg); }
+  }
+  .ball-roll { animation: ballRoll 7s steps(20, end) infinite; }
+
+  /* Ball wobble */
+  @keyframes ballWobble {
+    0%,100% { transform: translate(0, 0); }
+    25%     { transform: translate(-2px, -2px); }
+    50%     { transform: translate(2px, 0); }
+    75%     { transform: translate(-1px, 2px); }
+  }
+  .ball-wobble { animation: ballWobble 1.2s steps(4, end) infinite; }
+
+  @keyframes passTrail {
+    0%   { opacity: 0; transform: translateX(-10px); }
+    20%  { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(26px); }
+  }
+  .pass-trail { animation: passTrail 800ms steps(8, end) infinite; }
+
+  @keyframes shootFly {
+    0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+    40%  { transform: translate(8px, -24px) scale(0.92); opacity: 1; }
+    100% { transform: translate(0, -90px) scale(0.62); opacity: 0.25; }
+  }
+  .shoot-fly { animation: shootFly 800ms steps(6, end) infinite; }
+
+  @keyframes netShake {
+    0%,100% { transform: translate(0, 0); }
+    25%     { transform: translate(-2px, 0); }
+    50%     { transform: translate(2px, 1px); }
+    75%     { transform: translate(-1px, -1px); }
+  }
+  .net-shake { animation: netShake 800ms steps(4, end) infinite; }
+
+  /* Chest shake */
+  @keyframes chestShake {
+    0%,90%,100% { transform: rotate(0); }
+    93% { transform: rotate(-3deg); }
+    96% { transform: rotate(3deg); }
+  }
+  .chest-shake { animation: chestShake 2.8s steps(4, end) infinite; }
+
+  @keyframes chestOpen {
+    0%   { transform: translateX(-50%) rotate(0deg) translateY(0); }
+    35%  { transform: translateX(-50%) rotate(-10deg) translateY(-1px); }
+    100% { transform: translateX(-50%) rotate(-28deg) translateY(-3px); }
+  }
+
+  /* Pouch glow */
+  @keyframes pouchGlow {
+    0%,100% { filter: drop-shadow(0 0 0 transparent); }
+    50%     { filter: drop-shadow(0 0 6px rgba(255,215,0,0.9)); }
+  }
+  .pouch-glow { animation: pouchGlow 1.6s steps(4, end) infinite; }
+
+  @keyframes pouchUnlock {
+    0%   { opacity: 0; transform: scale(0.94); }
+    20%  { opacity: 1; transform: scale(1); }
+    70%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.03); }
+  }
+
+  /* Dice roll */
+  @keyframes diceRoll {
+    0%,80%,100% { transform: rotate(0); }
+    85% { transform: rotate(90deg); }
+    90% { transform: rotate(180deg); }
+    95% { transform: rotate(270deg); }
+  }
+  .dice-roll { animation: diceRoll 3.2s steps(4, end) infinite; }
+
+  /* === P11 animations === */
+
+  /* Player idle sway */
+  @keyframes idleSway {
+    0%,100% { transform: translateX(0); }
+    50%     { transform: translateX(1px); }
+  }
+  .player-idle { animation: idleSway 1.2s steps(2, end) infinite; }
+
+  /* Crowd bounce */
+  @keyframes crowdBounce {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-2px); }
+  }
+  .crowd-bounce { animation: crowdBounce 800ms steps(2, end) infinite; }
+
+  /* Tug bar shake */
+  @keyframes tugShake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-1px); }
+    75% { transform: translateX(1px); }
+  }
+  .tug-bar { animation: tugShake 400ms steps(2, end) infinite; }
+
+  /* Score bump */
+  @keyframes scoreBump {
+    0%   { transform: scale(1); color: #FFD700; }
+    30%  { transform: scale(1.6); color: #FF4444; }
+    60%  { transform: scale(0.9); }
+    100% { transform: scale(1); color: #FFD700; }
+  }
+  .score-bump { animation: scoreBump 400ms steps(6, end); }
+
+  /* Ad boards scroll */
+  @keyframes adUp   { 0%{transform:translateY(100%);} 100%{transform:translateY(-100%);} }
+  @keyframes adDown { 0%{transform:translateY(-100%);} 100%{transform:translateY(100%);} }
+  .ad-scroll-up   { animation: adUp 18s linear infinite; }
+  .ad-scroll-down { animation: adDown 18s linear infinite; }
+
+  /* Pitch ball (subtle jitter) */
+  @keyframes ballJitter { 0%,100%{transform:translate(-50%,-50%);} 50%{transform:translate(calc(-50% + 1px), calc(-50% - 1px));} }
+  .pitch-ball { animation: ballJitter 300ms steps(2, end) infinite; }
+
+  /* Fireworks */
+  @keyframes fwBurst {
+    0%   { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+  }
+  .fw-particle { animation: fwBurst 1.4s steps(8, end) infinite; }
+
+  /* Confetti fall */
+  @keyframes confettiFall {
+    0%   { transform: translate(0, 0) rotate(0); opacity: 1; }
+    100% { transform: translate(var(--dx, 0), 260px) rotate(540deg); opacity: 0.3; }
+  }
+  .confetti-fall { animation: confettiFall 2.2s steps(12, end) infinite; }
+
+  /* Champagne */
+  @keyframes champDrop {
+    0%   { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+  }
+  .champ-drop { animation: champDrop 800ms steps(6, end) infinite; }
+  @keyframes champSpray { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+  .champ-spray { animation: champSpray 400ms steps(4, end) infinite; }
+
+  /* Drum screen shake */
+  @keyframes drumShake {
+    0%,100% { transform: translate(0,0); }
+    25% { transform: translate(-2px, 1px); }
+    75% { transform: translate(2px, -1px); }
+  }
+  .drum-shake { animation: drumShake 240ms steps(2, end) infinite; }
+
+  /* Poop / egg arc (parabolic using translate + rotate) */
+  @keyframes arcAR {
+    0%   { transform: translate(0, 0) rotate(0); }
+    50%  { transform: translate(120px, -80px) rotate(180deg); }
+    100% { transform: translate(240px, 0) rotate(360deg); }
+  }
+  @keyframes arcBR {
+    0%   { transform: translate(0, 0) rotate(0); }
+    50%  { transform: translate(-120px, -80px) rotate(-180deg); }
+    100% { transform: translate(-240px, 0) rotate(-360deg); }
+  }
+  .arc-ar { animation: arcAR 1.6s steps(16, end) forwards; }
+  .arc-br { animation: arcBR 1.6s steps(16, end) forwards; }
+
+  @keyframes smokeUp {
+    0%,60% { transform: translateY(0) scale(0); opacity: 0; }
+    70% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-30px) scale(2); opacity: 0; }
+  }
+  .poop-smoke { animation: smokeUp 2s steps(8, end) forwards; }
+  .egg-smoke  { animation: smokeUp 2s steps(8, end) forwards; filter: hue-rotate(80deg); }
+
+  /* Tomato fall */
+  @keyframes tomFall {
+    0%   { transform: translate(0,0) rotate(0); opacity: 1; }
+    100% { transform: translate(0, 230px) rotate(360deg); opacity: 0.2; }
+  }
+  .tomato-fall { animation: tomFall 1.2s steps(10, end) forwards; }
+
+  /* Shoe streak */
+  @keyframes shoeAR { 0%{transform:translate(0,0);} 100%{transform:translate(240px,-20px);} }
+  @keyframes shoeBR { 0%{transform:translate(0,0);} 100%{transform:translate(-240px,-20px);} }
+  .shoe-ar { animation: shoeAR 600ms steps(10, end) forwards; }
+  .shoe-br { animation: shoeBR 600ms steps(10, end) forwards; }
+
+  /* Referee card pop */
+  @keyframes refPop {
+    0%   { transform: scale(0.2) rotate(-15deg); opacity: 0; }
+    40%  { transform: scale(1.15) rotate(2deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+  .ref-pop { animation: refPop 600ms steps(6, end) forwards; }
+
+  /* VAR TV */
+  @keyframes varTV {
+    0% { transform: scale(0.2); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .var-tv { animation: varTV 400ms steps(4, end) forwards; }
+  @keyframes varGlitch {
+    0%,100% { transform: translate(0,0); opacity: 1; }
+    50% { transform: translate(2px,-2px); opacity: 0.7; }
+  }
+  .var-glitch { animation: varGlitch 180ms steps(2, end) infinite; }
+
+  /* GOAL banner slide */
+  @keyframes goalSlide {
+    0%   { transform: translateX(-120%) rotate(-4deg); }
+    20%  { transform: translateX(0) rotate(-4deg); }
+    80%  { transform: translateX(0) rotate(-4deg); }
+    100% { transform: translateX(120%) rotate(-4deg); }
+  }
+  .goal-slide { animation: goalSlide 3s steps(30, end) forwards; }
+  @keyframes flagScroll { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+  .flag-scroll { animation: flagScroll 4s linear infinite; }
+
+  /* Star descent */
+  @keyframes starDrop {
+    0%   { transform: translate(-50%, -100%) rotate(0); opacity: 0; }
+    40%  { transform: translate(-50%, 60%) rotate(360deg); opacity: 1; }
+    100% { transform: translate(-50%, 60%) rotate(720deg); opacity: 1; }
+  }
+  .star-drop { animation: starDrop 2s steps(20, end) forwards; }
+
+  /* Trophy descent */
+  @keyframes trophyDescend {
+    0%   { transform: translate(-50%, -200%) scale(0.6); }
+    40%  { transform: translate(-50%, 60%) scale(1.1); }
+    60%  { transform: translate(-50%, 54%) scale(1); }
+    100% { transform: translate(-50%, 54%) scale(1); }
+  }
+  .trophy-descend { animation: trophyDescend 1.8s steps(16, end) forwards; }
+  @keyframes goldSparkle {
+    0%,100% { transform: translateY(0) scale(1); opacity: 1; }
+    50%     { transform: translateY(-20px) scale(0.5); opacity: 0.3; }
+  }
+  .gold-sparkle { animation: goldSparkle 1.4s steps(8, end) infinite; }
+
+  /* Shirt wave */
+  @keyframes shirtWave {
+    0%,100% { transform: translateY(0) rotate(-10deg); }
+    50%     { transform: translateY(-6px) rotate(10deg); }
+  }
+  .shirt-wave { animation: shirtWave 600ms steps(4, end) infinite; }
+
+  /* Whistle pop */
+  @keyframes whistlePop {
+    0%   { transform: scale(0.3) rotate(-5deg); opacity: 0; }
+    30%  { transform: scale(1.2); opacity: 1; }
+    80%  { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0; }
+  }
+  .whistle-pop { animation: whistlePop 1.6s steps(12, end) forwards; }
+
+  /* Hat trick */
+  @keyframes hatBounce {
+    0%   { transform: scale(0); }
+    40%  { transform: scale(1.2); }
+    60%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+  .hat-bounce { animation: hatBounce 700ms steps(8, end) forwards; }
+
+  /* Gift ticker fly-in */
+  @keyframes tickerFly {
+    0%   { transform: translateX(110%); opacity: 0; }
+    15%  { transform: translateX(0); opacity: 1; }
+    85%  { transform: translateX(0); opacity: 1; }
+    100% { transform: translateX(-110%); opacity: 0; }
+  }
+  .ticker-fly { animation: tickerFly 3s steps(20, end) forwards; }
+
+  /* background twinkle stars */
+  .stars::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, #fff8 0 1px, transparent 2px),
+      radial-gradient(1px 1px at 80% 10%, #fff6 0 1px, transparent 2px),
+      radial-gradient(1px 1px at 40% 80%, #fff5 0 1px, transparent 2px),
+      radial-gradient(1px 1px at 65% 40%, #fff7 0 1px, transparent 2px),
+      radial-gradient(1px 1px at 20% 60%, #fff4 0 1px, transparent 2px);
+    background-size: 200px 200px;
+    animation: blink 2s steps(2, end) infinite;
+  }
+
+  @keyframes heatBarPulse {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-1px); }
+  }
+  .heat-bar-pulse { animation: heatBarPulse 300ms steps(2, end) infinite; }
+
+  @keyframes heatBarGrow {
+    0% { transform: scaleY(0); }
+    100% { transform: scaleY(1); }
+  }
+  .heat-bar-grow {
+    transform-origin: bottom;
+    animation: heatBarGrow 600ms steps(12, end) forwards;
+  }
+
+  @keyframes goldGlow {
+    0%,100% { box-shadow: 0 0 0 transparent; }
+    50% { box-shadow: 0 0 8px rgba(255,215,0,0.8); }
+  }
+  .gold-glow { animation: goldGlow 1.6s steps(8, end) infinite; }
+
+  @keyframes modalSlideUp {
+    0% { transform: translateY(100%); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .modal-slide-up { animation: modalSlideUp 400ms steps(8, end) forwards; }
+
+  @keyframes tickerSlide { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .ticker-slide { animation: tickerSlide 30s steps(120, end) infinite; }
+  .ticker-slide:hover { animation-play-state: paused; }
+
+  @keyframes crowdBounce2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+  .crowd-bounce2 { animation: crowdBounce2 700ms steps(2, end) infinite; }
+
+  @keyframes mexicanWave { 0%, 90%, 100% { transform: translateY(0); } 45% { transform: translateY(-7px); } }
+  .mexican-wave { animation: mexicanWave 600ms steps(6, end) 1; }
+
+  @keyframes shimmerSweep { 0% { left: -60px; } 70%, 100% { left: calc(100% + 60px); } }
+  .shimmer-sweep { animation: shimmerSweep 3.2s steps(30, end) infinite; }
+
+  @keyframes particleBurst { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx, 0), var(--dy, 0)) scale(0.4); opacity: 0; } }
+  .particle-burst { animation: particleBurst 500ms steps(8, end) forwards; }
+
+  @keyframes heatPopScale { 0% { transform: scale(1); } 40% { transform: scale(1.28); } 100% { transform: scale(1); } }
+  .heat-pop { animation: heatPopScale 280ms steps(4, end); }
+
+  @keyframes filmNodePulse { 0%,100% { box-shadow: 0 0 0 transparent; } 50% { box-shadow: 0 0 6px rgba(255,215,0,0.9); } }
+  .film-node-active { animation: filmNodePulse 1.2s steps(6, end) infinite; }
+
+  @keyframes mapFlash {
+    0%, 90%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.6); }
+  }
+  .map-flash { animation: mapFlash 2.4s steps(8, end) infinite; }
+
+  @keyframes softPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  .soft-pulse { animation: softPulse 1.4s steps(4, end) infinite; }
+</style>
+</head>
+<body class="stars">
+  <div id="root" class="app-wrap"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="sfx.js"></script>
+<script src="bgm.js"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="page-chrome.jsx"></script>
+<script type="text/babel" src="pixel-v2.jsx"></script>
+<script type="text/babel" src="home.jsx"></script>
+<script type="text/babel" src="p1-p3.jsx"></script>
+<script type="text/babel" src="p4-p9.jsx"></script>
+<script type="text/babel" src="p10.jsx"></script>
+<script type="text/babel" src="p10-sub.jsx"></script>
+<script type="text/babel" src="p12-p15.jsx"></script>
+<script type="text/babel" src="p16.jsx"></script>
+<script type="text/babel" src="p17-p19.jsx"></script>
+<script type="text/babel" src="p11-pitch.jsx"></script>
+<script type="text/babel" src="p11-gifts.jsx"></script>
+<script type="text/babel" src="p11-effects.jsx"></script>
+<script type="text/babel" src="p11-modals.jsx"></script>
+<script type="text/babel" src="p11.jsx"></script>
+<script type="text/babel" src="spec.jsx"></script>
+<script type="text/babel" src="onboarding.jsx"></script>
+<script type="text/babel">
+  // 左上角静音按钮：同时控制 sfx 与 bgm，状态持久化到 localStorage
+  function MuteButton() {
+    const [muted, setMutedState] = React.useState(() => {
+      try { return localStorage.getItem('wc_muted') === '1'; } catch (e) { return false; }
+    });
+    // 组件挂载后同步一次状态给两套音频层（覆盖 sfx.js/bgm.js 的默认读取）
+    React.useEffect(() => {
+      if (window.sfx && window.sfx.setMuted) window.sfx.setMuted(muted);
+      if (window.bgm && window.bgm.setMuted) window.bgm.setMuted(muted);
+    }, [muted]);
+    const toggle = () => {
+      window.__sfx_suppressClick = true;   // 避免自身点击触发 nav-btn whoosh 误判
+      setMutedState(m => !m);
+    };
+    // 像素喇叭方块矩阵（4 列 6 行）：0=透明 1=色块
+    const spkOn = [
+      0,0,0,1,
+      0,0,1,1,
+      1,1,1,1,
+      1,1,1,1,
+      0,0,1,1,
+      0,0,0,1,
+    ];
+    const spkOff = [
+      0,0,0,1,
+      1,0,1,1,
+      0,1,1,1,
+      1,1,1,1,
+      0,0,1,1,
+      0,0,0,1,
+    ];
+    const grid = muted ? spkOff : spkOn;
+    return (
+      <div
+        className={'mute-btn' + (muted ? ' is-muted' : '')}
+        onClick={toggle}
+        title={muted ? '已静音 · 点击开启声音' : '点击静音'}
+        role="button"
+        aria-pressed={muted}
+      >
+        <span className="spk">
+          {grid.map((v, i) => <i key={i} style={{ visibility: v ? 'visible' : 'hidden' }} />)}
+        </span>
+        <span>{muted ? 'MUTED' : 'SOUND'}</span>
+      </div>
+    );
+  }
+
+  function Toast({ msg }) {
+    if (!msg) return null;
+    return (
+      <div style={{
+        position: 'fixed', top: 30, left: '50%', transform: 'translateX(-50%)',
+        background: '#1A1A3E', color: '#FFD700', padding: '10px 14px',
+        fontFamily: "'Press Start 2P', monospace", fontSize: 10,
+        border: '3px solid #FFD700', zIndex: 999,
+        boxShadow: '3px 3px 0 #000',
+      }}>{msg}</div>
+    );
+  }
+
+  // ── 右侧导航面板：活动名对齐《2026 世界杯大活动系统方案》
+  //    顺序大致按文档章节（官频→促播→玩法→活动页→圈子→私聊/分享），再插入我们 H5 特有的入口
+  // 顺序严格按《2026 世界杯大活动系统方案 v3》章节流程：
+  // 一 官频开播 → 二 内容促播 → 三 组队对战+宝箱福袋 → 四 活动页6模块 →
+  // 六 市场增长 → 七 连胜日历+文化日 → 八 圈子 → 九 私聊+Meetup → 辅助
+  // NavPanel 架构：7 大模块不再渲染模块头，改用每个子项左侧 5px 色条区分所属模块
+  // 同模块 accent 同色；周边 / 辅助 用灰分隔条隔开
+  const NAV_ENTRIES = [
+    { type: 'spec', key: 'spec', label: 'H5 说明页', action: 'spec' },
+
+    // 模块一 · 官频开播（绿）
+    { type: 'sub', key: 'channel', label: '官频开播专区', page: 'P4',  accent: '#4CAF50' },
+    { type: 'sub', key: 'room',    label: '陪看房',       page: 'P13', accent: '#4CAF50' },
+
+    // 模块二 · 48 国对抗总榜（金）
+    { type: 'sub', key: 'rank', label: '48 国对抗总榜', page: 'P2', accent: '#FFC107' },
+
+    // 模块三 · 射门玩法(蓝)
+    { type: 'sub', key: 'shoot', label: '射门玩法', page: 'P3', accent: '#2196F3' },
+
+    // 模块四 · 宝箱/福袋展示 (房间玩法·红)
+    { type: 'sub', key: 'battle', label: '组队对战',     page: 'P11', accent: '#E53935', skipAnchor: true },
+    { type: 'sub', key: 'chest',  label: '宝箱福袋展示', page: 'P19', accent: '#E53935', skipAnchor: true },
+    { type: 'sub', key: 'gifts',  label: '国家礼物大厅', page: 'P12', accent: '#E53935', skipAnchor: true },
+
+    // 模块五 · 每日焦点赛（橙）
+    { type: 'sub', key: 'focus',   label: '每日焦点赛', page: 'P1', accent: '#FF9800' },
+    { type: 'sub', key: 'predict', label: '比分竞猜',   page: 'P6', accent: '#FF9800' },
+
+    // 模块六 · 短视频瀑布流（紫）
+    { type: 'sub', key: 'shorts', label: '短视频瀑布流', page: 'P5', accent: '#9C27B0' },
+
+    // HelloTalk 世界杯（HT 扩展·深红）
+    { type: 'sub', key: 'speak', label: 'HelloTalk 世界杯 · 赛季中枢', page: 'P10', accent: '#C62828' },
+
+    // 周边
+    { type: 'divider', key: 'div-side', label: '周边' },
+    { type: 'sub', key: 'share',   label: '分享邀请',        page: 'P9',  accent: '#78909C' },
+    { type: 'sub', key: 'checkin', label: '连胜打卡日历',    page: 'P16', accent: '#78909C' },
+    { type: 'sub', key: 'culture', label: '文化日',          page: 'P15', accent: '#78909C', skipAnchor: true },
+    { type: 'sub', key: 'circle',  label: '信息流与圈子',    page: 'P14', accent: '#78909C' },
+    { type: 'sub', key: 'topic',   label: '私聊话题包',      page: 'P18', accent: '#78909C', skipAnchor: true },
+    { type: 'sub', key: 'meetup',  label: '线下 Meetup',     page: 'P17', accent: '#78909C', skipAnchor: true },
+
+    // 辅助
+    { type: 'divider', key: 'div-aux', label: '辅助' },
+    { type: 'sub', key: 'record', label: '个人战绩', page: 'P7', accent: '#9E9E9E' },
+    { type: 'sub', key: 'rules',  label: '活动规则', page: 'P8', accent: '#9E9E9E' },
+  ];
+  function NavPanel({ current, onJump, onOpenSpec }) {
+    return (
+      <div className="nav-panel">
+        <div className="nav-panel-title">活动导航</div>
+        {NAV_ENTRIES.map(e => {
+          if (e.type === 'spec') {
+            return (
+              <div key={e.key}
+                className={'nav-btn is-spec' + (current === e.page ? ' is-current' : '')}
+                onClick={() => onOpenSpec()}
+                title={e.label}>
+                <span className="label">{e.label}</span>
+              </div>
+            );
+          }
+          if (e.type === 'divider') {
+            return (
+              <div key={e.key} className="nav-divider">── {e.label} ──</div>
+            );
+          }
+          // sub
+          const isCurrent = current === e.page;
+          return (
+            <div key={e.key}
+              className={'nav-subitem' + (isCurrent ? ' is-current' : '')}
+              style={{ boxShadow: `inset 5px 0 0 ${e.accent}, 2px 2px 0 rgba(0,0,0,0.55)` }}
+              onClick={() => onJump(e.skipAnchor ? null : e.key, e.page)}
+              title={e.label}>
+              {e.label}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // 自定义慢速滚动（模仿人手滑动节奏，easeInOutQuad 缓动）
+  function animateScrollTo(container, targetY, duration, onDone) {
+    if (!container) { onDone && onDone(); return; }
+    const startY = container.scrollTop;
+    const maxY = Math.max(0, container.scrollHeight - container.clientHeight);
+    const clamped = Math.max(0, Math.min(maxY, targetY));
+    const distance = clamped - startY;
+    if (Math.abs(distance) < 4) { onDone && onDone(); return; }
+    const startTime = performance.now();
+    function ease(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+    function step(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      container.scrollTop = startY + distance * ease(progress);
+      if (progress < 1) requestAnimationFrame(step);
+      else onDone && onDone();
+    }
+    requestAnimationFrame(step);
+  }
+
+  function HomeButton({ onClick }) {
+    const Icon = window.PixelHouseIcon;
+    return (
+      <div className="home-btn" onClick={onClick} role="button"
+        title="入场仪式 · 开场引导">
+        {Icon ? <Icon size={22}/> : <span style={{ fontSize: 14 }}>⌂</span>}
+        <span>HOME</span>
+      </div>
+    );
+  }
+
+  function App() {
+    const [page, setPage] = React.useState(() => localStorage.getItem('wc_page') || 'H0');
+    const [showSpec, setShowSpec] = React.useState(false);
+    const [showOnboarding, setShowOnboarding] = React.useState(false);
+    const [toastMsg, setToastMsg] = React.useState('');
+    const pendingJumpRef = React.useRef(null);
+    const jumpingRef = React.useRef(false);
+    React.useEffect(() => {
+      localStorage.setItem('wc_page', page);
+      if (window.bgm) window.bgm.setPage(page);
+      // 每次页面切换后，把手机内层 scroll 容器滚到顶（避免打开详情页看到中间）
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.phone-scroll').forEach((el) => { el.scrollTop = 0; });
+      });
+    }, [page]);
+    const toast = React.useCallback((m) => {
+      setToastMsg(m);
+      clearTimeout(window.__t);
+      window.__t = setTimeout(() => setToastMsg(''), 1400);
+    }, []);
+    const nav = React.useCallback((p) => setPage(p), []);
+    const back = () => setPage('H0');
+    const openSpec = React.useCallback(() => setShowSpec(true), []);
+    const specJump = React.useCallback((p) => {
+      setShowSpec(false);
+      setPage(p);
+    }, []);
+
+    function runJumpAnimation(anchorKey, targetPage) {
+      const el = document.getElementById('anchor-' + anchorKey);
+      if (!el) { setPage(targetPage); return; }
+      if (jumpingRef.current) return;
+      jumpingRef.current = true;
+
+      const scroller = el.closest('.phone-scroll') || document.scrollingElement || document.documentElement;
+      const scrollerRect = scroller.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      // 目标：让锚点中心 ≈ scroller 可见中心（锚点完整居中显示）
+      // anchor 当前在 scroller 坐标系里的 top：elRect.top - scrollerRect.top
+      // 要让 anchor 中心 = scroller 中心，需要把 anchor 顶推到 (scroller 高 - anchor 高) / 2
+      // 如果 anchor 比 scroller 还高，clamp 成 20px（顶部留呼吸）
+      const anchorTopInScroller = elRect.top - scrollerRect.top;
+      const scrollerH = scroller.clientHeight;
+      const anchorH = elRect.height;
+      const desiredTopInScroller = anchorH >= scrollerH - 40
+        ? 20
+        : Math.max(20, (scrollerH - anchorH) / 2);
+      const targetScrollTop = scroller.scrollTop + (anchorTopInScroller - desiredTopInScroller);
+
+      animateScrollTo(scroller, targetScrollTop, 2100, () => {
+        setTimeout(() => {
+          el.classList.remove('flash-red');
+          void el.offsetWidth;
+          el.classList.add('flash-red');
+          if (window.sfx) window.sfx.play('click_soft');
+          setTimeout(() => {
+            el.classList.remove('flash-red');
+            if (window.sfx) window.sfx.play('page_in');
+            setPage(targetPage);
+            jumpingRef.current = false;
+          }, 3000);
+        }, 150);
+      });
+    }
+
+    function jumpTo(anchorKey, targetPage) {
+      if (!anchorKey) { setPage(targetPage); return; }
+      if (page === 'H0') {
+        runJumpAnimation(anchorKey, targetPage);
+      } else {
+        pendingJumpRef.current = { anchorKey, targetPage };
+        setPage('H0');
+      }
+    }
+
+    React.useEffect(() => {
+      if (page === 'H0' && pendingJumpRef.current) {
+        const { anchorKey, targetPage } = pendingJumpRef.current;
+        pendingJumpRef.current = null;
+        requestAnimationFrame(() => requestAnimationFrame(() => runJumpAnimation(anchorKey, targetPage)));
+      }
+    }, [page]);
+
+    const pages = {
+      H0:     <HomePage onNav={nav} />,
+      P1:     <P1Page    onBack={back} toast={toast} nav={nav}/>,
+      P2:     <P2Page    onBack={back} toast={toast} nav={nav}/>,
+      'P2.1': <P21Page   onBack={() => setPage('P2')} toast={toast}/>,
+      P3:     <P3Page    onBack={back} toast={toast}/>,
+      P4:     <P4Page    onBack={back} toast={toast} nav={nav}/>,
+      P5:     <P5Page    onBack={back} toast={toast} nav={nav}/>,
+      'P5.1': <P51Page   onBack={() => setPage('P5')} toast={toast} nav={nav}/>,
+      P6:     <P6Page    onBack={back} toast={toast} nav={nav}/>,
+      P7:     <P7Page    onBack={back} toast={toast} nav={nav}/>,
+      P8:     <P8Page    onBack={back} toast={toast}/>,
+      P9:     <P9Page    onBack={back} toast={toast}/>,
+      P10:    <P10Page   onBack={back} toast={toast} nav={nav}/>,
+      'P10.1':<P101Page  onBack={() => setPage('P10')} toast={toast}/>,
+      'P10.2':<P102Page  onBack={() => setPage('P10')} toast={toast}/>,
+      'P10.3':<P103Page  onBack={() => setPage('P10')} toast={toast}/>,
+      P11:    <P11Page   onBack={back}/>,
+      P12:    <P12Page   onBack={back} toast={toast} nav={nav}/>,
+      P13:    <P13Page   onBack={back} toast={toast} nav={nav}/>,
+      'P13.1':<P131Page  onBack={() => setPage('P13')} toast={toast}/>,
+      P14:    <P14Page   onBack={back} toast={toast}/>,
+      P15:    <P15Page   onBack={back} toast={toast}/>,
+      P16:    <P16Page   onBack={back} toast={toast} nav={nav}/>,
+      P17:    <P17Page   onBack={back} toast={toast}/>,
+      P18:    <P18Page   onBack={back} toast={toast}/>,
+      P19:    <P19Page   onBack={back} toast={toast} nav={nav}/>,
+    };
+
+    const handleOpenOnboarding = React.useCallback(() => {
+      setShowOnboarding(true);
+      if (window.sfx) window.sfx.play('page_in');
+    }, []);
+    const handleCloseOnboarding = React.useCallback(() => {
+      setShowOnboarding(false);
+      setPage('H0');
+    }, []);
+
+    return (
+      <>
+        <PhoneFrame>{pages[page] || pages.H0}</PhoneFrame>
+        <NavPanel current={page} onJump={jumpTo} onOpenSpec={openSpec} />
+        <DebugNav current={page} onNav={nav} />
+        <MuteButton />
+        <HomeButton onClick={handleOpenOnboarding} />
+        <Toast msg={toastMsg} />
+        {showSpec && <SpecModal onClose={() => setShowSpec(false)} onJump={specJump} />}
+        {showOnboarding && window.Onboarding && <Onboarding onClose={handleCloseOnboarding} />}
+      </>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
