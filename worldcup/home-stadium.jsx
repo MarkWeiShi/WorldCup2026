@@ -571,13 +571,13 @@
   ];
 
   // ── 各楼层头图（hero）：滚动时随内容向上滚走，悬浮 Tab 保持顶部 ──
-  function FloorHero({ kicker, title, subtitle, icon, bg, accent }) {
+  function FloorHero({ kickerEn, kickerZh, title, subtitle, icon, bg, accent }) {
     return (
       <div style={{
         background: bg,
         borderBottom: `3px solid ${navy3}`,
         boxShadow: `0 3px 0 ${accent}`,
-        padding: '12px 16px 14px',
+        padding: '10px 12px 14px',
         color: '#fff', position: 'relative', overflow: 'hidden',
       }}>
         {/* 像素方块装饰 */}
@@ -585,26 +585,33 @@
           position: 'absolute', right: -8, top: -8, fontSize: 64, opacity: 0.18,
           transform: 'rotate(-12deg)',
         }}>{icon}</div>
+        {/* 顶部居中标题 */}
         <div style={{
-          fontFamily: "'Press Start 2P', monospace", fontSize: 9,
-          color: accent, letterSpacing: 1, marginBottom: 4,
-        }}>{kicker}</div>
-        <div style={{
-          fontFamily: "'Press Start 2P', monospace", fontSize: 14,
-          color: '#fff', textShadow: `2px 2px 0 ${navy3}`, letterSpacing: 1,
+          fontFamily: "'Press Start 2P', monospace", fontSize: 12,
+          color: '#fff', textShadow: `2px 2px 0 ${navy3}`, letterSpacing: 0.5,
+          whiteSpace: 'nowrap', textAlign: 'center', marginBottom: 8,
         }}>{title}</div>
         <div style={{
-          fontSize: 11, marginTop: 6, color: '#fff', opacity: 0.92,
+          fontFamily: "'Press Start 2P', monospace", fontSize: 9,
+          color: accent, letterSpacing: 1, marginBottom: 4, textAlign: 'center',
+        }}>
+          <span>{kickerEn}</span>
+          <span style={{ marginLeft: 8 }}>{kickerZh}</span>
+        </div>
+        <div style={{
+          fontSize: 11, color: '#fff', opacity: 0.92, textAlign: 'center',
         }}>{subtitle}</div>
       </div>
     );
   }
+  const HERO_TITLE = '2026 FIFA WORLD CUP';
   const FLOOR_HEROES = {
     '1F': (
       <FloorHero
-        kicker="1F · ENTRY"
-        title="入场层 · Fan ID"
-        subtitle="登记 Fan ID · 收集 48 国 Stamp · 高光时刻"
+        kickerEn="1F · ENTRY"
+        kickerZh="入场"
+        title={HERO_TITLE}
+        subtitle="Fan ID · 热力排行 · 48 国 Stamp · 应援任务"
         icon="🎴"
         bg={`linear-gradient(180deg, #1F3864 0%, #0E1B33 100%)`}
         accent="#F0C24A"
@@ -612,19 +619,21 @@
     ),
     '2F': (
       <FloorHero
-        kicker="2F · TRIBUNE"
-        title="看台层 · 48 国对抗"
+        kickerEn="2F · TRIBUNE"
+        kickerZh="看台"
+        title={HERO_TITLE}
         subtitle="主队排名 · GOOOL Wave · TIFO 共创"
         icon="👥"
-        bg={`linear-gradient(180deg, #2E8B2E 0%, #1A5C1A 100%)`}
+        bg={`linear-gradient(180deg, #C62828 0%, #7A1414 100%)`}
         accent="#FFE89A"
       />
     ),
     '3F': (
       <FloorHero
-        kicker="3F · PITCH"
-        title="2026 FIFA WORLD CUP"
-        subtitle="· NORTH AMERICA · 焦点赛 / 射门 / 竞猜"
+        kickerEn="3F · PITCH"
+        kickerZh="球场"
+        title={HERO_TITLE}
+        subtitle="焦点赛 / 射门 / 竞猜"
         icon="⚽"
         bg={`linear-gradient(180deg, #1A5C1A 0%, #0F3A0F 100%)`}
         accent="#FFD54A"
@@ -632,8 +641,9 @@
     ),
     '4F': (
       <FloorHero
-        kicker="4F · PRESS"
-        title="媒体席 · 解说文化"
+        kickerEn="4F · PRESS"
+        kickerZh="媒体"
+        title={HERO_TITLE}
         subtitle="47 主播 LIVE · 文化日 · 短视频"
         icon="📺"
         bg={`linear-gradient(180deg, #ED7D31 0%, #B85C18 100%)`}
@@ -642,8 +652,9 @@
     ),
     '5F': (
       <FloorHero
-        kicker="5F · SHOP"
-        title="商店 · Fan Shop"
+        kickerEn="5F · SHOP"
+        kickerZh="商店"
+        title={HERO_TITLE}
         subtitle="宝箱 / 福袋 / 装扮 / 票面"
         icon="🎁"
         bg={`linear-gradient(180deg, #BF8F00 0%, #7A5C00 100%)`}

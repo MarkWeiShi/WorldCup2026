@@ -177,8 +177,278 @@ function P2Page({ onBack, toast, nav }) {
     'be','hr','mx','us','ma','sn','cn',
   ];
   const names = {br:'巴西',ar:'阿根廷',de:'德国',fr:'法国',es:'西班牙',en:'英格兰',pt:'葡萄牙',nl:'荷兰',jp:'日本',kr:'韩国',be:'比利时',hr:'克罗地亚',mx:'墨西哥',us:'美国',ma:'摩洛哥',sn:'塞内加尔',cn:'中国'};
+
+  /* ── 像素看台横幅（Canvas 1px 高清像素风，高度缩减30%） ── */
+  function PixelStands() {
+    const canvasRef = React.useRef(null);
+    const W = 393;
+    const H = 224;
+
+    React.useEffect(() => {
+      const cvs = canvasRef.current;
+      if (!cvs) return;
+      const dpr = window.devicePixelRatio || 1;
+      cvs.width = W * dpr;
+      cvs.height = H * dpr;
+      cvs.style.width = W + 'px';
+      cvs.style.height = H + 'px';
+      const ctx = cvs.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      function hash(a, b) { return ((a * 2654435761 + b * 340573321) >>> 0) % 1000; }
+      function px(x, y, c) { ctx.fillStyle = c; ctx.fillRect(x, y, 1, 1); }
+      function fillRow(y, c) { ctx.fillStyle = c; ctx.fillRect(0, y, W, 1); }
+      function fillRect(x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); }
+
+      const reds = ['#C62828','#D32F2F','#E53935','#B71C1C','#8B0000','#A52A2A','#CC3333','#BF2020'];
+      const darkReds = ['#7A1414','#6D0000','#8B0000','#5C0000','#700000','#6D0000'];
+      const blues = ['#1565C0','#1976D2','#1E88E5','#0D47A1'];
+      const browns = ['#5D4037','#4E342E','#6D4C41','#795548','#3E2723','#5D4037'];
+
+      // ── 1. Sky (y 0-5) ──
+      fillRect(0, 0, W, 6, '#87CEEB');
+
+      // ── 2. Roof truss structure (y 6-30) ──
+      // Top beam
+      fillRect(0, 6, W, 3, '#777');
+      fillRect(0, 9, W, 1, '#666');
+      // Truss triangles
+      for (let y = 10; y < 26; y++) {
+        for (let x = 0; x < W; x++) {
+          const seg = x % 32;
+          const mid = 16;
+          const row = y - 10;
+          const span = Math.round(row * mid / 16);
+          // Vertical supports
+          if (seg === 0 || seg === 31) { px(x, y, '#888'); continue; }
+          // Diagonal members
+          const distL = Math.abs(seg - (mid - span));
+          const distR = Math.abs(seg - (mid + span));
+          const distM = Math.abs(seg - mid);
+          if (distL < 1 || distR < 1 || (distM < 1 && row < 8)) {
+            px(x, y, '#999');
+          } else if (seg >= mid - span && seg <= mid + span && row <= 2) {
+            // Red roof panels at top
+            const rh = hash(x, y);
+            px(x, y, rh % 3 === 0 ? '#C62828' : (rh % 3 === 1 ? '#B71C1C' : '#999'));
+          }
+        }
+      }
+      // Bottom beam
+      fillRect(0, 26, W, 2, '#6B6B6B');
+      // Red fascia
+      fillRect(0, 28, W, 2, '#B71C1C');
+
+      // ── 3. Upper stand (y 30-65) ──
+      for (let y = 30; y < 65; y++) {
+        for (let x = 0; x < W; x++) {
+          if (x % 56 === 0 || x % 56 === 55) { px(x, y, '#757575'); continue; }
+          if ((y - 30) % 5 === 4) { px(x, y, '#4A4A4A'); continue; }
+          const h = hash(x, y);
+          px(x, y, reds[h % reds.length]);
+        }
+      }
+
+      // ── 4. LED advertising boards (y 65-72) ──
+      fillRect(0, 65, W, 1, '#111');
+      for (let y = 66; y < 71; y++) {
+        for (let x = 0; x < W; x++) {
+          const seg = Math.floor(x / 56);
+          const bases = ['#1A237E','#004D40','#B71C1C','#E65100','#1B5E20','#4A148C','#0D47A1'];
+          const base = bases[seg % bases.length];
+          if (y === 68) {
+            // Text row
+            const h = hash(x * 3, y);
+            px(x, y, h % 4 === 0 ? '#FFD54F' : (h % 4 === 1 ? '#FFFFFF' : base));
+          } else {
+            px(x, y, base);
+          }
+        }
+      }
+      fillRect(0, 71, W, 1, '#111');
+
+      // ── 5. Middle stand (y 72-125) – red with blue letter zones ──
+      for (let y = 72; y < 125; y++) {
+        for (let x = 0; x < W; x++) {
+          if (x % 56 === 0 || x % 56 === 55) { px(x, y, '#757575'); continue; }
+          if ((y - 72) % 7 === 6) { px(x, y, '#4A4A4A'); continue; }
+          // Blue letter zone: center-right 40%-75%
+          const blueZone = x >= 157 && x <= 295;
+          const h = hash(x, y);
+          if (blueZone) {
+            const lh = hash(x * 3, y * 7);
+            if (lh % 5 < 3) {
+              px(x, y, blues[h % blues.length]);
+            } else {
+              px(x, y, reds[h % reds.length]);
+            }
+          } else {
+            px(x, y, reds[h % reds.length]);
+          }
+        }
+      }
+
+      // ── 6. Walkway divider (y 125-127) ──
+      fillRect(0, 125, W, 2, '#616161');
+
+      // ── 7. Lower stand (y 127-160) – denser red/blue ──
+      for (let y = 127; y < 160; y++) {
+        for (let x = 0; x < W; x++) {
+          if (x % 56 === 0 || x % 56 === 55) { px(x, y, '#757575'); continue; }
+          if ((y - 127) % 6 === 5) { px(x, y, '#4A4A4A'); continue; }
+          const blueZone2 = x >= 137 && x <= 310;
+          const h = hash(x, y + 500);
+          if (blueZone2) {
+            const lh = hash(x * 5, y * 11);
+            if (lh % 6 < 3) {
+              px(x, y, blues[h % blues.length]);
+            } else {
+              px(x, y, reds[h % reds.length]);
+            }
+          } else {
+            px(x, y, reds[h % reds.length]);
+          }
+        }
+      }
+
+      // ── 8. Pitch (y 160-190) ──
+      for (let y = 160; y < 190; y++) {
+        for (let x = 0; x < W; x++) {
+          const stripe = Math.floor(x / 28) % 2;
+          const base = stripe ? '#2E7D32' : '#388E3C';
+
+          // Goals
+          if (x <= 12 && y >= 168 && y <= 182) {
+            if (y === 168 || y === 182 || x === 12) { px(x, y, '#FFFFFF'); continue; }
+            if (x <= 4) { px(x, y, '#E8E8E8'); continue; }
+            px(x, y, '#F5F5F5'); continue;
+          }
+          if (x >= W - 13 && y >= 168 && y <= 182) {
+            if (y === 168 || y === 182 || x === W - 13) { px(x, y, '#FFFFFF'); continue; }
+            if (x >= W - 5) { px(x, y, '#E8E8E8'); continue; }
+            px(x, y, '#F5F5F5'); continue;
+          }
+
+          // Center line
+          const cx = Math.floor(W / 2);
+          if (x === cx || x === cx + 1) { px(x, y, '#FFFFFF'); continue; }
+          // Center circle
+          const dx = x - cx, dy = (y - 175) * 2;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (Math.abs(dist - 16) < 1.3) { px(x, y, '#FFFFFF'); continue; }
+          // Penalty areas
+          if (x <= 40 && (y === 165 || y === 185 || (x === 40 && y >= 165 && y <= 185))) { px(x, y, '#FFFFFF'); continue; }
+          if (x >= W - 41 && (y === 165 || y === 185 || (x === W - 41 && y >= 165 && y <= 185))) { px(x, y, '#FFFFFF'); continue; }
+
+          px(x, y, base);
+        }
+      }
+
+      // Players
+      const players = [
+        {x:70,y:170,c:'#E53935'},{x:100,y:175,c:'#E53935'},{x:120,y:167,c:'#E53935'},
+        {x:140,y:178,c:'#E53935'},{x:160,y:172,c:'#E53935'},{x:90,y:182,c:'#E53935'},
+        {x:110,y:168,c:'#E53935'},
+        {x:240,y:170,c:'#1565C0'},{x:270,y:176,c:'#1565C0'},{x:290,y:168,c:'#1565C0'},
+        {x:310,y:179,c:'#1565C0'},{x:260,y:183,c:'#1565C0'},{x:230,y:175,c:'#1565C0'},
+        {x:280,y:172,c:'#1565C0'},
+        {x:18,y:175,c:'#FFC107'},{x:W-20,y:175,c:'#FFC107'},
+        {x:196,y:175,c:'#111'},{x:180,y:170,c:'#111'},
+      ];
+      players.forEach(p => {
+        px(p.x, p.y - 2, '#FFCCBC'); px(p.x + 1, p.y - 2, '#FFCCBC');
+        px(p.x - 1, p.y - 1, p.c); px(p.x, p.y - 1, p.c); px(p.x + 1, p.y - 1, p.c); px(p.x + 2, p.y - 1, p.c);
+        px(p.x, p.y, p.c); px(p.x + 1, p.y, p.c);
+        px(p.x, p.y + 1, '#222'); px(p.x + 1, p.y + 1, '#222');
+      });
+
+      // ── 9. Foreground spectators (y 190-224) ──
+      // Barrier/railing
+      fillRect(0, 190, W, 3, '#3E2723');
+      // Spectator heads
+      for (let y = 193; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const period = 8;
+          const pos = x % period;
+          const idx = Math.floor(x / period);
+          const headTop = 195 + (idx % 3);
+          const headW = 5;
+          if (pos >= 1 && pos <= headW && y >= headTop && y <= headTop + 4) {
+            px(x, y, browns[idx % browns.length]);
+          } else {
+            px(x, y, '#1A0F07');
+          }
+        }
+      }
+
+      // Cameras
+      fillRect(30, 196, 10, 6, '#333');
+      fillRect(32, 202, 2, 4, '#555'); fillRect(36, 202, 2, 4, '#555');
+      // Lens
+      fillRect(40, 197, 3, 4, '#222');
+      fillRect(W - 44, 196, 10, 6, '#333');
+      fillRect(W - 42, 202, 2, 4, '#555'); fillRect(W - 38, 202, 2, 4, '#555');
+      fillRect(W - 47, 197, 3, 4, '#222');
+
+    }, []);
+
+    return (
+      <div style={{
+        margin: '-12px -12px 0 -12px',
+        borderBottom: `3px solid ${PX.night}`,
+        boxShadow: `0 3px 0 ${PX.sunYellow}`,
+        lineHeight: 0,
+      }}>
+        <canvas
+          ref={canvasRef}
+          className="pixel-canvas"
+          style={{
+            width: '100%',
+            height: 'auto',
+            display: 'block',
+            imageRendering: 'pixelated',
+          }}
+        />
+      </div>
+    );
+  }
+
+
   return (
     <PageShell title="HONOR BOARD" subtitle="P2 · 48 国对抗总榜" onBack={onBack} darkHeader>
+      <SecHead title="WAVE & TIFO" sub="看台应援 · 人浪 & TIFO"/>
+      <div style={{
+        margin: '0 -12px',
+        borderBottom: `2px solid ${PX.night}`,
+        boxShadow: `0 2px 0 ${PX.sunYellow}`,
+        lineHeight: 0,
+      }}>
+        <img
+          src="assets/page-art/stadium-tifo.png"
+          alt="Stadium TIFO"
+          style={{ width: '100%', display: 'block', imageRendering: 'pixelated' }}
+        />
+      </div>
+      <div style={{ margin: '12px -12px 0', padding: '0 12px 12px', background: '#1A1A2E', borderTop: `2px solid ${PX.night}`, borderBottom: `2px solid ${PX.night}` }}>
+        <div style={{ marginTop: 12, marginBottom: 6 }}>
+          <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: PX.sunYellow, letterSpacing: 1 }}>FAN CLUB</div>
+          <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, color: '#aaa', marginTop: 2, fontWeight: 600 }}>球迷俱乐部</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          {[
+            { ic: '💬', t: '球迷圈子', sub: 'Fan Circle' },
+            { ic: '👥', t: '球迷群', sub: 'Fan Group' },
+            { ic: '📍', t: '线下聚会', sub: 'Meetup' },
+          ].map(x => (
+            <Card key={x.t} onClick={() => toast(x.t)} className="pixel-btn" bg="#2A2A4A" style={{ padding: 10, textAlign: 'center', cursor: 'pointer', border: `2px solid #444` }}>
+              <div style={{ fontSize: 24 }}>{x.ic}</div>
+              <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, fontWeight: 700, marginTop: 6, color: '#E8E8E8' }}>{x.t}</div>
+              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 6, color: '#888', marginTop: 3 }}>{x.sub}</div>
+            </Card>
+          ))}
+        </div>
+      </div>
+      <SecHead title="GOAL RANKING" sub="进球排行榜"/>
       <Card bg={PX.cream} style={{ padding: 10 }}>
         <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: PX.night, marginBottom: 6 }}>SCORING FORMULA</div>
         <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, color: '#444' }}>

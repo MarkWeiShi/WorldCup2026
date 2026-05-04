@@ -22,8 +22,6 @@
     overscroll-behavior: none;
     font-family: 'PingFang SC', 'Press Start 2P', system-ui, sans-serif;
     color: #1A1A3E;     /* 默认 PX.night，避免白底卡片上浅字看不清；深底区域各自覆盖 */
-    image-rendering: pixelated;
-    -webkit-font-smoothing: none;
   }
   *, *::before, *::after { box-sizing: border-box; }
 
@@ -328,12 +326,14 @@
     z-index: 50;
   }
 
-  /* Keep html overall pixelated but let smooth strokes (svg lines) render */
-  svg, img { image-rendering: pixelated; }
+  /* Opt-in pixel-crisp for Canvas / pixel-art elements only */
+  .pixel-canvas { image-rendering: pixelated; }
 
   /* Scrollbars inside phone */
   .phone-scroll::-webkit-scrollbar { width: 0; }
   .phone-scroll { overflow-x: hidden !important; overscroll-behavior: contain; }
+  /* 楼层页面隐藏 PageShell 自带的回退头（蓝色头条） */
+  .phone-scroll.is-floor-page .page-shell-header { display: none !important; }
   .h-scroll::-webkit-scrollbar { display: none; }
   .h-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -719,14 +719,14 @@
 
 <script src="sfx.js"></script>
 <script src="bgm.js"></script>
-<script type="text/babel" src="components.jsx?v=2"></script>
-<script type="text/babel" src="page-chrome.jsx"></script>
+<script type="text/babel" src="components.jsx?v=4"></script>
+<script type="text/babel" src="page-chrome.jsx?v=2"></script>
 <script type="text/babel" src="pixel-v2.jsx"></script>
 <script type="text/babel" src="home.jsx?v=4"></script>
-<script type="text/babel" src="home-stadium.jsx?v=5"></script>
-<script type="text/babel" src="p1-p3.jsx"></script>
+<script type="text/babel" src="home-stadium.jsx?v=11"></script>
+<script type="text/babel" src="p1-p3.jsx?v=9"></script>
 <script type="text/babel" src="p4-p9.jsx"></script>
-<script type="text/babel" src="p10.jsx"></script>
+<script type="text/babel" src="p10.jsx?v=19"></script>
 <script type="text/babel" src="p10-sub.jsx"></script>
 <script type="text/babel" src="p12-p15.jsx"></script>
 <script type="text/babel" src="p16.jsx"></script>

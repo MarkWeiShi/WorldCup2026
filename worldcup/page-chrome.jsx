@@ -5,18 +5,18 @@ function PageShell({ title, subtitle, onBack, children, bg = PX.cream, darkHeade
   const defaultText = bg === PX.night ? '#fff' : PX.night;
   return (
     <div style={{ minHeight: '100%', background: bg, paddingBottom: 40, position: 'relative', color: defaultText }}>
-      <div style={{
+      <div className="page-shell-header" style={{
         position: 'sticky', top: 0, zIndex: 30,
         padding: '58px 12px 10px',
         background: darkHeader
           ? `linear-gradient(${PX.night}, #2A2A5E)`
           : 'linear-gradient(#87CEEB, #9FDBF5)',
-        borderBottom: `3px solid ${PX.night}`,
+        borderBottom: `2px solid ${PX.night}`,
         display: 'flex', alignItems: 'center', gap: 10,
       }}>
         <div onClick={onBack} className="pixel-btn" style={{
           width: 34, height: 34, background: PX.cream,
-          border: `2.5px solid ${PX.night}`, boxShadow: `2px 2px 0 ${PX.night}`,
+          border: `2px solid ${PX.night}`, boxShadow: `1px 1px 0 ${PX.night}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
         }}>
           <PxIcon kind="back" size={16}/>
@@ -72,8 +72,8 @@ function ProgressBar({ value, max = 100, color = PX.grassGreen, height = 10 }) {
 function Card({ children, onClick, style = {}, bg = '#fff' }) {
   return (
     <div onClick={onClick} className={onClick ? 'pixel-btn' : ''} style={{
-      background: bg, border: `3px solid ${PX.night}`,
-      boxShadow: `3px 3px 0 ${PX.night}`, padding: 10,
+      background: bg, border: `2px solid ${PX.night}`,
+      boxShadow: `2px 2px 0 ${PX.night}`, padding: 10,
       cursor: onClick ? 'pointer' : 'default', ...style,
     }}>{children}</div>
   );

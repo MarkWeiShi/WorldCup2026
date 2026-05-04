@@ -1110,6 +1110,460 @@ function PixelStadiumStand() {
   );
 }
 
+/* ── Let's GOAL · 射门抽奖 ──────────────────────────────────── */
+const GOAL_GRID = [
+  { tier: 3, label: '10 兑换券', color: '#4CAF50' },
+  { tier: 2, label: '20 兑换券', color: '#FF9800' },
+  { tier: 3, label: '10 兑换券', color: '#4CAF50' },
+  { tier: 3, label: '10 兑换券', color: '#4CAF50' },
+  { tier: 1, label: '30 兑换券', color: '#F44336' },
+  { tier: 3, label: '10 兑换券', color: '#4CAF50' },
+  { tier: 3, label: '10 兑换券', color: '#4CAF50' },
+  { tier: 2, label: '20 兑换券', color: '#FF9800' },
+  { tier: 3, label: '10 兑换券', color: '#4CAF50' },
+];
+const TIER_LABEL = { 1: '🏆 高级', 2: '⭐ 中级', 3: '✅ 初级' };
+
+/* 2026 美加墨世界杯 48 国 */
+const WC2026_COUNTRIES = [
+  { code: 'ar', name: '阿根廷' }, { code: 'br', name: '巴西' }, { code: 'fr', name: '法国' },
+  { code: 'jp', name: '日本' },   { code: 'pt', name: '葡萄牙' }, { code: 'kr', name: '韩国' },
+  { code: 'es', name: '西班牙' }, { code: 'de', name: '德国' },   { code: 'nl', name: '荷兰' },
+  { code: 'en', name: '英格兰' }, { code: 'cn', name: '中国' },   { code: 'be', name: '比利时' },
+  { code: 'hr', name: '克罗地亚' }, { code: 'mx', name: '墨西哥' }, { code: 'us', name: '美国' },
+  { code: 'ma', name: '摩洛哥' }, { code: 'sn', name: '塞内加尔' }, { code: 'it', name: '意大利' },
+  { code: 'uy', name: '乌拉圭' }, { code: 'se', name: '瑞典' }, { code: 'ch', name: '瑞士' },
+  { code: 'dk', name: '丹麦' }, { code: 'pl', name: '波兰' }, { code: 'rs', name: '塞尔维亚' },
+  { code: 'cm', name: '喀麦隆' }, { code: 'gh', name: '加纳' }, { code: 'ng', name: '尼日利亚' },
+  { code: 'au', name: '澳大利亚' }, { code: 'sa', name: '沙特' }, { code: 'ir', name: '伊朗' },
+  { code: 'qa', name: '卡塔尔' }, { code: 'ca', name: '加拿大' }, { code: 'cr', name: '哥斯达黎加' },
+  { code: 'ec', name: '厄瓜多尔' }, { code: 'co', name: '哥伦比亚' }, { code: 'pe', name: '秘鲁' },
+  { code: 'cz', name: '捷克' }, { code: 'at', name: '奥地利' }, { code: 'ie', name: '爱尔兰' },
+  { code: 'ro', name: '罗马尼亚' }, { code: 'ua', name: '乌克兰' }, { code: 'cl', name: '智利' },
+  { code: 'eg', name: '埃及' }, { code: 'tn', name: '突尼斯' }, { code: 'dz', name: '阿尔及利亚' },
+  { code: 'za', name: '南非' }, { code: 'no', name: '挪威' }, { code: 'fi', name: '芬兰' },
+];
+
+/* 国家选择弹窗 */
+function CountryPickerModal({ onSelect, onClose, collectedCodes }) {
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, background: 'rgba(26,26,62,0.88)',
+      zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div onClick={e => e.stopPropagation()} className="modal-slide-up" style={{
+        width: 340, maxHeight: '80dvh',
+        background: PX.cream, border: `2px solid ${PX.night}`,
+        boxShadow: `3px 3px 0 ${PX.night}`,
+        display: 'flex', flexDirection: 'column',
+      }}>
+        <div style={{
+          padding: '12px 14px 8px',
+          borderBottom: `2px solid ${PX.night}`,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        }}>
+          <div style={{
+            fontFamily: "'Press Start 2P', monospace", fontSize: 9,
+            color: PX.night,
+          }}>SELECT COUNTRY</div>
+          <div onClick={onClose} style={{
+            fontFamily: "'Press Start 2P', monospace", fontSize: 10,
+            cursor: 'pointer', color: PX.night,
+          }}>✕</div>
+        </div>
+        <div style={{
+          flex: 1, overflowY: 'auto', padding: 10,
+          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6,
+        }}>
+          {WC2026_COUNTRIES.map(c => {
+            const already = collectedCodes.has(c.code);
+            return (
+              <div
+                key={c.code}
+                onClick={() => !already && onSelect(c.code)}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  gap: 4, padding: 6, cursor: already ? 'default' : 'pointer',
+                  background: already ? 'rgba(0,0,0,0.05)' : '#fff',
+                  border: `1.5px solid ${already ? '#ccc' : PX.night}`,
+                  borderRadius: 4,
+                  opacity: already ? 0.4 : 1,
+                }}
+              >
+                <div style={{
+                  width: 30, height: 30, borderRadius: '50%',
+                  overflow: 'hidden',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  border: `1.5px solid ${PX.night}`,
+                }}>
+                  <StampFlag code={c.code} size={28} />
+                </div>
+                <div style={{
+                  fontFamily: "'PingFang SC', sans-serif", fontSize: 10,
+                  color: PX.night, fontWeight: 600, textAlign: 'center',
+                }}>{c.name}</div>
+                {already && <div style={{ fontSize: 7, color: '#999' }}>已收集</div>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LetsGoal({ toast, shotCount, onGoal, collectedCodes }) {
+  const [result, setResult] = React.useState(null);
+  const [kicked, setKicked] = React.useState(false);
+  const [ballAnim, setBallAnim] = React.useState(null);
+  const [showPicker, setShowPicker] = React.useState(false);
+  const [pendingIdx, setPendingIdx] = React.useState(null);
+  const [chosenCode, setChosenCode] = React.useState(null);
+
+  const isFirstShot = shotCount === 0;
+
+  function handleCellClick(idx) {
+    if (kicked) return;
+    if (isFirstShot) {
+      // 第一次射门自动代表 Fan ID 中的国家
+      setChosenCode(MY_COUNTRY_CODE);
+      doShoot(idx, MY_COUNTRY_CODE);
+    } else {
+      // 第二次起，弹出国家选择
+      setPendingIdx(idx);
+      setShowPicker(true);
+    }
+  }
+
+  function handleCountrySelected(code) {
+    setShowPicker(false);
+    setChosenCode(code);
+    doShoot(pendingIdx, code);
+  }
+
+  function doShoot(idx, countryCode) {
+    setKicked(true);
+    setBallAnim(idx);
+    window.sfx?.play?.('coin');
+    setTimeout(() => {
+      const prize = GOAL_GRID[idx];
+      setResult({ idx, ...prize });
+      toast && toast(`为 ${countryCode.toUpperCase()} 射门成功！${TIER_LABEL[prize.tier]} · ${prize.label}`);
+      onGoal && onGoal(countryCode);
+    }, 600);
+  }
+
+  function handleReset() {
+    setResult(null);
+    setKicked(false);
+    setBallAnim(null);
+    setPendingIdx(null);
+    setChosenCode(null);
+  }
+
+  return (
+    <div style={{ marginTop: 12 }}>
+      <SecHead title="LET'S GOAL" sub={`射门抽奖 · 已射 ${shotCount} 次`} />
+      <Card style={{
+        background: 'linear-gradient(180deg, #1B5E20 0%, #2E7D32 100%)',
+        borderColor: PX.sunYellow, padding: 12, position: 'relative', overflow: 'hidden',
+      }}>
+        {/* 草地纹理 */}
+        <div style={{
+          position: 'absolute', inset: 0, opacity: 0.15, pointerEvents: 'none',
+          backgroundImage: 'repeating-linear-gradient(90deg, transparent 0 14px, rgba(255,255,255,0.3) 14px 28px)',
+        }} />
+
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          {/* 球门框 */}
+          <div style={{
+            border: `3px solid #fff`,
+            borderBottom: 'none',
+            borderRadius: '4px 4px 0 0',
+            padding: 3,
+            background: 'rgba(0,0,0,0.15)',
+          }}>
+            {/* 球网纹理 */}
+            <div style={{
+              position: 'absolute', top: 3, left: 3, right: 3, bottom: 0,
+              opacity: 0.12, pointerEvents: 'none',
+              backgroundImage: `linear-gradient(45deg, #fff 1px, transparent 1px), linear-gradient(-45deg, #fff 1px, transparent 1px)`,
+              backgroundSize: '12px 12px',
+            }} />
+
+            {/* 3×3 格子 */}
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 3, position: 'relative',
+            }}>
+              {GOAL_GRID.map((cell, i) => {
+                const isHit = result && result.idx === i;
+                const revealed = !!result;
+                return (
+                  <div
+                    key={i}
+                    onClick={() => !kicked && handleCellClick(i)}
+                    className={!kicked ? 'pixel-btn' : ''}
+                    style={{
+                      aspectRatio: '1.3',
+                      background: isHit
+                        ? cell.color
+                        : revealed
+                          ? 'rgba(255,255,255,0.08)'
+                          : 'rgba(255,255,255,0.12)',
+                      border: isHit
+                        ? `2px solid ${PX.sunYellow}`
+                        : '2px solid rgba(255,255,255,0.2)',
+                      borderRadius: 2,
+                      display: 'flex', flexDirection: 'column',
+                      alignItems: 'center', justifyContent: 'center',
+                      cursor: kicked ? 'default' : 'pointer',
+                      transition: 'background 0.3s, border 0.3s',
+                      position: 'relative',
+                    }}
+                  >
+                    {isHit && (
+                      <div style={{
+                        fontFamily: "'Press Start 2P', monospace", fontSize: 7,
+                        color: '#fff', textShadow: `1px 1px 0 ${PX.night}`,
+                        textAlign: 'center', lineHeight: 1.4,
+                      }}>
+                        <div style={{ fontSize: 16, marginBottom: 2 }}>⚽</div>
+                        {cell.label}
+                      </div>
+                    )}
+                    {revealed && !isHit && (
+                      <div style={{
+                        fontFamily: "'Press Start 2P', monospace", fontSize: 6,
+                        color: 'rgba(255,255,255,0.4)', textAlign: 'center',
+                      }}>{cell.label}</div>
+                    )}
+                    {!revealed && (
+                      <div style={{
+                        fontFamily: "'Press Start 2P', monospace", fontSize: 7,
+                        color: 'rgba(255,255,255,0.6)',
+                      }}>?</div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 球门底线 */}
+          <div style={{
+            height: 4, background: '#fff',
+            borderRadius: '0 0 2px 2px',
+          }} />
+
+          {/* 禁区线 + 足球 */}
+          <div style={{
+            marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center',
+          }}>
+            {/* 禁区弧线 */}
+            <div style={{
+              width: '60%', height: 16,
+              borderBottom: '2px solid rgba(255,255,255,0.5)',
+              borderLeft: '2px solid rgba(255,255,255,0.5)',
+              borderRight: '2px solid rgba(255,255,255,0.5)',
+              borderRadius: '0 0 50% 50%',
+              marginBottom: 8,
+            }} />
+            {/* 足球 */}
+            <div style={{
+              fontSize: 28, lineHeight: 1,
+              transform: ballAnim !== null ? 'scale(0.5) translateY(-40px)' : 'none',
+              opacity: ballAnim !== null ? 0.3 : 1,
+              transition: 'transform 0.5s ease-out, opacity 0.5s',
+            }}>⚽</div>
+          </div>
+
+          {/* 结果 / 重置 */}
+          {result && (
+            <div style={{
+              marginTop: 10, textAlign: 'center',
+            }}>
+              <div style={{
+                fontFamily: "'Press Start 2P', monospace", fontSize: 10,
+                color: PX.sunYellow, textShadow: `1px 1px 0 ${PX.night}`,
+                marginBottom: 6,
+              }}>{TIER_LABEL[result.tier]} · {result.label}</div>
+              <div
+                onClick={handleReset}
+                className="pixel-btn"
+                style={{
+                  display: 'inline-block',
+                  fontFamily: "'Press Start 2P', monospace", fontSize: 8,
+                  background: PX.sunYellow, color: PX.night,
+                  padding: '6px 14px',
+                  border: `2px solid ${PX.night}`,
+                  boxShadow: `2px 2px 0 ${PX.night}`,
+                  cursor: 'pointer',
+                }}
+              >RETRY</div>
+            </div>
+          )}
+
+          {/* 当前代表国家 */}
+          {chosenCode && result && (
+            <div style={{
+              marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}>
+              <div style={{
+                width: 24, height: 24, borderRadius: '50%', overflow: 'hidden',
+                border: `2px solid ${PX.sunYellow}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <StampFlag code={chosenCode} size={20} />
+              </div>
+              <div style={{
+                fontFamily: "'PingFang SC', sans-serif", fontSize: 11,
+                color: '#fff', fontWeight: 600,
+              }}>为 {(WC2026_COUNTRIES.find(c => c.code === chosenCode) || {}).name || chosenCode.toUpperCase()} 射门成功！</div>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* 国家选择弹窗 */}
+      {showPicker && (
+        <CountryPickerModal
+          collectedCodes={collectedCodes}
+          onSelect={handleCountrySelected}
+          onClose={() => { setShowPicker(false); setPendingIdx(null); }}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ── Goals of the World · 48 国集邮 ─────────────────────────── */
+const STAMP_48 = [
+  /* row 1 */ { code: 'ar', name: '阿根廷' }, { code: 'br', name: '巴西' }, { code: 'fr', name: '法国' },
+              { code: 'jp', name: '日本' },   { code: 'pt', name: '葡萄牙' }, { code: 'kr', name: '韩国' },
+  /* row 2 */ { code: 'es', name: '西班牙' }, { code: 'de', name: '德国' },   { code: 'nl', name: '荷兰' },
+              { code: 'en', name: '英格兰' }, { code: 'cn', name: '中国' },   { code: 'be', name: '比利时' },
+  /* row 3 */ { code: 'hr', name: '克罗地亚' }, { code: 'mx', name: '墨西哥' }, { code: 'us', name: '美国' },
+              { code: 'ma', name: '摩洛哥' }, { code: 'sn', name: '塞内加尔' }, { code: 'it', name: '意大利' },
+  /* row 4-8: locked */
+  { code: 'uy' }, { code: 'se' }, { code: 'ch' }, { code: 'dk' }, { code: 'pl' }, { code: 'rs' },
+  { code: 'cm' }, { code: 'gh' }, { code: 'ng' }, { code: 'au' }, { code: 'sa' }, { code: 'ir' },
+  { code: 'qa' }, { code: 'ca' }, { code: 'cr' }, { code: 'ec' }, { code: 'co' }, { code: 'pe' },
+  { code: 'cz' }, { code: 'at' }, { code: 'ie' }, { code: 'ro' }, { code: 'ua' }, { code: 'cl' },
+  { code: 'eg' }, { code: 'tn' }, { code: 'dz' }, { code: 'za' }, { code: 'no' }, { code: 'fi' },
+];
+const STAMP_COLLECTED = 18;
+
+function StampFlag({ code, size = 40 }) {
+  const data = FLAGS[code];
+  if (!data) return <div style={{ fontSize: Math.round(size * 0.45) }}>🏳️</div>;
+  const cell = Math.floor(size / 6);
+  const gridSize = cell * 6;
+  return (
+    <div style={{
+      display: 'inline-grid',
+      gridTemplateColumns: `repeat(6, ${cell}px)`,
+      gridTemplateRows: `repeat(6, ${cell}px)`,
+      width: gridSize, height: gridSize,
+      lineHeight: 0, flexShrink: 0,
+    }}>
+      {data.flat().map((c, i) => (
+        <div key={i} style={{ background: FLAG_COLORS[c] || '#fff' }} />
+      ))}
+    </div>
+  );
+}
+
+function GoalsOfTheWorld({ toast, collectedCodes }) {
+  const COLS = 6;
+  const collectedCount = collectedCodes.size;
+  return (
+    <div style={{ marginTop: 12 }}>
+      <SecHead title="GOALS OF THE WORLD" sub="我陪伴过的国家" action="查看全部" onAction={() => toast && toast('查看全部 48 国')} />
+      <Card style={{
+        background: 'linear-gradient(180deg, #2A2A5E 0%, #1A1A3E 100%)',
+        borderColor: PX.sunYellow, padding: 12,
+      }}>
+        {/* 进度标题 */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          marginBottom: 10,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <div style={{
+              fontFamily: "'Press Start 2P', monospace", fontSize: 16,
+              color: PX.sunYellow,
+            }}>{collectedCount}</div>
+            <div style={{
+              fontFamily: "'Press Start 2P', monospace", fontSize: 10,
+              color: 'rgba(255,255,255,0.5)',
+            }}>/ 48</div>
+          </div>
+        </div>
+
+        {/* 集邮网格 */}
+        <div style={{
+          background: 'rgba(255,255,255,0.06)',
+          borderRadius: 8, padding: 8,
+          border: '1px solid rgba(255,255,255,0.1)',
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+            gap: 6,
+          }}>
+            {WC2026_COUNTRIES.map((slot, i) => {
+              const collected = collectedCodes.has(slot.code);
+              return (
+                <div key={i} style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: collected
+                      ? 'linear-gradient(135deg, #3949AB, #1A237E)'
+                      : 'rgba(255,255,255,0.08)',
+                    border: collected
+                      ? `2px solid ${PX.sunYellow}`
+                      : '2px dashed rgba(255,255,255,0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    overflow: 'hidden',
+                    opacity: collected ? 1 : 0.4,
+                  }}>
+                    {collected ? (
+                      <StampFlag code={slot.code} size={32} />
+                    ) : (
+                      <div style={{
+                        width: 14, height: 14, borderRadius: '50%',
+                        border: '2px dashed rgba(255,255,255,0.2)',
+                      }} />
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 底部提示 */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          marginTop: 10,
+        }}>
+          <div style={{
+            fontFamily: "'PingFang SC', sans-serif", fontSize: 11,
+            color: 'rgba(255,255,255,0.7)', fontWeight: 600,
+          }}>下一个目标 · <span style={{ color: PX.sunYellow }}>{(WC2026_COUNTRIES.find(c => !collectedCodes.has(c.code)) || {}).name || '全部完成'}</span></div>
+          <div style={{
+            fontFamily: "'PingFang SC', sans-serif", fontSize: 11,
+            color: 'rgba(255,255,255,0.5)',
+          }}>还需陪伴 {48 - collectedCount} 个国家</div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 function SeasonFilmStrip() {
   const [dayIndex, setDayIndex] = React.useState(0);
   const [glowFlash, setGlowFlash] = React.useState(false);
@@ -1246,169 +1700,154 @@ function SeasonFilmStrip() {
 }
 
 function PassCard({ unlocked, onOpenIntro, onOpenTracks }) {
-  const trophyTiles = [
-    { top: 10, left: 14 },
-    { top: 12, right: 18 },
-    { top: 42, left: 64 },
-    { top: 46, right: 60 },
-    { bottom: 18, left: 20 },
-    { bottom: 14, right: 24 },
-    { bottom: 52, left: 108 },
-    { top: 28, left: '50%', transform: 'translateX(-50%)' },
+  const level = 28;
+  const xp = 3620;
+  const xpMax = 5000;
+  const xpPct = Math.round((xp / xpMax) * 100);
+  const BADGES = [
+    { icon: '🛡️', label: '等级' },
+    { icon: '🌟', label: '语言' },
+    { icon: '🎫', label: '票册' },
+    { icon: '✨', label: '时刻' },
   ];
 
   return (
-    <Card style={{
-      marginTop: 12,
-      background: 'linear-gradient(45deg, #FFC107 0%, #FFC107 50%, #FF9800 50%, #FF9800 100%)',
-      borderColor: PX.night,
-      padding: 12,
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      <div style={{ position: 'absolute', inset: 0, opacity: 0.12, pointerEvents: 'none' }}>
-        {trophyTiles.map((tile, index) => (
-          <div
-            key={`trophy-tile-${index}`}
-            className="soft-pulse"
-            style={{
-              position: 'absolute',
-              ...tile,
-            }}
-          >
-            <PxIcon kind="trophy" size={20} />
-          </div>
-        ))}
-      </div>
-
-      {!unlocked && (
-        <div
-          className="shimmer-sweep"
+    <div style={{ marginTop: 12, position: 'relative' }}>
+      <SecHead title="FAN ID" sub="你的世界杯身份主页" />
+      {/* 检票口背景图 */}
+      <div style={{
+        position: 'relative',
+        borderRadius: 6, overflow: 'hidden',
+        border: `2px solid ${PX.night}`,
+        boxShadow: `2px 2px 0 ${PX.night}`,
+      }}>
+        <img
+          src="assets/page-art/gate-entry.png"
+          alt="Entry Gate"
           style={{
-            position: 'absolute',
-            top: '-10%',
-            left: -60,
-            width: 60,
-            height: '120%',
-            transform: 'rotate(-20deg)',
-            background: 'linear-gradient(90deg, transparent 0%, rgba(255,215,0,0.4) 50%, transparent 100%)',
-            pointerEvents: 'none',
-            zIndex: 0,
+            width: '100%', display: 'block',
+            imageRendering: 'pixelated',
           }}
         />
-      )}
-
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {/* 卡片浮层 */}
+        <div style={{
+          position: 'absolute', top: '28%', left: 0, right: 0, bottom: '15%',
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+          pointerEvents: 'none',
+        }}>
           <div style={{
-            width: 40,
-            height: 40,
-            background: '#FFF2C2',
-            border: `3px solid ${PX.sunYellow}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: `3px 3px 0 ${PX.night}`,
-            flexShrink: 0,
+            pointerEvents: 'auto',
+            width: 152,
+          background: 'linear-gradient(180deg, #1565C0 0%, #0D47A1 100%)',
+          border: `3px solid ${PX.sunYellow}`,
+          boxShadow: `3px 3px 0 ${PX.night}`,
+          padding: 8,
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+        }}>
+          {/* HelloTalk 标识 */}
+          <div style={{
+            fontFamily: "'Press Start 2P', monospace", fontSize: 6,
+            color: '#90CAF9', letterSpacing: 0.5, marginBottom: 2,
+          }}>HelloTalk</div>
+          <div style={{
+            fontFamily: "'Press Start 2P', monospace", fontSize: 8,
+            color: '#fff', textShadow: `1px 1px 0 ${PX.night}`,
+            letterSpacing: 0.5, marginBottom: 6, textAlign: 'center',
+          }}>WORLD FAN ID</div>
+
+          {/* 像素头像区 */}
+          <div style={{
+            width: 45, height: 45,
+            background: 'linear-gradient(180deg, #42A5F5 0%, #1E88E5 100%)',
+            border: `2px solid ${PX.sunYellow}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: 5, position: 'relative',
           }}>
-            <PixelTrophy size={28} />
+            <div style={{ fontSize: 28, lineHeight: 1 }}>⚽</div>
+            <div style={{
+              position: 'absolute', right: -5, bottom: -3, fontSize: 13,
+            }}>🏆</div>
           </div>
-          <div style={{ flex: 1 }}>
+
+          {/* 等级 */}
+          <div style={{
+            fontFamily: "'Press Start 2P', monospace", fontSize: 8,
+            color: PX.sunYellow, textShadow: `1px 1px 0 ${PX.night}`,
+            marginBottom: 2,
+          }}>Lv.{level}</div>
+          <div style={{
+            fontSize: 10, color: '#E3F2FD', fontWeight: 700, marginBottom: 6,
+          }}>资深球迷</div>
+
+          {/* XP 进度条 */}
+          <div style={{
+            width: '100%', height: 10,
+            background: 'rgba(0,0,0,0.4)',
+            border: `2px solid ${PX.night}`,
+            position: 'relative', marginBottom: 4,
+          }}>
             <div style={{
-              fontFamily: "'Press Start 2P', monospace",
-              fontSize: 10,
-              color: PX.night,
-              lineHeight: 1.4,
-            }}>HELLOTALK WORLD CUP PASS</div>
+              position: 'absolute', left: 0, top: 0, bottom: 0,
+              width: `${xpPct}%`,
+              background: 'linear-gradient(90deg, #4CAF50, #8BC34A)',
+            }} />
+          </div>
+          <div style={{
+            fontFamily: "'Press Start 2P', monospace", fontSize: 6,
+            color: '#90CAF9',
+          }}>{xp} / {xpMax} XP</div>
+
+          {/* 底部 4 个功能图标 */}
+          <div style={{
+            display: 'flex', gap: 5, marginTop: 8,
+            justifyContent: 'center', width: '100%',
+          }}>
+            {BADGES.map((b, i) => (
+              <div key={`badge-${i}`} style={{
+                width: 24, height: 24,
+                background: 'rgba(255,255,255,0.12)',
+                border: `2px solid rgba(255,255,255,0.25)`,
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                gap: 1,
+              }}>
+                <div style={{ fontSize: 11, lineHeight: 1 }}>{b.icon}</div>
+                <div style={{
+                  fontSize: 5, color: '#90CAF9', lineHeight: 1,
+                }}>{b.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* 说明 */}
+          <div style={{
+            marginTop: 6, fontSize: 8, color: '#B0BEC5',
+            textAlign: 'center', lineHeight: 1.4,
+          }}>⭐ 可跨届保留的身份主页</div>
+
+          {/* 操作按钮 */}
+          <div
+            onClick={unlocked ? onOpenTracks : onOpenIntro}
+            className="pixel-btn"
+            style={{
+              marginTop: 8, width: '100%',
+              background: PX.red,
+              border: `2px solid ${PX.night}`,
+              boxShadow: `2px 2px 0 ${PX.night}`,
+              padding: '8px 6px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 6, cursor: 'pointer',
+            }}
+          >
             <div style={{
-              marginTop: 4,
-              fontFamily: "'PingFang SC', sans-serif",
-              fontSize: 11,
-              color: PX.night,
-              fontWeight: 700,
-            }}>赛季通行证</div>
+              fontFamily: "'Press Start 2P', monospace", fontSize: 8,
+              color: PX.sunYellow,
+            }}>{unlocked ? '查看双轨 · T3' : '查看 FAN ID'}</div>
           </div>
         </div>
-
-        {!unlocked ? (
-          <>
-            <div style={{ marginTop: 12, textAlign: 'center' }}>
-              <div style={{
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: 18,
-                color: PX.night,
-              }}>2488 金币</div>
-              <div style={{
-                marginTop: 4,
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: 10,
-                color: 'rgba(26,26,62,0.5)',
-                textDecoration: 'line-through',
-              }}>原价 3888</div>
-            </div>
-            <div
-              onClick={onOpenIntro}
-              className="pixel-btn"
-              style={{
-                marginTop: 12,
-                background: PX.red,
-                border: `3px solid ${PX.night}`,
-                boxShadow: `3px 3px 0 ${PX.night}`,
-                padding: '10px 8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                cursor: 'pointer',
-              }}
-            >
-              <PxIcon kind="bolt" size={12} />
-              <div style={{
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: 9,
-                color: PX.sunYellow,
-              }}>立即出战 · 开通通行证</div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div style={{
-              marginTop: 12,
-              fontFamily: "'PingFang SC', sans-serif",
-              fontSize: 12,
-              color: PX.night,
-              fontWeight: 700,
-            }}>我的赛季进度 T3/20 · 距下一奖 120 热力</div>
-            <div style={{ marginTop: 8 }}>
-              <ProgressBar value={3} max={20} color={PX.sunYellow} />
-            </div>
-            <div
-              onClick={onOpenTracks}
-              className="pixel-btn"
-              style={{
-                marginTop: 12,
-                background: PX.red,
-                border: `3px solid ${PX.night}`,
-                boxShadow: `3px 3px 0 ${PX.night}`,
-                padding: '10px 8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                cursor: 'pointer',
-              }}
-            >
-              <PxIcon kind="ticket" size={12} />
-              <div style={{
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: 9,
-                color: PX.sunYellow,
-              }}>查看双轨 · 当前 T3</div>
-            </div>
-          </>
-        )}
+        </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -1426,7 +1865,7 @@ function HeatChart({ entries, displayHeats, pulseCodes, myCountryCode, toast }) 
 
   return (
     <>
-      <SecHead title="HEAT CHART" sub="Top 10 · 实时动态" />
+      <SecHead title="HT GOAL RANKING" sub="Top 10 · 实时动态" />
       <PixelTicker />
       <Card style={{
         background: '#2E7D32',
@@ -1668,6 +2107,21 @@ function P10Page({ onBack, toast }) {
   const [heatPopTick, setHeatPopTick] = React.useState(0);
   const [heatBursts, setHeatBursts] = React.useState([]);
 
+  // 射门集邮状态
+  const [collectedCodes, setCollectedCodes] = React.useState(() =>
+    new Set(WC2026_COUNTRIES.slice(0, STAMP_COLLECTED).map(c => c.code))
+  );
+  const [shotCount, setShotCount] = React.useState(0);
+
+  function handleGoal(countryCode) {
+    setShotCount(prev => prev + 1);
+    setCollectedCodes(prev => {
+      const next = new Set(prev);
+      next.add(countryCode);
+      return next;
+    });
+  }
+
   const entriesRef = React.useRef(entries);
   const burstIdRef = React.useRef(0);
   React.useEffect(() => {
@@ -1739,9 +2193,18 @@ function P10Page({ onBack, toast }) {
       darkHeader
       bg="repeating-linear-gradient(45deg, #2E7D32 0 20px, #4CAF50 20px 40px)"
     >
-      <PixelWorldMapBanner />
-      <PixelStadiumStand />
-      <PitchLine />
+      <PassCard
+        unlocked={showPassUnlocked}
+        onOpenIntro={() => setShowPassIntro(true)}
+        onOpenTracks={() => setShowPassTracks(true)}
+      />
+
+      <LetsGoal toast={toast} shotCount={shotCount} onGoal={handleGoal} collectedCodes={collectedCodes} />
+
+      <GoalsOfTheWorld toast={toast} collectedCodes={collectedCodes} />
+
+      <SeasonFilmStrip />
+
       <HeatChart entries={entries} displayHeats={displayHeats} pulseCodes={pulseCodes} myCountryCode={MY_COUNTRY_CODE} toast={toast} />
       <PitchLine />
 
@@ -1845,14 +2308,6 @@ function P10Page({ onBack, toast }) {
           切换应援国家 · 剩 1 次
         </div>
       </Card>
-
-      <SeasonFilmStrip />
-
-      <PassCard
-        unlocked={showPassUnlocked}
-        onOpenIntro={() => setShowPassIntro(true)}
-        onOpenTracks={() => setShowPassTracks(true)}
-      />
 
       <SecHead title="TODAY TASKS" sub="完成任务 · 为国家积累热力" />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4, marginBottom: 8 }}>

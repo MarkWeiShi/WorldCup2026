@@ -91,7 +91,9 @@ function PhoneFrame({ children, currentPage, onNav }) {
         {/* Scrollable content */}
         <div style={{
           position: 'absolute', inset: 0, overflow: 'auto', overscrollBehavior: 'contain',
-        }} className="phone-scroll">
+        }} className={'phone-scroll' + (
+          ['P10', 'P2', 'P5', 'P19'].includes(currentPage) ? ' is-floor-page' : ''
+        )}>
           {window.FloatingTabBar
             ? React.createElement(window.FloatingTabBar, { currentPage, onNav })
             : null}
@@ -170,8 +172,8 @@ function PixelButton({ children, color = PX.red, textColor = '#fff', onClick, st
     <button onClick={onClick} className="pixel-btn" style={{
       fontFamily: "'Press Start 2P', monospace",
       fontSize: fs, color: textColor, background: color,
-      border: `3px solid ${PX.night}`, padding: pad, cursor: 'pointer',
-      boxShadow: `3px 3px 0 ${PX.night}`, letterSpacing: 0,
+      border: `2px solid ${PX.night}`, padding: pad, cursor: 'pointer',
+      boxShadow: `2px 2px 0 ${PX.night}`, letterSpacing: 0,
       imageRendering: 'pixelated', textTransform: 'uppercase',
       ...style,
     }}>
@@ -767,9 +769,9 @@ function PixelCrowdBand({ rows = 3, count = 18, flags = ['br', 'ar', 'cn', 'de']
   const colors = [PX.red, PX.sunYellow, PX.skyBlue, PX.grassGreen, PX.orange, PX.purple, PX.cream];
   return (
     <div style={{
-      border: `3px solid ${PX.night}`,
+      border: `2px solid ${PX.night}`,
       background: PX.ink2,
-      boxShadow: `3px 3px 0 ${PX.shadow}`,
+      boxShadow: `2px 2px 0 ${PX.shadow}`,
       padding: compact ? 4 : 6,
       overflow: 'hidden',
     }}>
@@ -809,7 +811,7 @@ function PixelMiniPitch({ left = 'ar', right = 'br', height = 118, children }) {
       position: 'relative',
       height,
       background: `repeating-linear-gradient(90deg, ${PX.turfDark} 0 18px, ${PX.turfMid} 18px 36px)`,
-      border: `3px solid ${PX.night}`,
+      border: `2px solid ${PX.night}`,
       boxShadow: `4px 4px 0 ${PX.shadow}`,
       overflow: 'hidden',
     }}>
@@ -967,8 +969,8 @@ function PixelStar({ name, size = 40 }) {
       height: size,
       padding: Math.max(2, Math.floor(size / 16)),
       background: '#ffffff',
-      border: `3px solid ${PX.night}`,
-      boxShadow: `3px 3px 0 ${PX.shadow}`,
+      border: `2px solid ${PX.night}`,
+      boxShadow: `2px 2px 0 ${PX.shadow}`,
       clipPath: 'polygon(0 18%, 12% 18%, 12% 0, 88% 0, 88% 18%, 100% 18%, 100% 82%, 88% 82%, 88% 100%, 12% 100%, 12% 82%, 0 82%)',
       display: 'inline-grid',
       gridTemplateColumns: `repeat(${g}, ${s}px)`,
@@ -1019,8 +1021,8 @@ function PixelCommentator({ size = 24 }) {
       gridTemplateRows: `repeat(${grid}, ${cell}px)`,
       width: size,
       height: size,
-      border: `3px solid ${PX.night}`,
-      boxShadow: `3px 3px 0 ${PX.night}`,
+      border: `2px solid ${PX.night}`,
+      boxShadow: `2px 2px 0 ${PX.night}`,
       background: PX.cream,
       overflow: 'hidden',
       imageRendering: 'pixelated',
@@ -1141,8 +1143,8 @@ function PixelWorldMapBanner() {
       margin: '-12px -12px 12px -12px',
       position: 'relative',
       overflow: 'hidden',
-      borderBottom: '3px solid #fff',
-      boxShadow: `3px 3px 0 ${PX.night}`,
+      borderBottom: '2px solid #fff',
+      boxShadow: `2px 2px 0 ${PX.night}`,
     }}>
       <div style={{
         position: 'absolute',
