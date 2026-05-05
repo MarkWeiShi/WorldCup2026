@@ -227,9 +227,14 @@ function Hero({ nav }) {
 }
 
 function FocusMatch({ toast, nav }) {
+  const upcomingMatches = [
+    { a: 'br', aName: '巴西', b: 'de', bName: '德国', group: '小组赛 · GROUP E', time: '明日 04:00', venue: '🏟 洛杉矶 SoFi 球场' },
+    { a: 'fr', aName: '法国', b: 'es', bName: '西班牙', group: '小组赛 · GROUP F', time: '明日 15:00', venue: '🏟 迈阿密硬石球场' },
+  ];
   return (
     <div style={{ padding: '14px 12px 0' }}>
       <SectionTitle jp="TODAY'S FOCUS" cn="今日焦点赛" />
+      {/* 主焦点赛 */}
       <PixelBox bg={PX.cream} style={{ marginTop: 8 }}>
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -270,6 +275,45 @@ function FocusMatch({ toast, nav }) {
             onClick={() => nav && nav('P6')}>立即竞猜</PixelButton>
         </div>
       </PixelBox>
+      {/* 更多比赛 */}
+      {upcomingMatches.map((m, idx) => (
+        <PixelBox key={idx} bg={PX.cream} style={{ marginTop: 10 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            fontFamily: "'Press Start 2P', monospace", fontSize: 7,
+            color: PX.night, marginBottom: 10,
+          }}>
+            <span>{m.group}</span>
+            <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: PX.darkRed }}>{m.time}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <TeamSlot code={m.a} name={m.aName} />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                fontFamily: "'Press Start 2P', monospace", fontSize: 18,
+                color: PX.night, background: PX.cream,
+                padding: '6px 10px', border: `2.5px solid ${PX.night}`,
+                boxShadow: `2px 2px 0 ${PX.night}`,
+                whiteSpace: 'nowrap',
+              }}>VS</div>
+            </div>
+            <TeamSlot code={m.b} name={m.bName} />
+          </div>
+          <div style={{
+            fontFamily: "'PingFang SC', sans-serif", fontSize: 11,
+            textAlign: 'center', marginTop: 10, color: '#555',
+            borderTop: `2px dashed ${PX.night}`, paddingTop: 8,
+          }}>
+            {m.venue}
+          </div>
+          <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+            <PixelButton color={PX.grassGreen} style={{ flex: 1 }}
+              onClick={() => nav && nav('P1')}>进入陪看房</PixelButton>
+            <PixelButton color={PX.gold} textColor={PX.night} style={{ flex: 1 }}
+              onClick={() => nav && nav('P6')}>立即竞猜</PixelButton>
+          </div>
+        </PixelBox>
+      ))}
     </div>
   );
 }
@@ -865,45 +909,11 @@ function HomePage({ onNav }) {
   return (
     <div data-screen-label="01 Home" style={{ position: 'relative', minHeight: '100%' }}>
       {window.HomeStadium ? React.createElement(window.HomeStadium, { onNav }) : null}
-      <TopBar onNav={handleNav} />
-      <TodayBannerStrip nav={onNav}/>
-      <Hero nav={onNav} />
-      <FocusMatch toast={toast} nav={onNav}/>
-      <div style={{ height: 14 }} />
       <Shooting toast={toast} nav={onNav}/>
       <div style={{ height: 14 }} />
-      {/* 比分竞猜入口（原 EntryBars 中的 betting bar，单独抽出） */}
-      <div style={{ padding: '0 12px' }}>
-        <div id="anchor-predict" onClick={() => onNav && onNav('P6')}
-          className="pixel-btn"
-          style={{
-            display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
-            background: PX.sunYellow, border: `3px solid ${PX.night}`,
-            boxShadow: `3px 3px 0 ${PX.night}`, cursor: 'pointer',
-          }}>
-          <div className="dice-roll"><PixelDice size={36} /></div>
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontFamily: "'Press Start 2P', monospace", fontSize: 9,
-              color: PX.darkRed, marginBottom: 3,
-            }}>TODAY · 5 MATCHES</div>
-            <div style={{
-              fontFamily: "'PingFang SC', sans-serif", fontSize: 11,
-              color: PX.night, fontWeight: 700,
-            }}>比分竞猜 · 累计奖池 <span style={{ color: PX.darkRed }}>88,888</span> HT币</div>
-          </div>
-          <div style={{ color: PX.night, fontFamily: "'Press Start 2P', monospace", fontSize: 14 }}>›</div>
-        </div>
-      </div>
+      <FocusMatch toast={toast} nav={onNav}/>
       <div style={{ height: 14 }} />
-      <SpeakToScore toast={toast} nav={onNav}/>
-      <Ranking toast={toast} nav={onNav}/>
-      <div style={{ height: 14 }} />
-      <LiveRooms toast={toast} nav={onNav}/>
-      <div style={{ height: 14 }} />
-      <Shorts toast={toast} nav={onNav}/>
-      <div style={{ height: 14 }} />
-      <BottomEntries toast={toast} nav={onNav}/>
+
       <Footer />
       <div style={{ height: 60 }} />
       <Toast msg={toastMsg} onClose={() => setToastMsg('')} />

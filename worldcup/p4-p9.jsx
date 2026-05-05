@@ -156,6 +156,17 @@ function P5Page({ onBack, toast, nav }) {
   const [cat, setCat] = React.useState(0);
   const [country, setCountry] = React.useState('all');
   const categories = ['全部','球迷现场','跨国 PK','解说','房间名场面','多语言看球'];
+
+  const liveRooms = [
+    { title: '阿根廷 vs 英格兰 全程陪看', host: 'Diego', flag: 'ar', viewers: '12.3k', pk: false },
+    { title: '🌏 多语言神解说', host: 'Aki', flag: 'fr', viewers: '8.7k', pk: true },
+    { title: '德意志战车冲鸭!', host: 'Hans', flag: 'de', viewers: '6.1k', pk: false },
+    { title: '巴西桑巴狂欢夜', host: 'Luiza', flag: 'br', viewers: '9.4k', pk: true },
+    { title: 'ESP vs ITA 预演', host: 'Carlos', flag: 'es', viewers: '4.2k', pk: false },
+    { title: '深夜加时解说', host: 'Sam', flag: 'en', viewers: '3.8k', pk: false },
+  ];
+  const liveCoverColors = ['#FF4444', '#4CAF50', '#FFC107', '#3F51B5', '#87CEEB', '#C62828'];
+
   const videos = [
     { t: '阿根廷球迷唱跳应援 · 纽约街头',     d: '00:48', likes: '12.3k', src: '@maria',  flag: 'ar', color: '#4CAF50' },
     { t: '德国小哥学中文口号: 冲鸭!',         d: '01:12', likes: '8.4k',  src: '@hans',   flag: 'de', color: '#FFC107' },
@@ -165,7 +176,78 @@ function P5Page({ onBack, toast, nav }) {
     { t: '日本球迷赛后捡垃圾又上热搜',        d: '00:58', likes: '11.6k', src: '@yuki',   flag: 'jp', color: '#9C27B0' },
   ];
   return (
-    <PageShell title="SHORTS" subtitle="P5 · 短视频专区" onBack={onBack} darkHeader>
+    <PageShell title="MEDIA" subtitle="P5 · 媒体专区" onBack={onBack} darkHeader>
+      {/* PROGRESS · 比赛进程 */}
+      <SecHead title="PROGRESS" sub="比赛进程"/>
+      <div style={{
+        border: `3px solid ${PX.night}`, boxShadow: `3px 3px 0 ${PX.night}`,
+        lineHeight: 0, overflow: 'hidden',
+      }}>
+        <img
+          src="assets/page-art/bracket-progress.png"
+          alt="World Cup Bracket"
+          style={{ width: '100%', display: 'block' }}
+        />
+      </div>
+
+      {/* ON AIR · 正在直播 */}
+      <SecHead title="ON AIR" sub="正在直播" action="全部" onAction={() => nav('P4')}/>
+      <div className="h-scroll" style={{
+        display: 'flex', gap: 10, overflowX: 'auto', scrollSnapType: 'x mandatory', paddingBottom: 4,
+      }}>
+        {liveRooms.map((r, i) => (
+          <div key={i} onClick={() => nav('P13')}
+            style={{
+              flex: '0 0 140px', scrollSnapAlign: 'start',
+              border: `3px solid ${PX.night}`, boxShadow: `3px 3px 0 ${PX.night}`,
+              background: PX.cream, cursor: 'pointer',
+            }}>
+            <div style={{
+              height: 88, background: liveCoverColors[i],
+              position: 'relative', overflow: 'hidden',
+              borderBottom: `2px solid ${PX.night}`,
+            }}>
+              <div style={{
+                position: 'absolute', inset: 0,
+                backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0 2px, transparent 2px 4px)',
+              }}/>
+              <div style={{
+                position: 'absolute', bottom: 4, left: 4,
+                width: 28, height: 28, background: PX.cream,
+                border: `2px solid ${PX.night}`, display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                fontFamily: "'Press Start 2P', monospace", fontSize: 10,
+              }}>{r.host[0]}</div>
+              <div style={{ position: 'absolute', top: 4, left: 4 }}>
+                <PixelFlag code={r.flag} px={4} />
+              </div>
+              <div style={{ position: 'absolute', top: 4, right: 4 }}><LiveDot /></div>
+              {r.pk && (
+                <div style={{
+                  position: 'absolute', bottom: 6, right: 4,
+                  background: PX.sunYellow, color: PX.night,
+                  fontFamily: "'Press Start 2P', monospace", fontSize: 7,
+                  padding: '2px 4px', border: `2px solid ${PX.night}`,
+                }}>⚔ PK</div>
+              )}
+            </div>
+            <div style={{ padding: 6 }}>
+              <div style={{
+                fontFamily: "'PingFang SC', sans-serif", fontSize: 11,
+                color: PX.night, fontWeight: 700, lineHeight: 1.3,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{r.title}</div>
+              <div style={{
+                fontFamily: "'Press Start 2P', monospace", fontSize: 7,
+                color: '#888', marginTop: 4,
+              }}>👁 {r.viewers}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* HIGHLIGHTS · 精彩集锦 */}
+      <SecHead title="HIGHLIGHTS" sub="精彩集锦" action="更多" onAction={() => toast('更多集锦')}/>
       {/* 分类 Tab */}
       <div className="h-scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
         {categories.map((c, i) => (

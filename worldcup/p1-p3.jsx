@@ -434,17 +434,21 @@ function P2Page({ onBack, toast, nav }) {
           <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: PX.sunYellow, letterSpacing: 1 }}>FAN CLUB</div>
           <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, color: '#aaa', marginTop: 2, fontWeight: 600 }}>球迷俱乐部</div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8 }}>
           {[
-            { ic: '💬', t: '球迷圈子', sub: 'Fan Circle' },
-            { ic: '👥', t: '球迷群', sub: 'Fan Group' },
-            { ic: '📍', t: '线下聚会', sub: 'Meetup' },
+            { emoji: '🌍', label: 'CIRCLE', sub: '世界杯圈子', color: PX.skyBlue, onClick: () => nav('P14') },
+            { emoji: '🎉', label: 'MEETUP', sub: '线下观赛', color: PX.gold, onClick: () => toast('线下观赛 Meetup') },
+            { emoji: '👥', label: 'GROUP', sub: '球迷群', color: '#7E57C2', onClick: () => toast('球迷群') },
           ].map(x => (
-            <Card key={x.t} onClick={() => toast(x.t)} className="pixel-btn" bg="#2A2A4A" style={{ padding: 10, textAlign: 'center', cursor: 'pointer', border: `2px solid #444` }}>
-              <div style={{ fontSize: 24 }}>{x.ic}</div>
-              <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, fontWeight: 700, marginTop: 6, color: '#E8E8E8' }}>{x.t}</div>
-              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 6, color: '#888', marginTop: 3 }}>{x.sub}</div>
-            </Card>
+            <div key={x.label} onClick={x.onClick} className="pixel-btn" style={{
+              flex: 1, background: x.color, border: `3px solid ${PX.night}`,
+              boxShadow: `3px 3px 0 ${PX.night}`, padding: '10px 8px',
+              cursor: 'pointer', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 22 }}>{x.emoji}</div>
+              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: PX.night, marginTop: 4 }}>{x.label}</div>
+              <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 9, color: '#333', marginTop: 2 }}>{x.sub}</div>
+            </div>
           ))}
         </div>
       </div>

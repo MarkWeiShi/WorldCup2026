@@ -723,6 +723,14 @@
             })}
           </div>
         </div>
+        {/* 楼层专属 Section Header */}
+        {activeFloor === '3F' && (
+          <div style={{ padding: '0 12px 6px' }}>
+            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 11, color: navy3, letterSpacing: 1 }}>STADIUM</div>
+            <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, color: '#666', marginTop: 2, fontWeight: 600 }}>球场</div>
+          </div>
+        )}
+
       </React.Fragment>
     );
   }
