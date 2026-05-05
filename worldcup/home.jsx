@@ -479,48 +479,203 @@ function Ranking({ toast, nav }) {
 }
 
 function Shooting({ toast, nav }) {
+  const [result, setResult] = React.useState(null);
+  const [goals, setGoals] = React.useState(12);
+  const [stage, setStage] = React.useState('idle');
+  const [showPickStar, setShowPickStar] = React.useState(false);
+  const [pickedStar, setPickedStar] = React.useState(null);
+  const demoTimersRef = React.useRef([]);
+
+  const STARS = [
+    { id: 'messi',    name: '梅西',     emoji: '🇦🇷', num: 10, flag: 'ar' },
+    { id: 'neymar',   name: '内马尔',   emoji: '🇧🇷', num: 10, flag: 'br' },
+    { id: 'mbappe',   name: '姆巴佩',   emoji: '🇫🇷', num: 7,  flag: 'fr' },
+    { id: 'ronaldo',  name: 'C罗',      emoji: '🇵🇹', num: 7,  flag: 'pt' },
+    { id: 'yamal',    name: '亚马尔',   emoji: '🇪🇸', num: 19, flag: 'es' },
+    { id: 'dembele',  name: '登贝莱',   emoji: '🇫🇷', num: 11, flag: 'fr' },
+    { id: 'kane',     name: '凯恩',     emoji: '🏴', num: 9,  flag: 'en' },
+  ];
+
+  function clearDemoTimers() {
+    demoTimersRef.current.forEach((timer) => clearTimeout(timer));
+    demoTimersRef.current = [];
+  }
+  function setDemoStage(nextStage) {
+    setStage(nextStage);
+    if (!window.sfx) return;
+    if (nextStage === 'pass') window.sfx.play('whoosh');
+    if (nextStage === 'dribble') window.sfx.play('combo_tick');
+    if (nextStage === 'shoot') window.sfx.play('kick');
+    if (nextStage === 'goal') window.sfx.goalBurst();
+  }
+  function runDemo() {
+    clearDemoTimers();
+    [
+      { stage: 'pass', at: 0 },
+      { stage: 'dribble', at: 800 },
+      { stage: 'shoot', at: 1600 },
+      { stage: 'goal', at: 2400 },
+      { stage: 'idle', at: 3200 },
+    ].forEach((item) => {
+      const timer = setTimeout(() => setDemoStage(item.stage), item.at);
+      demoTimersRef.current.push(timer);
+    });
+  }
+  React.useEffect(() => () => clearDemoTimers(), []);
+
+  function shoot() {
+    const win = Math.random() > 0.4;
+    setResult(win ? 'goal' : 'miss');
+    if (win) setGoals(g => g + 1);
+    setTimeout(() => setResult(null), 1500);
+    if (window.sfx) {
+      window.sfx.suppressNextClick();
+      window.sfx.play('kick');
+      setTimeout(() => {
+        if (win) window.sfx.goalBurst();
+        else window.sfx.play('error');
+      }, 350);
+    }
+  }
+
   return (
     <div style={{ padding: '0 12px' }}>
       <SectionTitle jp="SHOOT CHALLENGE" cn="射门挑战" />
       <div id="anchor-shoot">
-      <PixelBox bg={PX.lightCream} style={{ marginTop: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ position: 'relative', width: 110, height: 64 }}>
-            <PixelGoal width={110} height={64}/>
-            <div className="ball-wobble" style={{
-              position: 'absolute', bottom: 4, left: 42,
-            }}>
-              <PixelBall size={18} />
+      <div style={{
+        position: 'relative', background: PX.grassGreen,
+        border: `3px solid ${PX.night}`, boxShadow: `3px 3px 0 ${PX.night}`,
+        padding: '20px 10px', overflow: 'hidden', textAlign: 'center',
+      }}>
+        <div style={{ position: 'absolute', inset: 0, background: `repeating-linear-gradient(90deg, #3FA042 0 20px, #4CB550 20px 40px)` }}/>
+        <div style={{ position: 'relative', width: 200, margin: '0 auto' }}>
+          <PixelGoal width={200} height={110}/>
+          {stage === 'goal' && (
+            <div className="net-shake" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+              <PixelGoal width={200} height={110}/>
             </div>
-          </div>
-          <div style={{ flex: 1 }}>
+          )}
+          {stage === 'pass' && (
+            <div className="pass-trail" style={{
+              position: 'absolute', left: 22, top: 84, width: 156, height: 8,
+              border: `3px solid ${PX.night}`, boxShadow: `3px 3px 0 ${PX.shadow}`,
+              background: `repeating-linear-gradient(90deg, ${PX.sunYellow} 0 14px, transparent 14px 24px)`,
+              pointerEvents: 'none',
+            }} />
+          )}
+          <div className="ball-wobble" style={{ marginTop: 10 }}><PixelBall size={28}/></div>
+          {stage === 'dribble' && (
+            <div className="ball-wobble" style={{
+              position: 'absolute', left: '50%', top: 116, transform: 'translateX(-50%)',
+              opacity: 0.85, pointerEvents: 'none',
+            }}><PixelBall size={28}/></div>
+          )}
+          {stage === 'shoot' && (
+            <div className="shoot-fly" style={{
+              position: 'absolute', left: '50%', top: 116, width: 28, height: 28,
+              marginLeft: -14, pointerEvents: 'none',
+            }}><PixelBall size={28}/></div>
+          )}
+          {stage === 'goal' && (
+            <div className="live-blink" style={{
+              position: 'absolute', top: 18, left: '50%', transform: 'translateX(-50%)',
+              background: PX.red, color: PX.sunYellow, padding: '6px 12px',
+              fontFamily: "'Press Start 2P', monospace", fontSize: 18,
+              border: `3px solid ${PX.sunYellow}`, textShadow: `2px 2px 0 ${PX.night}`,
+              pointerEvents: 'none',
+            }}>GOAL</div>
+          )}
+          {result === 'goal' && (
+            <div className="live-blink" style={{
+              position: 'absolute', top: 20, left: '50%', transform: 'translateX(-50%)',
+              background: PX.red, color: PX.sunYellow, padding: '6px 12px',
+              fontFamily: "'Press Start 2P', monospace", fontSize: 18,
+              border: `3px solid ${PX.sunYellow}`, textShadow: `2px 2px 0 ${PX.night}`,
+            }}>GOAL!</div>
+          )}
+          {result === 'miss' && (
             <div style={{
-              fontFamily: "'Press Start 2P', monospace", fontSize: 9,
-              color: PX.night, marginBottom: 6,
-            }}>再进 3 球 → 金靴徽章</div>
-            <div style={{
-              height: 12, background: '#fff', border: `2px solid ${PX.night}`,
-              display: 'flex', padding: 1,
-            }}>
-              {[...Array(10)].map((_, i) => (
-                <div key={i} style={{
-                  flex: 1, background: i < 7 ? PX.grassGreen : 'transparent',
-                  marginRight: i < 9 ? 1 : 0,
-                }} />
+              position: 'absolute', top: 30, left: '50%', transform: 'translateX(-50%)',
+              background: PX.night, color: '#fff', padding: '6px 10px',
+              fontFamily: "'Press Start 2P', monospace", fontSize: 10,
+            }}>MISS · 😢</div>
+          )}
+        </div>
+      </div>
+
+      <div onClick={() => setShowPickStar(true)} className="pixel-btn" style={{
+        marginTop: 14, padding: '14px 0', cursor: 'pointer', textAlign: 'center',
+        background: PX.red, color: '#fff',
+        border: `4px solid ${PX.night}`, boxShadow: `4px 4px 0 ${PX.night}`,
+        fontFamily: "'Press Start 2P', monospace", fontSize: 16,
+      }}>⚡ 射门 !</div>
+      <div style={{ marginTop: 8 }}>
+        <PixelButton onClick={runDemo} color={PX.sunYellow} textColor={PX.night} style={{ width: '100%', display: 'block' }}>
+          DEMO · 传球→过人→射门→进球
+        </PixelButton>
+      </div>
+
+      {/* PICK STAR + GIFT MAP 弹窗 */}
+      {showPickStar && (
+        <div onClick={() => { setShowPickStar(false); setPickedStar(null); }} style={{
+          position: 'fixed', inset: 0, background: 'rgba(26,26,62,0.88)',
+          zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div onClick={e => e.stopPropagation()} className="modal-slide-up" style={{
+            width: 340, maxHeight: '85dvh', overflowY: 'auto',
+            background: PX.cream, border: `2px solid ${PX.night}`,
+            boxShadow: `3px 3px 0 ${PX.night}`, padding: 16,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: PX.night }}>PICK STAR</div>
+              <div onClick={() => { setShowPickStar(false); setPickedStar(null); }} style={{
+                fontFamily: "'Press Start 2P', monospace", fontSize: 10, cursor: 'pointer', color: PX.night,
+              }}>✕</div>
+            </div>
+            <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, color: '#666', marginBottom: 10, fontWeight: 600 }}>选择球星为你射门</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 14 }}>
+              {STARS.map(s => (
+                <div key={s.id} onClick={() => setPickedStar(s)} style={{
+                  padding: 8, textAlign: 'center', cursor: 'pointer',
+                  background: pickedStar?.id === s.id ? PX.sunYellow : '#fff',
+                  border: `2px solid ${pickedStar?.id === s.id ? PX.red : PX.night}`,
+                  boxShadow: pickedStar?.id === s.id ? `2px 2px 0 ${PX.red}` : `2px 2px 0 ${PX.night}`,
+                }}>
+                  <div style={{ marginBottom: 4 }}><PixelFlag code={s.flag} px={3}/></div>
+                  <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: PX.night }}>#{s.num}</div>
+                  <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 10, fontWeight: 700, marginTop: 2 }}>{s.name}</div>
+                </div>
               ))}
             </div>
-            <div style={{
-              fontFamily: "'Press Start 2P', monospace", fontSize: 8,
-              color: '#666', marginTop: 6,
-            }}>今日已射门 <span style={{ color: PX.darkRed }}>12</span> 次</div>
+
+            <div style={{ borderTop: `2px dashed ${PX.night}`, paddingTop: 10, marginBottom: 6 }}>
+              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: PX.night, marginBottom: 6 }}>GIFT MAP</div>
+              <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 10, color: '#666', marginBottom: 8, fontWeight: 600 }}>4 档礼物映射</div>
+            </div>
+            {[
+              { g: '🎁 应援贴纸', act: '传球', r: '+1 助攻' },
+              { g: '🌹 玫瑰花',   act: '过人', r: '+1 过人' },
+              { g: '🎯 精准瞄准', act: '射门', r: '+1 射门' },
+              { g: '🏆 大力神杯', act: '进球', r: '+1 进球 · 触发 GOAL 特效' },
+            ].map((x, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, padding: '5px 0', alignItems: 'center', borderBottom: i < 3 ? `1px dashed #ddd` : 'none' }}>
+                <div style={{ flex: 1, fontFamily: "'PingFang SC', sans-serif", fontSize: 11, fontWeight: 700 }}>{x.g}</div>
+                <Tag>{x.act}</Tag>
+                <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: PX.darkRed }}>{x.r}</div>
+              </div>
+            ))}
+            <div onClick={() => {
+              if (!pickedStar) { toast && toast('请先选择球星'); return; }
+              setShowPickStar(false); setPickedStar(null); shoot();
+            }} className="pixel-btn" style={{
+              marginTop: 12, padding: '10px 0', textAlign: 'center', cursor: 'pointer',
+              background: pickedStar ? PX.red : '#aaa', color: '#fff',
+              border: `3px solid ${PX.night}`, boxShadow: `3px 3px 0 ${PX.night}`,
+              fontFamily: "'Press Start 2P', monospace", fontSize: 11,
+            }}>{pickedStar ? `⚡ ${pickedStar.name} 射门 →` : '⚡ 请先选球星'}</div>
           </div>
         </div>
-        <div style={{ marginTop: 10 }}>
-          <PixelButton color={PX.red} onClick={() => nav && nav('P3')} style={{ width: '100%' }}>
-            立即射门 →
-          </PixelButton>
-        </div>
-      </PixelBox>
+      )}
       </div>
     </div>
   );

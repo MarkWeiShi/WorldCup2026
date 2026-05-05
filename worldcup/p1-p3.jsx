@@ -453,14 +453,8 @@ function P2Page({ onBack, toast, nav }) {
         </div>
       </div>
       <SecHead title="GOAL RANKING" sub="进球排行榜"/>
-      <Card bg={PX.cream} style={{ padding: 10 }}>
-        <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: PX.night, marginBottom: 6 }}>SCORING FORMULA</div>
-        <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, color: '#444' }}>
-          综合分 = 送礼 × 0.5 + 时长 × 0.3 + 进球 × 0.2
-        </div>
-      </Card>
       <div style={{ marginTop: 10 }}>
-        <TabBar tabs={['综合','送礼','时长','进球']} active={tab} onChange={setTab} size="sm"/>
+        <TabBar tabs={['个人','球队','球星']} active={tab} onChange={setTab} size="sm"/>
       </div>
       <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
         {['今日','本周','总榜'].map((p, i) => (
@@ -595,6 +589,7 @@ function P3Page({ onBack, toast }) {
   const [goals, setGoals] = React.useState(12);
   const [country, setCountry] = React.useState('cn');
   const [stage, setStage] = React.useState('idle');
+  const [showGiftMap, setShowGiftMap] = React.useState(false);
   const demoTimersRef = React.useRef([]);
 
   function clearDemoTimers() {
@@ -738,7 +733,7 @@ function P3Page({ onBack, toast }) {
         </div>
       </div>
 
-      <div onClick={shoot} className="pixel-btn" style={{
+      <div onClick={() => setShowGiftMap(true)} className="pixel-btn" style={{
         marginTop: 14, padding: '14px 0', cursor: 'pointer', textAlign: 'center',
         background: PX.red, color: '#fff',
         border: `4px solid ${PX.night}`, boxShadow: `4px 4px 0 ${PX.night}`,
@@ -755,82 +750,48 @@ function P3Page({ onBack, toast }) {
         </PixelButton>
       </div>
 
-      <SecHead title="PROGRESS" sub="进度 · 奖励"/>
-      <Card>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 18, color: PX.red }}>{goals}</div>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 6, color: '#888' }}>TODAY</div>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: PX.darkRed, marginBottom: 4 }}>NEXT: 金靴徽章 ({goals}/15)</div>
-            <ProgressBar value={goals} max={15}/>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 14, color: PX.gold }}>240</div>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 6, color: '#888' }}>TOTAL</div>
-          </div>
-        </div>
-      </Card>
-
-      {/* 奖励阶梯 */}
-      <SecHead title="REWARDS" sub="阶梯奖励"/>
-      <div className="h-scroll" style={{ display: 'flex', gap: 8, overflowX: 'auto' }}>
-        {[5, 15, 50, 100, 500].map((th, i) => {
-          const unlocked = goals >= th;
-          return (
-            <Card key={i} style={{
-              flex: '0 0 90px', padding: 8, textAlign: 'center',
-              borderColor: unlocked ? PX.gold : PX.night,
-              boxShadow: unlocked ? `3px 3px 0 ${PX.gold}` : `3px 3px 0 ${PX.night}`,
-              opacity: unlocked ? 1 : 0.7,
-            }}>
-              <div style={{ fontSize: 22 }}>{['🎁','🎖','⚽','👟','🏆'][i]}</div>
-              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: PX.red, marginTop: 4 }}>{th} 球</div>
-              {unlocked && <Tag color={PX.gold}>已解锁</Tag>}
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* 映射 */}
-      <SecHead title="GIFT MAP" sub="4 档礼物映射"/>
-      <Card>
-        {[
-          { g: '🎁 应援贴纸', act: '传球', r: '+1 助攻' },
-          { g: '🌹 玫瑰花',   act: '过人', r: '+1 过人' },
-          { g: '🎯 精准瞄准', act: '射门', r: '+1 射门' },
-          { g: '🏆 大力神杯', act: '进球', r: '+1 进球 · 触发 GOAL 特效' },
-        ].map((x, i) => (
-          <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 0', alignItems: 'center', borderBottom: i < 3 ? `1px dashed #ddd` : 'none' }}>
-            <div style={{ flex: 1, fontFamily: "'PingFang SC', sans-serif", fontSize: 11, fontWeight: 700 }}>{x.g}</div>
-            <Tag>{x.act}</Tag>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: PX.darkRed }}>{x.r}</div>
-          </div>
-        ))}
-      </Card>
-
-      <SecHead title="PICK COUNTRY" sub="为谁射门"/>
+      <SecHead title="PICK STAR" sub="为谁射门"/>
       <FlagRow codes={ALL_CODES.slice(0,12)} selected={country} onPick={setCountry}/>
 
-      <SecHead title="FRIENDS" sub="好友榜"/>
-      <Card>
-        {['Diego','Hans','Luiza'].map((n, i) => (
-          <div key={n} style={{ display: 'flex', gap: 6, alignItems: 'center', padding: '5px 0', borderBottom: i < 2 ? `1px dashed #ddd` : 'none' }}>
-            <div style={{ width: 18, fontFamily: "'Press Start 2P', monospace", fontSize: 10, color: PX.gold }}>{i+1}</div>
-            <div style={{ width: 22, height: 22, background: PX.sunYellow, border: `2px solid ${PX.night}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Press Start 2P', monospace", fontSize: 9 }}>{n[0]}</div>
-            <div style={{ flex: 1, fontFamily: "'PingFang SC', sans-serif", fontSize: 11, fontWeight: 700 }}>{n}</div>
-            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: PX.darkRed }}>{80 - i*15} 球</div>
+      {/* GIFT MAP 弹窗 */}
+      {showGiftMap && (
+        <div onClick={() => setShowGiftMap(false)} style={{
+          position: 'fixed', inset: 0, background: 'rgba(26,26,62,0.88)',
+          zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div onClick={e => e.stopPropagation()} className="modal-slide-up" style={{
+            width: 320, background: PX.cream, border: `2px solid ${PX.night}`,
+            boxShadow: `3px 3px 0 ${PX.night}`, padding: 16,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: PX.night }}>GIFT MAP</div>
+              <div onClick={() => setShowGiftMap(false)} style={{
+                fontFamily: "'Press Start 2P', monospace", fontSize: 10,
+                cursor: 'pointer', color: PX.night,
+              }}>✕</div>
+            </div>
+            <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, color: '#666', marginBottom: 10, fontWeight: 600 }}>4 档礼物映射</div>
+            {[
+              { g: '🎁 应援贴纸', act: '传球', r: '+1 助攻' },
+              { g: '🌹 玫瑰花',   act: '过人', r: '+1 过人' },
+              { g: '🎯 精准瞄准', act: '射门', r: '+1 射门' },
+              { g: '🏆 大力神杯', act: '进球', r: '+1 进球 · 触发 GOAL 特效' },
+            ].map((x, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 0', alignItems: 'center', borderBottom: i < 3 ? `1px dashed #ddd` : 'none' }}>
+                <div style={{ flex: 1, fontFamily: "'PingFang SC', sans-serif", fontSize: 11, fontWeight: 700 }}>{x.g}</div>
+                <Tag>{x.act}</Tag>
+                <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 7, color: PX.darkRed }}>{x.r}</div>
+              </div>
+            ))}
+            <div onClick={() => { setShowGiftMap(false); shoot(); }} className="pixel-btn" style={{
+              marginTop: 12, padding: '10px 0', textAlign: 'center', cursor: 'pointer',
+              background: PX.red, color: '#fff',
+              border: `3px solid ${PX.night}`, boxShadow: `3px 3px 0 ${PX.night}`,
+              fontFamily: "'Press Start 2P', monospace", fontSize: 11,
+            }}>🎁 送礼射门 →</div>
           </div>
-        ))}
-      </Card>
-
-      <div onClick={() => toast('送礼射门')} className="pixel-btn" style={{
-        marginTop: 14, padding: '12px 0', textAlign: 'center', cursor: 'pointer',
-        background: PX.gold, color: PX.night,
-        border: `3px solid ${PX.night}`, boxShadow: `3px 3px 0 ${PX.night}`,
-        fontFamily: "'Press Start 2P', monospace", fontSize: 11,
-      }}>🎁 送礼射门 →</div>
+        </div>
+      )}
     </PageShell>
   );
 }

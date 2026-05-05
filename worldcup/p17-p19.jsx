@@ -377,6 +377,57 @@ function P18Page({ onBack, toast }) {
 // ────────────────────────────────────────────────────────────
 // P19 · 宝箱 + 福袋详情
 // ────────────────────────────────────────────────────────────
+const TEAM_GIFT_48 = [
+  { code: 'ar', name: '阿根廷', gifts: ['🦁 球衣', '🧣 蓝白围巾', '🏆 马黛茶杯'] },
+  { code: 'br', name: '巴西', gifts: ['👕 球衣', '🧣 桑巴围巾', '⚽ 足球钥匙扣'] },
+  { code: 'fr', name: '法国', gifts: ['👕 球衣', '🧣 三色围巾', '🗼 埃菲尔摆件'] },
+  { code: 'jp', name: '日本', gifts: ['👕 球衣', '🧣 武士围巾', '🎌 折扇'] },
+  { code: 'pt', name: '葡萄牙', gifts: ['👕 球衣', '🧣 绿红围巾', '⚓ 航海摆件'] },
+  { code: 'kr', name: '韩国', gifts: ['👕 球衣', '🧣 太极围巾', '🥁 小鼓挂件'] },
+  { code: 'es', name: '西班牙', gifts: ['👕 球衣', '🧣 斗牛围巾', '💃 弗拉门戈摆件'] },
+  { code: 'de', name: '德国', gifts: ['👕 球衣', '🧣 黑红金围巾', '🍺 啤酒杯'] },
+  { code: 'nl', name: '荷兰', gifts: ['👕 球衣', '🧣 橙色围巾', '🌷 郁金香摆件'] },
+  { code: 'en', name: '英格兰', gifts: ['👕 球衣', '🧣 三狮围巾', '🫖 茶壶摆件'] },
+  { code: 'cn', name: '中国', gifts: ['👕 球衣', '🧣 龙纹围巾', '🐉 龙摆件'] },
+  { code: 'be', name: '比利时', gifts: ['👕 球衣', '🧣 红魔围巾', '🍫 巧克力礼盒'] },
+  { code: 'hr', name: '克罗地亚', gifts: ['👕 球衣', '🧣 格子围巾', '⚽ 徽章'] },
+  { code: 'mx', name: '墨西哥', gifts: ['👕 球衣', '🧣 仙人掌围巾', '🌮 摆件'] },
+  { code: 'us', name: '美国', gifts: ['👕 球衣', '🧣 星条围巾', '🗽 自由女神摆件'] },
+  { code: 'ma', name: '摩洛哥', gifts: ['👕 球衣', '🧣 红绿围巾', '🕌 摆件'] },
+  { code: 'sn', name: '塞内加尔', gifts: ['👕 球衣', '🧣 绿色围巾', '🦁 狮子徽章'] },
+  { code: 'it', name: '意大利', gifts: ['👕 球衣', '🧣 蓝色围巾', '🏛 斗兽场摆件'] },
+  { code: 'uy', name: '乌拉圭', gifts: ['👕 球衣', '🧣 天蓝围巾', '⚽ 徽章'] },
+  { code: 'se', name: '瑞典', gifts: ['👕 球衣', '🧣 黄蓝围巾', '🫎 驼鹿摆件'] },
+  { code: 'ch', name: '瑞士', gifts: ['👕 球衣', '🧣 白十字围巾', '⛰ 雪山摆件'] },
+  { code: 'dk', name: '丹麦', gifts: ['👕 球衣', '🧣 红白围巾', '🧜 美人鱼摆件'] },
+  { code: 'pl', name: '波兰', gifts: ['👕 球衣', '🧣 白红围巾', '🦅 鹰徽章'] },
+  { code: 'rs', name: '塞尔维亚', gifts: ['👕 球衣', '🧣 三色围巾', '⚽ 徽章'] },
+  { code: 'cm', name: '喀麦隆', gifts: ['👕 球衣', '🧣 绿红黄围巾', '🦁 狮子摆件'] },
+  { code: 'gh', name: '加纳', gifts: ['👕 球衣', '🧣 黑星围巾', '⭐ 星章'] },
+  { code: 'ng', name: '尼日利亚', gifts: ['👕 球衣', '🧣 绿白围巾', '🦅 鹰摆件'] },
+  { code: 'au', name: '澳大利亚', gifts: ['👕 球衣', '🧣 绿金围巾', '🦘 袋鼠摆件'] },
+  { code: 'sa', name: '沙特', gifts: ['👕 球衣', '🧣 绿色围巾', '🕌 摆件'] },
+  { code: 'ir', name: '伊朗', gifts: ['👕 球衣', '🧣 三色围巾', '🏺 波斯摆件'] },
+  { code: 'qa', name: '卡塔尔', gifts: ['👕 球衣', '🧣 栗色围巾', '🏟 摆件'] },
+  { code: 'ca', name: '加拿大', gifts: ['👕 球衣', '🧣 红白围巾', '🍁 枫叶摆件'] },
+  { code: 'cr', name: '哥斯达黎加', gifts: ['👕 球衣', '🧣 红蓝围巾', '🦜 鹦鹉摆件'] },
+  { code: 'ec', name: '厄瓜多尔', gifts: ['👕 球衣', '🧣 黄蓝红围巾', '🌋 火山摆件'] },
+  { code: 'co', name: '哥伦比亚', gifts: ['👕 球衣', '🧣 黄蓝红围巾', '☕ 咖啡杯'] },
+  { code: 'pe', name: '秘鲁', gifts: ['👕 球衣', '🧣 红白围巾', '🦙 羊驼摆件'] },
+  { code: 'cz', name: '捷克', gifts: ['👕 球衣', '🧣 蓝红围巾', '🦁 狮徽章'] },
+  { code: 'at', name: '奥地利', gifts: ['👕 球衣', '🧣 红白红围巾', '🎵 音符摆件'] },
+  { code: 'ie', name: '爱尔兰', gifts: ['👕 球衣', '🧣 绿白橙围巾', '☘ 三叶草摆件'] },
+  { code: 'ro', name: '罗马尼亚', gifts: ['👕 球衣', '🧣 三色围巾', '🏰 城堡摆件'] },
+  { code: 'ua', name: '乌克兰', gifts: ['👕 球衣', '🧣 蓝黄围巾', '🌻 向日葵摆件'] },
+  { code: 'cl', name: '智利', gifts: ['👕 球衣', '🧣 红蓝围巾', '🏔 安第斯摆件'] },
+  { code: 'eg', name: '埃及', gifts: ['👕 球衣', '🧣 红白黑围巾', '🔺 金字塔摆件'] },
+  { code: 'tn', name: '突尼斯', gifts: ['👕 球衣', '🧣 红白围巾', '⭐ 星月摆件'] },
+  { code: 'dz', name: '阿尔及利亚', gifts: ['👕 球衣', '🧣 绿白围巾', '☪ 新月摆件'] },
+  { code: 'za', name: '南非', gifts: ['👕 球衣', '🧣 彩虹围巾', '🦁 狮子摆件'] },
+  { code: 'no', name: '挪威', gifts: ['👕 球衣', '🧣 红蓝围巾', '🛥 维京船摆件'] },
+  { code: 'fi', name: '芬兰', gifts: ['👕 球衣', '🧣 蓝白围巾', '❄ 雪花摆件'] },
+];
+
 const CHEST_TIERS = [
   { t: '小宝箱', cost: 100,  icon: '📦', reward: '国旗贴纸 · +10 热力', rate: '必中' },
   { t: '中宝箱', cost: 500,  icon: '🎁', reward: '球衣挂件 · +50 热力', rate: '70%' },
@@ -395,34 +446,138 @@ function P19Page({ onBack, toast, nav }) {
   const [selChest, setSelChest] = React.useState(1);
   const pouchProgress = 6800;   // 当前房累送
   const pouchTarget = 10000;
+  const [giftCountry, setGiftCountry] = React.useState(null);
 
   return (
     <PageShell title="TREASURE" subtitle="P19 · 宝箱 + 福袋" onBack={onBack} darkHeader>
-      {/* 宝箱入口大卡 */}
-      <Card bg={PX.night} style={{ padding: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="chest-shake"><PixelChest size={48}/></div>
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontFamily: "'Press Start 2P', monospace", fontSize: 10,
-              color: PX.sunYellow,
-            }}>BATTLE CHEST</div>
+      {/* FIFA VIP Sales */}
+      <SecHead title="FIFA VIP SALES" sub="VIP 促销"/>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {[
+          { icon: '⭐', name: '3个月', price: '¥68', orig: '¥98', tag: '世界杯特惠' },
+          { icon: '🌟', name: '12个月', price: '¥198', orig: '¥388', tag: '最受欢迎' },
+          { icon: '👑', name: '终生', price: '¥648', orig: '¥1288', tag: '限时半价' },
+        ].map((v, i) => (
+          <div key={i} className="pixel-btn" style={{
+            flex: 1, padding: 10, cursor: 'pointer', textAlign: 'center',
+            background: i === 2 ? PX.sunYellow : '#fff',
+            border: `3px solid ${PX.night}`,
+            boxShadow: `3px 3px 0 ${PX.night}`,
+          }}>
+            <div style={{ fontSize: 30 }}>{v.icon}</div>
             <div style={{
               fontFamily: "'PingFang SC', sans-serif", fontSize: 11,
-              color: '#fff', marginTop: 4, lineHeight: 1.4,
-            }}>组队对战结算触发 · 阵营消耗 10% 入池</div>
+              fontWeight: 700, marginTop: 6,
+            }}>{v.name}</div>
+            <div style={{
+              fontFamily: "'Press Start 2P', monospace", fontSize: 9,
+              color: PX.darkRed, marginTop: 4,
+            }}>{v.price}</div>
+            <div style={{
+              fontFamily: "'PingFang SC', sans-serif", fontSize: 9,
+              color: '#999', marginTop: 2, textDecoration: 'line-through',
+            }}>{v.orig}</div>
+            <Tag color={i === 1 ? PX.red : PX.gold} textColor={i === 1 ? '#fff' : PX.night} size={7}>{v.tag}</Tag>
           </div>
-          <div className="pouch-glow"><PixelPouch size={42}/></div>
+        ))}
+      </div>
+
+      {/* TEAM GIFT · 48 国专属礼物 */}
+      <SecHead title="TEAM GIFT" sub="48 国专属礼物"/>
+      <Card style={{
+        background: 'linear-gradient(180deg, #2A2A5E 0%, #1A1A3E 100%)',
+        borderColor: PX.sunYellow, padding: 12,
+      }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.06)',
+          borderRadius: 8, padding: 8,
+          border: '1px solid rgba(255,255,255,0.1)',
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(6, 1fr)',
+            gap: 6,
+          }}>
+            {TEAM_GIFT_48.map((slot, i) => (
+              <div key={i} onClick={() => setGiftCountry(slot)} style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                cursor: 'pointer',
+              }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #3949AB, #1A237E)',
+                  border: `2px solid ${PX.sunYellow}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  overflow: 'hidden',
+                }}>
+                  <PixelFlag code={slot.code} size={28} px={1}/>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-          <Tag color={PX.red} textColor="#fff" size={8}>可开 2 次</Tag>
-          <Tag color={PX.sunYellow} size={8}>输方保底</Tag>
-          <Tag color={PX.grassGreen} textColor="#fff" size={8}>稀有球星</Tag>
-        </div>
+        <div style={{
+          fontFamily: "'Press Start 2P', monospace", fontSize: 7,
+          color: 'rgba(255,255,255,0.5)', marginTop: 8, textAlign: 'center',
+        }}>TAP FLAG TO VIEW GIFT</div>
       </Card>
 
-      {/* 3 档宝箱 */}
-      <SecHead title="CHEST TIERS" sub="三档阶梯"/>
+      {/* 国家礼物弹窗 */}
+      {giftCountry && (
+        <div onClick={() => setGiftCountry(null)} style={{
+          position: 'fixed', inset: 0, background: 'rgba(26,26,62,0.88)',
+          zIndex: 90, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div onClick={e => e.stopPropagation()} className="modal-slide-up" style={{
+            width: 300, background: PX.cream, border: `2px solid ${PX.night}`,
+            boxShadow: `3px 3px 0 ${PX.night}`, padding: 16,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #3949AB, #1A237E)',
+                  border: `2px solid ${PX.sunYellow}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  overflow: 'hidden',
+                }}>
+                  <PixelFlag code={giftCountry.code} size={28} px={1}/>
+                </div>
+                <div>
+                  <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 9, color: PX.night }}>{giftCountry.code.toUpperCase()}</div>
+                  <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 11, color: '#666', fontWeight: 600 }}>{giftCountry.name}</div>
+                </div>
+              </div>
+              <div onClick={() => setGiftCountry(null)} style={{
+                fontFamily: "'Press Start 2P', monospace", fontSize: 10,
+                cursor: 'pointer', color: PX.night,
+              }}>✕</div>
+            </div>
+            <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: PX.night, marginBottom: 8 }}>EXCLUSIVE GIFTS</div>
+            {giftCountry.gifts.map((g, i) => (
+              <div key={i} style={{
+                padding: '8px 10px', marginBottom: 6,
+                background: '#fff', border: `2px solid ${PX.night}`,
+                boxShadow: `2px 2px 0 ${PX.night}`,
+                fontFamily: "'PingFang SC', sans-serif", fontSize: 12, fontWeight: 600,
+              }}>{g}</div>
+            ))}
+            <div onClick={() => { setGiftCountry(null); toast && toast(`已收藏 ${giftCountry.name} 礼物`); }} className="pixel-btn" style={{
+              marginTop: 8, padding: '8px 0', textAlign: 'center', cursor: 'pointer',
+              background: PX.sunYellow, border: `2px solid ${PX.night}`,
+              boxShadow: `2px 2px 0 ${PX.night}`,
+              fontFamily: "'Press Start 2P', monospace", fontSize: 8,
+            }}>♥ COLLECT</div>
+          </div>
+        </div>
+      )}
+
+      {/* 比赛礼物：宝箱 + 福袋 */}
+      <SecHead title="MATCH GIFT" sub="比赛礼物"/>
+      <div style={{ marginTop: 4, marginBottom: 6 }}>
+        <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: PX.night, letterSpacing: 1 }}>TEAM PK TREASURE</div>
+        <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 9, color: '#666', marginTop: 1, fontWeight: 600 }}>组队对战宝箱</div>
+      </div>
       <div style={{ display: 'flex', gap: 8 }}>
         {CHEST_TIERS.map((c, i) => (
           <div key={i} onClick={() => setSelChest(i)} className="pixel-btn" style={{
@@ -460,27 +615,11 @@ function P19Page({ onBack, toast, nav }) {
         </div>
       </Card>
 
-      {/* 福袋进度 */}
-      <SecHead title="LUCKY POUCH" sub="单房累送解锁限定福袋"/>
-      <Card bg={PX.cream}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div className="pouch-glow"><PixelPouch size={44}/></div>
-          <div style={{ flex: 1 }}>
-            <div style={{
-              fontFamily: "'Press Start 2P', monospace", fontSize: 8,
-              color: PX.darkRed, marginBottom: 4,
-            }}>CURRENT HOUSE · 累送 {pouchProgress.toLocaleString()} / {pouchTarget.toLocaleString()} 币</div>
-            <ProgressBar value={pouchProgress} max={pouchTarget} color={PX.red} height={10}/>
-            <div style={{
-              fontFamily: "'Press Start 2P', monospace", fontSize: 7,
-              color: '#555', marginTop: 6,
-            }}>差 {(pouchTarget - pouchProgress).toLocaleString()} 币触发 · 今日剩 4 次 · 每次 5 分钟</div>
-          </div>
-        </div>
-      </Card>
-
       {/* 福袋奖品预览 */}
-      <SecHead title="POUCH REWARDS" sub="福袋掉落"/>
+      <div style={{ marginTop: 10, marginBottom: 6 }}>
+        <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 8, color: PX.night, letterSpacing: 1 }}>POUCH REWARDS</div>
+        <div style={{ fontFamily: "'PingFang SC', sans-serif", fontSize: 9, color: '#666', marginTop: 1, fontWeight: 600 }}>福袋掉落</div>
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
         {POUCH_REWARDS.map(r => (
           <Card key={r.n} style={{ padding: 8, textAlign: 'center' }}>
@@ -495,6 +634,7 @@ function P19Page({ onBack, toast, nav }) {
           </Card>
         ))}
       </div>
+
 
       {/* 赛事阶段爆率 */}
       <SecHead title="RATE BY STAGE" sub="赛事阶段动态爆率"/>
