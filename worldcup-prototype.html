@@ -1,0 +1,3117 @@
+<!-- Stage 1/4: Foundation -->
+<!-- Stage 2/4: Tab 1 + Tab 2 -->
+<!-- Stage 3/4: Tab 3 + Tab 5 -->
+<!-- Stage 4/4: Tab 4 + Polish -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HelloTalk 2026 World Cup H5 — Stage 2 Tab 1 + Tab 2</title>
+<style>
+  /* ============================================================
+     Design Tokens
+     ============================================================ */
+  :root {
+    /* 8-step grayscale */
+    --g0: #FFFFFF;
+    --g1: #F5F5F5;
+    --g2: #E5E5E5;
+    --g3: #C8C8C8;
+    --g4: #8C8C8C;
+    --g5: #6E6E6E;
+    --g6: #4A4A4A;
+    --g7: #1A1A1A;
+
+    /* TBD accent */
+    --tbd: #D03A2E;
+
+    /* Type */
+    --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    --weight-title: 600;
+    --weight-body: 400;
+    --fs-min: 11pt;
+
+    /* Shape */
+    --radius: 8px;
+    --pad-card: 12px;
+    --hairline: 1px solid var(--g2);
+
+    /* Device */
+    --device-w: 393px;
+    --device-h: 852px;
+    --safe-top: 54px;
+    --safe-bottom: 34px;
+    --tabbar-h: 64px;
+    --topbar-h: 44px;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    font-weight: var(--weight-body);
+    font-size: 14px;
+    color: var(--g7);
+    background: var(--g1);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  /* ============================================================
+     Page Frame Wrapper (centers device on the canvas)
+     ============================================================ */
+  .stage-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .stage-meta {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--g5);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .stage-meta b { color: var(--g7); font-weight: var(--weight-title); }
+
+  /* ============================================================
+     iPhone 15 Pro shell — 393 × 852
+     ============================================================ */
+  .device {
+    position: relative;
+    width: var(--device-w);
+    height: var(--device-h);
+    background: var(--g7);
+    border-radius: 56px;
+    padding: 12px;
+    box-shadow: 0 0 0 2px var(--g6) inset;
+  }
+  .device-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--g0);
+    border-radius: 44px;
+    overflow: hidden;
+  }
+  /* Dynamic Island placeholder */
+  .dynamic-island {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 124px;
+    height: 36px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 60;
+    pointer-events: none;
+  }
+  /* Home Indicator */
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: var(--g7);
+    border-radius: 3px;
+    z-index: 60;
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     Top Bar (safe area)
+     ============================================================ */
+  .top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--safe-top) + var(--topbar-h));
+    padding: var(--safe-top) 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--g0);
+    border-bottom: var(--hairline);
+    z-index: 30;
+  }
+  .top-bar__title {
+    font-size: 15px;
+    font-weight: var(--weight-title);
+    color: var(--g7);
+    letter-spacing: 0.02em;
+  }
+  .top-bar__btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--g1);
+    border: var(--hairline);
+    color: var(--g6);
+    font-size: 14px;
+    font-weight: var(--weight-title);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .top-bar__btn:active { background: var(--g2); }
+
+  /* ============================================================
+     Pages (scrollable area between top bar and tab bar)
+     ============================================================ */
+  .pages {
+    position: absolute;
+    top: calc(var(--safe-top) + var(--topbar-h));
+    bottom: calc(var(--tabbar-h) + var(--safe-bottom));
+    left: 0;
+    right: 0;
+    overflow: hidden;
+  }
+  .page {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 16px 24px;
+    background: var(--g1);
+    display: none;
+  }
+  .page.is-active { display: block; }
+  .page::-webkit-scrollbar { width: 0; }
+
+  .page-header {
+    margin: 4px 0 14px;
+  }
+  .page-header__eyebrow {
+    font-size: 11px;
+    color: var(--g4);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: var(--weight-title);
+  }
+  .page-header__title {
+    font-size: 22px;
+    font-weight: var(--weight-title);
+    color: var(--g7);
+    margin: 4px 0 0;
+    line-height: 1.2;
+  }
+
+  /* Module placeholder */
+  .module {
+    margin: 0 0 14px;
+  }
+  .module__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 0 8px;
+    padding: 0 2px;
+  }
+  .module__title {
+    font-size: 14px;
+    font-weight: var(--weight-title);
+    color: var(--g7);
+    letter-spacing: 0.01em;
+  }
+  .module__anchor {
+    font-size: 11px;
+    color: var(--g4);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .module__body {
+    background: var(--g0);
+    border: var(--hairline);
+    border-radius: var(--radius);
+    padding: 14px var(--pad-card);
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ============================================================
+     Tab Bar
+     ============================================================ */
+  .tab-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(var(--tabbar-h) + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    background: var(--g0);
+    border-top: var(--hairline);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    z-index: 40;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    user-select: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font-family: var(--font-sans);
+    color: var(--g4);
+    transition: background 120ms ease;
+  }
+  .tab__num {
+    font-size: 13px;
+    font-weight: var(--weight-body);
+    line-height: 1;
+  }
+  .tab__label {
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+  .tab.is-active {
+    background: var(--g2);
+    color: var(--g7);
+  }
+  .tab.is-active .tab__num,
+  .tab.is-active .tab__label {
+    font-weight: var(--weight-title);
+  }
+
+  /* ============================================================
+     Reusable components
+     ============================================================ */
+  .card {
+    background: var(--g0);
+    border: var(--hairline);
+    border-radius: var(--radius);
+    padding: var(--pad-card);
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-disabled {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 18px;
+    border-radius: var(--radius);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: var(--weight-title);
+    border: 1px solid transparent;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1;
+  }
+  .btn-primary {
+    background: var(--g7);
+    color: var(--g0);
+  }
+  .btn-primary:active { background: var(--g6); }
+  .btn-secondary {
+    background: var(--g0);
+    color: var(--g7);
+    border-color: var(--g3);
+  }
+  .btn-secondary:active { background: var(--g1); }
+  .btn-disabled {
+    background: var(--g1);
+    color: var(--g4);
+    cursor: not-allowed;
+  }
+
+  /* Image placeholder — diagonal stripes */
+  .placeholder-img {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background-color: var(--g1);
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--g1) 0,
+      var(--g1) 8px,
+      var(--g2) 8px,
+      var(--g2) 16px
+    );
+    border: var(--hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--g5);
+    font-size: 13px;
+    font-weight: var(--weight-title);
+    letter-spacing: 0.08em;
+  }
+  .placeholder-img::after {
+    content: "图";
+    background: var(--g0);
+    border: var(--hairline);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Video placeholder */
+  .placeholder-video {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    background: var(--g6);
+    color: var(--g0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .placeholder-video::before {
+    content: "▶";
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 4px;
+  }
+  .placeholder-video::after {
+    content: "00:30";
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-size: 11px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: rgba(0,0,0,0.5);
+    color: var(--g0);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* GIF placeholder */
+  .placeholder-gif {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--g1);
+    border: var(--hairline);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--g5);
+    font-size: 14px;
+    font-weight: var(--weight-title);
+    letter-spacing: 0.1em;
+  }
+  .placeholder-gif::after {
+    content: "GIF";
+    background: var(--g0);
+    border: var(--hairline);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+  }
+
+  /* TBD inline */
+  .tbd {
+    color: var(--tbd);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    background: rgba(208,58,46,0.06);
+    border: 1px solid rgba(208,58,46,0.25);
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+  a.tbd { cursor: pointer; }
+  a.tbd:hover { background: rgba(208,58,46,0.12); }
+
+  /* Toast */
+  .toast {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 16px);
+    transform: translateX(-50%) translateY(8px);
+    background: rgba(26,26,26,0.92);
+    color: var(--g0);
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    z-index: 80;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 180ms ease;
+    max-width: 280px;
+    text-align: center;
+  }
+  .toast.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Modal */
+  .modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(26,26,26,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 90;
+    padding: 24px;
+  }
+  .modal.is-open { display: flex; }
+  .modal__card {
+    position: relative;
+    background: var(--g0);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 320px;
+    max-height: 80%;
+    padding: 20px 18px 18px;
+    overflow-y: auto;
+    border: var(--hairline);
+  }
+  .modal__close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: var(--hairline);
+    background: var(--g0);
+    color: var(--g6);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal__title {
+    font-size: 16px;
+    font-weight: var(--weight-title);
+    margin: 0 28px 10px 0;
+  }
+
+  /* Half sheet */
+  .sheet-half {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50%;
+    background: var(--g0);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border-top: var(--hairline);
+    transform: translateY(100%);
+    transition: transform 220ms ease;
+    z-index: 85;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  .sheet-half.is-open { transform: translateY(0); }
+  .sheet-half__handle {
+    width: 36px;
+    height: 4px;
+    background: var(--g3);
+    border-radius: 2px;
+    margin: 0 auto 12px;
+  }
+  .sheet-half__title {
+    font-size: 15px;
+    font-weight: var(--weight-title);
+    margin: 0 0 10px;
+  }
+
+  /* ============================================================
+     [TBD] Index Panel (collapsible, top of phone)
+     ============================================================ */
+  .tbd-panel {
+    position: absolute;
+    top: calc(var(--safe-top) + var(--topbar-h));
+    left: 0;
+    right: 0;
+    background: var(--g0);
+    border-bottom: var(--hairline);
+    z-index: 50;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 240ms ease;
+  }
+  .tbd-panel.is-open { max-height: 360px; }
+  .tbd-panel__inner {
+    padding: 14px 16px 16px;
+    overflow-y: auto;
+    max-height: 360px;
+  }
+  .tbd-panel__title {
+    font-size: 12px;
+    font-weight: var(--weight-title);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g6);
+    margin: 0 0 8px;
+  }
+  .tbd-panel__empty {
+    font-size: 12px;
+    color: var(--g4);
+    line-height: 1.5;
+    background: var(--g1);
+    border: var(--hairline);
+    border-radius: var(--radius);
+    padding: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .tbd-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tbd-list li a {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border: var(--hairline);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--g7);
+    text-decoration: none;
+    background: var(--g1);
+  }
+  .tbd-list li a span:last-child {
+    color: var(--tbd);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  /* ============================================================
+     Component Reference (below the phone, dev aid)
+     ============================================================ */
+  .legend {
+    width: var(--device-w);
+    background: var(--g0);
+    border: var(--hairline);
+    border-radius: var(--radius);
+    padding: 14px;
+    font-size: 12px;
+    color: var(--g6);
+    line-height: 1.6;
+  }
+  .legend h4 {
+    margin: 0 0 6px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g7);
+    font-weight: var(--weight-title);
+  }
+  .legend code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--g1);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+  }
+
+  /* ============================================================
+     STAGE 2 ADDITIONS
+     ============================================================ */
+
+  /* Module body override (let real content fill) */
+  .module__body--fill { display:block; padding:0; background:transparent; border:0; border-radius:0; min-height:0; }
+  .subhead { font-size:11px; color:var(--g5); letter-spacing:0.06em; text-transform:uppercase; font-weight:600; margin:2px 4px 6px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  /* --- Onboarding overlay --- */
+  .onb { position:absolute; inset:0; background:var(--g0); z-index:100; display:none; flex-direction:column; }
+  .onb.is-open { display:flex; }
+  .onb__head { display:flex; align-items:center; justify-content:space-between; padding: calc(var(--safe-top) + 4px) 16px 10px; border-bottom: var(--hairline); }
+  .onb__step-label { font-size:14px; font-weight:600; }
+  .onb__close { width:28px; height:28px; border-radius:50%; border:var(--hairline); background:var(--g0); color:var(--g6); font-size:14px; cursor:pointer; display:grid; place-items:center; }
+  .onb__body { flex:1; overflow:hidden; position:relative; background:var(--g1); }
+  .onb__step { position:absolute; inset:0; display:none; flex-direction:column; padding:10px; gap:8px; overflow:hidden; }
+  .onb__step.is-current { display:flex; }
+  .onb__foot { padding:10px 16px calc(var(--safe-bottom) + 10px); border-top:var(--hairline); display:flex; gap:8px; background:var(--g0); }
+  .onb__foot .btn-primary, .onb__foot .btn-secondary, .onb__foot .btn-disabled { flex:1; }
+
+  /* Step 1 picker */
+  .onb-pick { flex:1.1; display:flex; gap:0; border:var(--hairline); border-radius:8px; overflow:hidden; min-height:0; background:var(--g0); }
+  .onb-pick__col { display:flex; flex-direction:column; min-height:0; }
+  .onb-pick__col.left { width:48px; border-right:var(--hairline); background:var(--g1); }
+  .onb-pick__col.center { flex:1; min-width:0; border-right:var(--hairline); }
+  .onb-pick__col.right { flex:1; min-width:0; }
+  .col-head { font-size:10px; color:var(--g5); padding:6px 10px; border-bottom:var(--hairline); letter-spacing:0.08em; text-transform:uppercase; font-weight:600; flex-shrink:0; }
+  .list-scroll { flex:1; overflow-y:auto; }
+  .list-scroll::-webkit-scrollbar { width:0; }
+  .con-tabs { display:flex; flex-direction:column; height:100%; }
+  .con-tab { padding:14px 4px; text-align:center; font-size:14px; border:0; border-bottom:var(--hairline); background:transparent; cursor:pointer; color:var(--g5); flex:1; font-weight:600; }
+  .con-tab.is-active { background:var(--g0); color:var(--g7); }
+  .country-item, .player-item { display:flex; align-items:center; gap:8px; padding:7px 10px; font-size:13px; cursor:pointer; border-bottom:1px solid var(--g1); }
+  .country-item.is-selected, .player-item.is-selected { background:var(--g7); color:var(--g0); font-weight:600; }
+  .country-flag { width:24px; height:16px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px); border:1px solid var(--g3); border-radius:2px; flex-shrink:0; }
+  .country-letter { width:14px; flex-shrink:0; font-family:ui-monospace,Menlo,monospace; font-size:10px; color:var(--g4); }
+  .country-name { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .player-num { width:26px; height:26px; border:1px solid var(--g3); border-radius:4px; display:grid; place-items:center; font-weight:600; font-size:11px; flex-shrink:0; font-family:ui-monospace,Menlo,monospace; }
+  .player-meta { flex:1; min-width:0; }
+  .player-name { font-size:12px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .player-pos { font-size:10px; color:var(--g5); margin-top:2px; }
+  .player-item.is-selected .player-num { border-color:var(--g0); }
+  .player-item.is-selected .player-pos { color:var(--g3); }
+
+  /* 2x2 banner cycle */
+  .banner-zone { flex:0.85; display:flex; flex-direction:column; gap:6px; min-height:0; }
+  .banner-zone__head { display:flex; align-items:center; justify-content:space-between; padding:0 4px; flex-shrink:0; }
+  .banner-zone__title { font-size:11px; color:var(--g5); font-weight:600; letter-spacing:0.04em; text-transform:uppercase; }
+  .banner-zone__pager { font-family:ui-monospace,Menlo,monospace; font-size:10px; color:var(--g4); background:var(--g0); padding:2px 6px; border-radius:8px; border:var(--hairline); }
+  .banner-grid { flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:6px; min-height:0; }
+  .banner-tile { background:var(--g0); border:var(--hairline); border-radius:6px; padding:8px 10px; display:flex; flex-direction:column; gap:4px; font-size:12px; cursor:pointer; overflow:hidden; text-align:left; }
+  .banner-tile__num { font-family:ui-monospace,Menlo,monospace; font-size:10px; color:var(--g4); }
+  .banner-tile__name { font-weight:600; font-size:13px; }
+  .banner-tile__hint { font-size:10px; color:var(--g4); margin-top:auto; }
+
+  /* Step 2 FAN ID preview + step 3 cards */
+  .fanid-preview { position:relative; border-radius:12px; border:var(--hairline); overflow:hidden; background:var(--g1); background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 8px, var(--g2) 8px, var(--g2) 16px); padding:14px; min-height:120px; display:flex; gap:12px; align-items:center; }
+  .fanid-preview::before { content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.9)); }
+  .fanid-preview > * { position:relative; z-index:1; }
+  .fanid-avatar { width:60px; height:60px; border-radius:50%; background:var(--g0); border:2px solid var(--g0); box-shadow:0 0 0 1px var(--g3); display:grid; place-items:center; color:var(--g4); font-size:11px; flex-shrink:0; }
+  .fanid-info { flex:1; min-width:0; }
+  .fanid-info__star { font-size:11px; color:var(--g6); margin-bottom:4px; }
+  .fanid-info__name { font-size:15px; font-weight:600; line-height:1.2; }
+  .fanid-info__stats { display:flex; gap:14px; margin-top:8px; }
+  .fanid-stat-label { font-size:10px; color:var(--g5); }
+  .fanid-stat-value { font-size:13px; font-weight:600; font-family:ui-monospace,Menlo,monospace; }
+  .onb-hint { font-size:12px; color:var(--g6); background:var(--g0); border:var(--hairline); border-radius:6px; padding:8px 10px; line-height:1.5; }
+  .gameplay-grid { flex:1; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:repeat(3, 1fr); gap:8px; min-height:0; }
+  .gameplay-card { background:var(--g0); border:var(--hairline); border-radius:8px; padding:10px; cursor:pointer; display:flex; flex-direction:column; gap:4px; text-align:left; }
+  .gameplay-card__name { font-size:13px; font-weight:600; }
+  .gameplay-card__landing { font-size:10px; color:var(--g5); font-family:ui-monospace,Menlo,monospace; }
+  .gameplay-card__hint { font-size:10px; color:var(--g4); margin-top:auto; }
+
+  /* --- FAN ID resident card on Tab 1 --- */
+  .fanid-resident { position:relative; height:200px; border-radius:10px; overflow:hidden; border:var(--hairline); background:var(--g1); background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 10px, var(--g2) 10px, var(--g2) 20px); }
+  .fanid-resident::before { content:""; position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.85)); }
+  .fanid-resident__inner { position:relative; height:100%; padding:14px; display:flex; flex-direction:column; z-index:1; }
+  .fanid-resident__top { display:flex; gap:12px; align-items:center; flex:1; }
+  .fanid-resident__bot { display:flex; gap:6px; margin-top:10px; }
+  .fanid-resident__bot button { flex:1; height:36px; padding:0; font-size:12px; font-weight:600; background:rgba(26,26,26,0.88); color:var(--g0); border:0; border-radius:6px; cursor:pointer; }
+  .fanid-resident__bot button.alt { background:var(--g0); color:var(--g7); border:1px solid var(--g3); }
+  .fanid-stat--clickable { cursor:pointer; border-radius:4px; padding:2px 4px; margin:-2px -4px; }
+  .fanid-stat--clickable:active { background:rgba(0,0,0,0.06); }
+
+  /* --- Task module --- */
+  .task-group { margin-bottom:16px; }
+  .task-group__title { font-size:12px; font-weight:600; letter-spacing:0.04em; color:var(--g6); margin:0 4px 6px; display:flex; justify-content:space-between; align-items:baseline; }
+  .task-group__hint { font-size:10px; color:var(--g4); font-weight:400; font-family:ui-monospace,Menlo,monospace; }
+  .task-list { display:flex; flex-direction:column; gap:6px; }
+  .task-card { display:flex; gap:10px; padding:10px 12px; background:var(--g0); border:var(--hairline); border-radius:8px; cursor:pointer; align-items:center; }
+  .task-card:active { background:var(--g1); }
+  .task-icon { width:36px; height:36px; border-radius:8px; background:var(--g1); border:var(--hairline); display:grid; place-items:center; color:var(--g4); font-size:11px; flex-shrink:0; }
+  .task-body { flex:1; min-width:0; }
+  .task-desc { font-size:13px; line-height:1.3; }
+  .task-progress { font-size:11px; color:var(--g5); margin-top:4px; font-family:ui-monospace,Menlo,monospace; }
+  .task-rewards { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+  .task-reward { background:var(--g1); border:var(--hairline); border-radius:4px; padding:2px 6px; font-family:ui-monospace,Menlo,monospace; font-size:10px; white-space:nowrap; color:var(--g6); }
+  .task-status { font-size:10px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; padding:2px 6px; border-radius:3px; }
+  .task-status.done { color:var(--g4); background:var(--g1); }
+  .task-status.pending { color:var(--g0); background:var(--g7); }
+
+  /* --- Wave / banner module (Tab 2) --- */
+  .wave-zone { position:relative; height:240px; border-radius:10px; overflow:hidden; border:var(--hairline); background:var(--g6); background-image:repeating-linear-gradient(0deg, var(--g6) 0, var(--g6) 6px, var(--g5) 6px, var(--g5) 12px); color:var(--g0); }
+  .wave-zone__top-controls { position:absolute; top:8px; right:8px; display:flex; gap:6px; z-index:4; }
+  .wave-zone__pill { background:rgba(0,0,0,0.5); color:var(--g0); font-size:11px; padding:4px 8px; border-radius:14px; border:1px solid rgba(255,255,255,0.2); cursor:pointer; user-select:none; }
+  .wave-zone__banner { position:absolute; left:12px; right:12px; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.94); color:var(--g7); border-radius:10px; padding:10px; display:flex; gap:10px; align-items:center; cursor:pointer; }
+  .wave-zone__banner .placeholder-gif { width:54px; height:54px; flex-shrink:0; font-size:11px; }
+  .wave-zone__banner-info { flex:1; min-width:0; font-size:12px; }
+  .wave-zone__banner-info b { font-size:14px; font-weight:600; display:block; margin-bottom:2px; }
+  .wave-zone__banner-pager { position:absolute; right:18px; bottom:14px; font-family:ui-monospace,Menlo,monospace; font-size:10px; color:var(--g5); background:var(--g0); padding:2px 6px; border-radius:8px; border:var(--hairline); }
+  .wave-zone__bot { position:absolute; left:12px; bottom:12px; display:flex; gap:8px; align-items:center; z-index:4; }
+  .wave-icon { width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.94); color:var(--g7); display:grid; place-items:center; font-size:14px; font-weight:700; cursor:pointer; border:0; font-family:ui-monospace,Menlo,monospace; }
+  .wave-stats { display:flex; flex-direction:column; font-size:10px; background:rgba(0,0,0,0.55); border-radius:6px; padding:4px 8px; line-height:1.4; font-family:ui-monospace,Menlo,monospace; }
+  .wave-stats span:first-child { color:var(--g3); }
+
+  /* --- Coach 9-grid + global world --- */
+  .coach-card { background:var(--g0); border:var(--hairline); border-radius:10px; overflow:hidden; }
+  .coach-head { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-bottom:var(--hairline); }
+  .coach-head__left { display:flex; flex-direction:column; gap:4px; }
+  .coach-head__title { font-size:13px; font-weight:600; }
+  .coach-head__stats { display:flex; gap:12px; font-size:10px; color:var(--g5); }
+  .coach-head__stat b { color:var(--g7); font-family:ui-monospace,Menlo,monospace; font-weight:600; }
+  .coach-head__stat--dim b { color:var(--g4); }
+  .coach-pitch-btn { background:transparent; border:var(--hairline); color:var(--g7); height:28px; padding:0 12px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; }
+  .coach-pitch { position:relative; background:var(--g6); background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.06) 0%, transparent 70%), repeating-linear-gradient(90deg, var(--g6) 0, var(--g6) 24px, var(--g5) 24px, var(--g5) 48px); }
+  .coach-grid { display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr; aspect-ratio:4/3; gap:1px; background:var(--g2); }
+  .coach-cell { background:rgba(255,255,255,0.04); display:grid; place-items:center; cursor:pointer; color:rgba(255,255,255,0.6); font-family:ui-monospace,Menlo,monospace; font-size:11px; position:relative; border:0; }
+  .coach-cell:active { background:rgba(255,255,255,0.18); }
+  .coach-cell::before { content:""; position:absolute; width:24px; height:24px; border:1px solid rgba(255,255,255,0.28); border-radius:4px; }
+  .coach-feedback { padding:12px; display:flex; gap:10px; align-items:center; border-top:var(--hairline); }
+  .coach-feedback__mic { width:34px; height:34px; border-radius:50%; border:var(--hairline); background:var(--g1); display:grid; place-items:center; font-size:14px; flex-shrink:0; }
+  .coach-feedback__main { flex:1; min-width:0; }
+  .coach-feedback__text { font-size:12px; color:var(--g6); line-height:1.4; min-height:32px; }
+  .coach-feedback__progress { display:flex; gap:6px; margin-top:6px; }
+  .coach-ball { width:18px; height:18px; border-radius:50%; border:1px solid var(--g3); background:var(--g0); display:grid; place-items:center; font-size:9px; color:var(--g4); font-family:ui-monospace,Menlo,monospace; transition:all 200ms ease; }
+  .coach-ball.lit { background:var(--g7); color:var(--g0); border-color:var(--g7); }
+  .coach-feedback__globe { width:34px; height:34px; border-radius:50%; border:var(--hairline); background:var(--g0); display:grid; place-items:center; font-size:14px; cursor:pointer; flex-shrink:0; }
+
+  /* Globe sheet */
+  .globe-wrap { padding:4px 0 0; }
+  .globe-zone { border-radius:12px; padding:10px; margin-bottom:8px; }
+  .globe-zone.z1 { background:var(--g1); }
+  .globe-zone.z2 { background:var(--g2); }
+  .globe-zone.z3 { background:var(--g3); }
+  .globe-zone__label { font-size:10px; color:var(--g6); margin-bottom:6px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; display:flex; justify-content:space-between; }
+  .globe-row { display:grid; grid-template-columns:repeat(8, 1fr); gap:4px; }
+  .globe-stamp { aspect-ratio:1; border-radius:50%; background:var(--g0); border:1px solid var(--g3); display:grid; place-items:center; font-size:11px; color:var(--g5); cursor:pointer; font-family:ui-monospace,Menlo,monospace; padding:0; }
+  .globe-stamp.locked { background:var(--g4); color:var(--g0); border-color:var(--g4); }
+  .globe-stamp.owned { background-color:var(--g0); background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 3px, var(--g2) 3px, var(--g2) 6px); border-color:var(--g6); border-width:1.5px; }
+  .globe-foot { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:var(--g7); color:var(--g0); border-radius:8px; margin-top:8px; font-size:12px; }
+  .globe-foot__count { font-family:ui-monospace,Menlo,monospace; font-weight:600; font-size:14px; }
+
+  /* --- Ranking module (Tab 2) --- */
+  .rank-card { background:var(--g0); border:var(--hairline); border-radius:10px; overflow:hidden; }
+  .rank-tabs { display:flex; border-bottom:var(--hairline); background:var(--g1); }
+  .rank-tabs.row2 { border-bottom:0; border-top:var(--hairline); }
+  .rank-tab { flex:1; text-align:center; font-size:12px; padding:10px 4px; cursor:pointer; color:var(--g5); border:0; background:transparent; border-right:1px solid var(--g2); }
+  .rank-tab:last-child { border-right:0; }
+  .rank-tab.is-active { background:var(--g0); color:var(--g7); font-weight:600; }
+  .rank-tabs.row2 .rank-tab { font-size:11px; padding:8px 4px; }
+  .rank-podium { background:var(--g7); color:var(--g0); padding:14px 10px 12px; position:relative; }
+  .rank-podium__title { display:flex; justify-content:space-between; font-size:11px; color:var(--g3); margin-bottom:12px; padding:0 4px; }
+  .rank-podium__row { display:flex; justify-content:center; align-items:flex-end; gap:8px; }
+  .rank-podium__col { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+  .rank-podium__avatar { width:44px; height:44px; border-radius:50%; background:var(--g4); border:2px solid var(--g0); display:grid; place-items:center; font-family:ui-monospace,Menlo,monospace; font-size:11px; color:var(--g0); }
+  .rank-podium__col.first .rank-podium__avatar { width:56px; height:56px; }
+  .rank-podium__name { font-size:11px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .rank-podium__bar { width:100%; background:var(--g6); text-align:center; font-family:ui-monospace,Menlo,monospace; font-weight:600; font-size:13px; color:var(--g0); border-top-left-radius:4px; border-top-right-radius:4px; }
+  .rank-podium__col.first .rank-podium__bar { padding:14px 0; background:var(--g5); }
+  .rank-podium__col.second .rank-podium__bar { padding:8px 0; }
+  .rank-podium__col.third .rank-podium__bar { padding:4px 0; background:var(--g6); }
+  .rank-podium__note { font-size:11px; color:var(--g3); text-align:center; margin-top:12px; line-height:1.4; padding:0 8px; }
+  .rank-self { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--g1); border-bottom:var(--hairline); }
+  .rank-self__rank { width:32px; text-align:center; font-weight:600; font-family:ui-monospace,Menlo,monospace; }
+  .rank-self__avatar { width:32px; height:32px; border-radius:50%; background:var(--g3); border:1px solid var(--g3); display:grid; place-items:center; font-size:10px; color:var(--g0); flex-shrink:0; }
+  .rank-self__name { flex:1; font-size:13px; font-weight:600; }
+  .rank-self__goal { font-family:ui-monospace,Menlo,monospace; font-weight:600; font-size:13px; }
+  .rank-list { display:flex; flex-direction:column; }
+  .rank-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border-top:1px solid var(--g1); font-size:13px; cursor:pointer; }
+  .rank-row:active { background:var(--g1); }
+  .rank-row__rank { width:28px; text-align:center; font-family:ui-monospace,Menlo,monospace; color:var(--g5); }
+  .rank-row__avatar { width:28px; height:28px; border-radius:50%; background:var(--g1); border:1px solid var(--g3); flex-shrink:0; cursor:pointer; }
+  .rank-row__avatar.flag { background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px); border-radius:3px; }
+  .rank-row__name { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .rank-row__goal { font-family:ui-monospace,Menlo,monospace; color:var(--g6); }
+
+  /* TBD panel debug section */
+  .tbd-debug { margin-top:12px; padding-top:10px; border-top:var(--hairline); display:flex; flex-direction:column; gap:6px; }
+  .tbd-debug h4 { margin:0 0 4px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--g6); font-weight:600; }
+  .tbd-debug button { height:30px; font-size:12px; }
+
+  /* ============================================================
+     STAGE 3 — Tab 3 (Pitch) + Tab 5 (Store)
+     ============================================================ */
+
+  /* Sub-page switcher inside Tab 3 */
+  .subpage-stack { position: relative; }
+  .subpage { display: none; }
+  .subpage.is-active { display: block; }
+  .subpage__head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 4px 10px;
+    border-bottom: var(--hairline); margin-bottom: 12px;
+  }
+  .subpage__back {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--g1); border: 0; color: var(--g7);
+    font-size: 16px; cursor: pointer;
+  }
+  .subpage__title { font-weight: var(--weight-title); font-size: 14px; }
+
+  /* Gift strip (top of goal-shooting) */
+  .gift-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .gift-card {
+    background: var(--g1); border: var(--hairline); border-radius: var(--radius);
+    padding: 10px 8px; text-align: center; display:flex; flex-direction:column; gap:4px; align-items:center;
+  }
+  .gift-card__icon {
+    width: 38px; height: 38px; border-radius: 50%;
+    background-image: repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px);
+    border: var(--hairline); display:grid; place-items:center; font-size:9px; color:var(--g4);
+  }
+  .gift-card__name { font-size: 12px; font-weight: var(--weight-title); }
+  .gift-card__price { font-size: 11px; color: var(--g5); font-family: ui-monospace, Menlo, monospace; }
+  .gift-card__rule { font-size: 10px; color: var(--g4); line-height: 1.4; }
+
+  /* Penalty kick stage */
+  .pk-stage { background: var(--g1); border: var(--hairline); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
+  .pk-goal {
+    height: 90px; border-radius: 6px;
+    background-image:
+      linear-gradient(0deg, var(--g3) 0, var(--g3) 1px, transparent 1px),
+      repeating-linear-gradient(90deg, var(--g2) 0, var(--g2) 14px, var(--g1) 14px, var(--g1) 16px),
+      repeating-linear-gradient(0deg, var(--g2) 0, var(--g2) 14px, var(--g1) 14px, var(--g1) 16px);
+    border: 2px solid var(--g6);
+    border-bottom-width: 0;
+    position: relative; overflow: hidden;
+  }
+  .pk-goal::after {
+    content: "球门 placeholder";
+    position: absolute; left: 8px; bottom: 6px;
+    font-size: 10px; color: var(--g5);
+  }
+  .pk-meta { display:flex; justify-content:space-between; align-items:center; margin: 10px 0 8px; font-size: 12px; }
+  .pk-meta__help { width: 22px; height: 22px; border-radius: 50%; background: var(--g0); border: var(--hairline); display:grid; place-items:center; cursor:pointer; }
+  .pk-power {
+    height: 16px; border-radius: 8px; background: linear-gradient(90deg, #f4d2cf 0%, #e88a83 50%, #b73127 100%);
+    position: relative; overflow: hidden; margin: 6px 0 12px;
+  }
+  .pk-power__pointer {
+    position: absolute; top: -2px; bottom: -2px; width: 4px; background: var(--g7); border-radius: 2px;
+    animation: pkSwing 0.9s ease-in-out infinite alternate;
+  }
+  @keyframes pkSwing { from { left: 0%; } to { left: calc(100% - 4px); } }
+  .pk-power.is-stopped .pk-power__pointer { animation-paused: paused; animation: none; }
+  .pk-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pk-actions .btn-primary, .pk-actions .btn-secondary { height: 38px; }
+
+  /* Reward exchange list */
+  .exchange-head { display:flex; justify-content:space-between; align-items:center; margin: 12px 0 8px; font-size: 12px; }
+  .exchange-head b { font-family: ui-monospace, Menlo, monospace; color: var(--g7); }
+  .exchange-list { display: flex; flex-direction: column; gap: 8px; }
+  .ex-row {
+    background: var(--g0); border: var(--hairline); border-radius: var(--radius);
+    padding: 10px; display: grid; grid-template-columns: 36px 1fr auto; gap: 10px; align-items: center;
+  }
+  .ex-row__icon {
+    width: 36px; height: 36px; border-radius: 6px;
+    background-image: repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px);
+    border: var(--hairline);
+  }
+  .ex-row__body { min-width: 0; }
+  .ex-row__name { font-size: 12px; font-weight: var(--weight-title); }
+  .ex-row__meta { font-size: 11px; color: var(--g5); margin-top: 2px; }
+  .ex-row__btn { height: 28px; padding: 0 12px; font-size: 12px; border: var(--hairline); background: var(--g7); color: var(--g0); border-radius: 14px; cursor: pointer; }
+  .ex-row__btn.is-disabled { background: var(--g2); color: var(--g4); cursor: not-allowed; }
+
+  .ranking-entry-btn {
+    width: 100%; margin-top: 14px; height: 40px;
+    background: var(--g0); border: 1px solid var(--g7); color: var(--g7);
+    border-radius: var(--radius); font-weight: var(--weight-title); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+
+  /* Activity ranking sub-page */
+  .rk-tabs { display: flex; gap: 0; background: var(--g1); border-radius: 8px; padding: 3px; margin-bottom: 10px; }
+  .rk-tab { flex:1; height: 30px; border:0; background: transparent; font-size: 12px; border-radius: 6px; cursor: pointer; color: var(--g5); }
+  .rk-tab.is-active { background: var(--g0); color: var(--g7); font-weight: var(--weight-title); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+  .rk-stage-row { display:flex; gap: 6px; overflow-x: auto; padding: 2px 0 8px; -webkit-overflow-scrolling: touch; }
+  .rk-stage { flex: 0 0 auto; padding: 6px 10px; font-size: 11px; border: var(--hairline); border-radius: 14px; background: var(--g0); color: var(--g6); cursor: pointer; white-space: nowrap; }
+  .rk-stage.is-active { background: var(--g7); color: var(--g0); border-color: var(--g7); }
+  .rk-stage.is-locked { color: var(--g4); }
+  .rk-countdown {
+    display:flex; justify-content:space-between; align-items:center;
+    background: var(--g1); border-radius: 8px; padding: 8px 12px; font-size: 12px; margin-bottom: 10px;
+  }
+  .rk-countdown b { font-family: ui-monospace, Menlo, monospace; color: var(--g7); }
+  .rk-rewards { background: var(--g0); border: var(--hairline); border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+  .rk-rewards__title { font-size: 12px; font-weight: var(--weight-title); margin-bottom: 8px; }
+  .rk-rewards__row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .rk-rewards__cell { background: var(--g1); border-radius: 6px; padding: 8px 4px; text-align: center; font-size: 10px; color: var(--g5); }
+  .rk-rewards__cell b { display:block; font-size: 11px; color: var(--g7); margin-bottom: 4px; }
+  .rk-rewards__note { font-size: 10px; color: var(--g4); margin-top: 6px; text-align: center; }
+
+  .rk-board { background: var(--g0); border-radius: 8px; }
+  .rk-top3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .rk-top { background: var(--g1); border-radius: 8px; padding: 10px 6px; text-align: center; }
+  .rk-top--1 { background: var(--g6); color: var(--g0); transform: translateY(-4px); }
+  .rk-top--2 { background: var(--g4); color: var(--g0); }
+  .rk-top--3 { background: var(--g3); color: var(--g7); }
+  .rk-top__rank { font-size: 11px; opacity: 0.8; }
+  .rk-top__avatar { width: 36px; height: 36px; border-radius: 50%; margin: 4px auto; background: var(--g0); border: 1px solid var(--g3); }
+  .rk-top__name { font-size: 11px; font-weight: var(--weight-title); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rk-top__goal { font-family: ui-monospace, Menlo, monospace; font-size: 12px; margin-top: 2px; }
+
+  .rk-pager { display:flex; justify-content:space-between; align-items:center; padding: 8px 4px; font-size: 11px; color: var(--g5); }
+  .rk-pager button { width: 24px; height: 24px; border-radius: 50%; border: var(--hairline); background: var(--g0); cursor: pointer; }
+  .rk-pager button:disabled { color: var(--g3); cursor: default; }
+
+  .rk-row {
+    display: grid; grid-template-columns: 28px 32px 1fr auto auto; align-items: center; gap: 8px;
+    padding: 8px 6px; border-bottom: var(--hairline); font-size: 12px;
+  }
+  .rk-row:last-child { border-bottom: 0; }
+  .rk-row__rank { font-family: ui-monospace, Menlo, monospace; font-weight: var(--weight-title); }
+  .rk-row__avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--g1); border: var(--hairline); cursor: pointer; }
+  .rk-row__name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rk-row__goal { font-family: ui-monospace, Menlo, monospace; color: var(--g6); }
+  .rk-row__follow { height: 24px; padding: 0 8px; font-size: 11px; border-radius: 12px; border: 1px solid var(--g7); background: var(--g0); color: var(--g7); cursor: pointer; }
+  .rk-row__follow.is-followed { background: var(--g2); color: var(--g5); border-color: var(--g2); }
+
+  .rk-self {
+    position: sticky; bottom: 0; left: 0; right: 0;
+    margin-top: 8px;
+    background: var(--g7); color: var(--g0); border-radius: 8px;
+    padding: 8px 10px; display: grid; grid-template-columns: 32px 32px 1fr auto; gap: 8px; align-items: center;
+  }
+  .rk-self__rank { font-family: ui-monospace, Menlo, monospace; font-weight: var(--weight-title); }
+  .rk-self__avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--g4); }
+  .rk-self__name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+  .rk-self__goal { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+
+  /* MATCH PK / Focus betting */
+  .focus-card {
+    background: var(--g7); color: var(--g0); border-radius: var(--radius);
+    padding: 14px 12px; margin-bottom: 12px;
+  }
+  .focus-card__eyebrow { font-size: 10px; letter-spacing: 0.1em; opacity: 0.7; }
+  .focus-card__live {
+    display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 3px;
+    background: var(--tbd); color: var(--g0); font-size: 9px; font-weight: var(--weight-title); letter-spacing: 0.1em;
+  }
+  .focus-card__teams { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin: 10px 0; }
+  .focus-team { text-align: center; }
+  .focus-team__flag { width: 44px; height: 44px; border-radius: 50%; margin: 0 auto 4px; border: 2px solid var(--g0); background-image: repeating-linear-gradient(45deg, var(--g4) 0, var(--g4) 5px, var(--g5) 5px, var(--g5) 10px); }
+  .focus-team__name { font-size: 12px; font-weight: var(--weight-title); }
+  .focus-card__vs { font-size: 16px; font-weight: var(--weight-title); opacity: 0.6; }
+  .focus-card__countdown { text-align: center; font-size: 11px; opacity: 0.8; font-family: ui-monospace, Menlo, monospace; }
+  .focus-heat { height: 8px; border-radius: 4px; background: var(--g5); margin: 12px 0 4px; overflow: hidden; display: flex; }
+  .focus-heat__a { background: var(--g0); }
+  .focus-heat__b { background: var(--g3); }
+  .focus-heat-meta { display:flex; justify-content:space-between; font-size: 10px; opacity: 0.8; font-family: ui-monospace, Menlo, monospace; }
+  .focus-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .focus-buttons button { height: 36px; border-radius: 18px; border: 0; font-weight: var(--weight-title); font-size: 12px; cursor: pointer; }
+  .focus-buttons button.bet { background: var(--g0); color: var(--g7); }
+  .focus-buttons button.chat { background: var(--g5); color: var(--g0); }
+
+  .pk-section-head { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 10px; }
+  .pk-section-head__title { font-weight: var(--weight-title); font-size: 13px; }
+  .pk-section-head__more { font-size: 11px; color: var(--g5); cursor: pointer; }
+
+  .pk-cards { position: relative; overflow: hidden; }
+  .pk-cards__track { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
+  .pk-cards__track::-webkit-scrollbar { display: none; }
+  .pk-card {
+    flex: 0 0 100%; scroll-snap-align: start;
+    background: var(--g0); border: var(--hairline); border-radius: var(--radius); padding: 12px;
+  }
+  .pk-card__head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--g5); margin-bottom: 8px; }
+  .pk-card__teams { display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px; align-items: center; margin-bottom: 10px; }
+  .pk-card__team { text-align: center; }
+  .pk-card__flag { width: 32px; height: 32px; border-radius: 50%; margin: 0 auto 4px; background: var(--g1); border: var(--hairline); }
+  .pk-card__code { font-size: 10px; color: var(--g4); font-family: ui-monospace, Menlo, monospace; letter-spacing: 0.05em; }
+  .pk-card__name { font-size: 11px; font-weight: var(--weight-title); }
+  .pk-card__vs { font-size: 11px; color: var(--g4); }
+  .pk-card__odds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+  .odd-btn {
+    height: 44px; border: var(--hairline); border-radius: 6px; background: var(--g0);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    font-size: 11px; cursor: pointer; color: var(--g7);
+  }
+  .odd-btn small { font-size: 10px; color: var(--g5); }
+  .odd-btn.is-active { background: var(--g7); color: var(--g0); border-color: var(--g7); }
+  .odd-btn.is-active small { color: var(--g3); }
+  .odd-btn.is-disabled { background: var(--g1); color: var(--g4); cursor: not-allowed; }
+  .odd-btn.is-chat { background: var(--g5); color: var(--g0); border-color: var(--g5); flex-direction: row; }
+  .pk-card__foot { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--g5); }
+  .pk-card__foot button { background: transparent; border: 0; color: var(--g5); cursor: pointer; padding: 4px; font-size: 11px; text-decoration: underline; }
+  .pk-cards__dots { display: flex; justify-content: center; gap: 6px; padding-top: 6px; }
+  .pk-cards__dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--g3); display: inline-block; }
+  .pk-cards__dots i.is-active { background: var(--g7); width: 18px; border-radius: 3px; }
+
+  .focus-rule {
+    margin-top: 10px; font-size: 11px; color: var(--g5); line-height: 1.5;
+    background: var(--g1); border-radius: 6px; padding: 8px 10px;
+  }
+
+  /* More events sheet rows */
+  .more-events-list { display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; }
+  .me-row { display: grid; grid-template-columns: 32px 1fr auto; gap: 10px; align-items: center; padding: 8px; background: var(--g1); border-radius: 6px; }
+  .me-row__flag { width: 28px; height: 28px; border-radius: 50%; background: var(--g0); border: var(--hairline); }
+  .me-row__title { font-size: 12px; font-weight: var(--weight-title); }
+  .me-row__time { font-size: 10px; color: var(--g5); margin-top: 2px; font-family: ui-monospace, Menlo, monospace; }
+  .me-row__star { width: 28px; height: 28px; border-radius: 50%; border: var(--hairline); background: var(--g0); cursor: pointer; }
+  .me-row__star.is-followed { background: var(--g7); color: var(--g0); border-color: var(--g7); }
+
+  /* ----- Tab 5 styles ----- */
+  .vip-card { background: var(--g7); color: var(--g0); border-radius: var(--radius); padding: 14px 12px; margin-bottom: 12px; }
+  .vip-card--lifetime { background: linear-gradient(135deg, var(--g6) 0%, var(--g7) 100%); }
+  .vip-card__eyebrow { font-size: 10px; opacity: 0.7; letter-spacing: 0.1em; }
+  .vip-card__title { font-size: 16px; font-weight: var(--weight-title); margin: 4px 0 8px; }
+  .vip-card__row { display: flex; justify-content: space-between; align-items: center; }
+  .vip-card__price { font-family: ui-monospace, Menlo, monospace; font-size: 16px; font-weight: var(--weight-title); }
+  .vip-card__btn { background: var(--g0); color: var(--g7); border: 0; height: 32px; padding: 0 16px; border-radius: 16px; font-weight: var(--weight-title); font-size: 12px; cursor: pointer; }
+
+  .pkg-card { background: var(--g0); border: var(--hairline); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
+  .pkg-card__title { font-size: 12px; font-weight: var(--weight-title); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .pkg-card__title small { font-size: 10px; color: var(--g5); font-weight: var(--weight-body); }
+  .pkg-go { display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--g1); border-radius: 6px; margin-bottom: 8px; }
+  .pkg-go__icon { width: 32px; height: 32px; border-radius: 50%; background: var(--g7); color: var(--g0); display: grid; place-items: center; font-weight: var(--weight-title); font-size: 12px; }
+  .pkg-go__num { font-family: ui-monospace, Menlo, monospace; font-size: 14px; font-weight: var(--weight-title); }
+  .pkg-cosmetic-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .pkg-cosmetic { background: var(--g1); border-radius: 6px; padding: 6px 4px; text-align: center; font-size: 9px; color: var(--g5); aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .pkg-cosmetic b { display: block; color: var(--g7); font-size: 10px; margin-bottom: 2px; }
+
+  .cosmetic-shop { background: var(--g0); border: var(--hairline); border-radius: var(--radius); padding: 12px; }
+  .cosmetic-shop__banner {
+    height: 80px; border-radius: 6px;
+    background-image:
+      repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 8px, var(--g2) 8px, var(--g2) 16px);
+    border: var(--hairline);
+    display: grid; place-items: center; color: var(--g5); font-size: 11px;
+    margin-bottom: 10px;
+  }
+  .cosmetic-shop__cats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 10px; }
+  .cosmetic-cat { background: var(--g1); border-radius: 6px; padding: 8px 2px; font-size: 9px; text-align: center; color: var(--g6); }
+  .cosmetic-shop__cta { width: 100%; height: 36px; }
+
+  /* ----- Tab 4 styles ----- */
+  .live-row { display: grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: var(--hairline); }
+  .live-row:last-child { border-bottom: 0; }
+  .live-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--g1); border: var(--hairline); position: relative; cursor: pointer; }
+  .live-avatar.in-room::after { content:''; position:absolute; inset:-3px; border:2px solid var(--g7); border-radius:50%; }
+  .live-avatar.live-on::after { content:''; position:absolute; inset:-3px; border:2px solid var(--tbd); border-radius:50%; animation: liveRing 1.4s ease-in-out infinite; }
+  @keyframes liveRing { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+  .live-meta { min-width: 0; }
+  .live-meta__top { font-size: 12px; font-weight: var(--weight-title); display:flex; gap:6px; align-items:center; }
+  .live-meta__top small { font-weight: var(--weight-body); color: var(--g4); font-size: 10px; font-family: ui-monospace, Menlo, monospace; }
+  .live-meta__topic { font-size: 11px; color: var(--g6); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .live-meta__time { font-size: 10px; color: var(--g5); margin-top: 2px; font-family: ui-monospace, Menlo, monospace; }
+  .live-actions { display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
+  .live-btn { height: 24px; padding: 0 10px; border-radius: 12px; font-size: 11px; cursor: pointer; border: 1px solid var(--g7); background: var(--g0); color: var(--g7); white-space: nowrap; }
+  .live-btn.is-followed { background: var(--g2); color: var(--g5); border-color: var(--g2); }
+  .live-btn.is-live { background: var(--tbd); color: var(--g0); border-color: var(--tbd); }
+  .live-btn.is-ended { background: var(--g2); color: var(--g4); border-color: var(--g2); cursor: not-allowed; }
+  .live-btn.is-booked { background: var(--g7); color: var(--g0); }
+
+  .org-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .org-cell { background: var(--g0); border: var(--hairline); border-radius: var(--radius); padding: 14px 8px; text-align: center; cursor: pointer; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .org-cell__icon { width: 36px; height: 36px; border-radius: 8px; background: var(--g7); color: var(--g0); display: grid; place-items: center; font-size: 10px; font-weight: var(--weight-title); margin-bottom: 4px; letter-spacing: 0.05em; }
+  .org-cell__title { font-size: 12px; font-weight: var(--weight-title); }
+  .org-cell__sub { font-size: 10px; color: var(--g5); }
+  .org-cell__arrow { position: absolute; top: 6px; right: 8px; color: var(--g3); font-size: 12px; }
+
+  .city-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .city-card { background: var(--g0); border: var(--hairline); border-radius: var(--radius); overflow: hidden; }
+  .city-card__img { height: 80px; background-image: repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 8px, var(--g2) 8px, var(--g2) 16px); border-bottom: var(--hairline); display: grid; place-items: center; color: var(--g5); font-size: 11px; cursor: pointer; }
+  .city-card__body { padding: 8px 10px; }
+  .city-card__name { font-size: 12px; font-weight: var(--weight-title); }
+  .city-card__meta { font-size: 10px; color: var(--g5); margin-top: 2px; }
+  .city-card__btn { width: 100%; height: 28px; margin-top: 6px; border: 1px solid var(--g7); background: var(--g0); color: var(--g7); border-radius: 14px; font-size: 11px; cursor: pointer; }
+
+  .group-list { display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; }
+  .group-row { display: grid; grid-template-columns: 36px 1fr auto; gap: 10px; align-items: center; padding: 10px; background: var(--g1); border-radius: 6px; cursor: pointer; }
+  .group-row__flag { width: 32px; height: 32px; border-radius: 6px; background: var(--g0); border: var(--hairline); }
+  .group-row__name { font-size: 12px; font-weight: var(--weight-title); }
+  .group-row__meta { font-size: 10px; color: var(--g5); margin-top: 2px; }
+  .group-row__count { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--g6); }
+
+  .hl-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .hl-strip::-webkit-scrollbar { display: none; }
+  .hl-thumb { flex: 0 0 130px; cursor: pointer; }
+  .hl-thumb__cover { aspect-ratio: 9/12; border-radius: 6px; background-image: repeating-linear-gradient(45deg, var(--g4) 0, var(--g4) 8px, var(--g5) 8px, var(--g5) 16px); position: relative; display: grid; place-items: center; color: var(--g0); font-size: 11px; overflow: hidden; }
+  .hl-thumb__play { position: absolute; right: 6px; bottom: 6px; width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,0.5); color: var(--g0); display: grid; place-items: center; font-size: 10px; }
+  .hl-thumb__dur { position: absolute; left: 6px; top: 6px; background: rgba(0,0,0,0.5); color: var(--g0); font-size: 10px; padding: 1px 5px; border-radius: 3px; font-family: ui-monospace, Menlo, monospace; }
+  .hl-thumb__title { font-size: 11px; font-weight: var(--weight-title); margin-top: 6px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .hl-thumb__like { font-size: 10px; color: var(--g5); margin-top: 2px; }
+
+  .hl-feed { display: flex; flex-direction: column; gap: 12px; }
+  .hl-feed-card { background: var(--g0); border: var(--hairline); border-radius: var(--radius); overflow: hidden; cursor: pointer; }
+  .hl-feed-card__cover { aspect-ratio: 16/9; background-image: repeating-linear-gradient(45deg, var(--g4) 0, var(--g4) 8px, var(--g5) 8px, var(--g5) 16px); position: relative; display: grid; place-items: center; color: var(--g0); }
+  .hl-feed-card__cover .hl-thumb__dur { left: 8px; top: auto; bottom: 8px; }
+  .hl-feed-card__body { padding: 10px; }
+  .hl-feed-card__title { font-size: 12px; font-weight: var(--weight-title); margin-bottom: 6px; }
+  .hl-feed-card__meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--g5); }
+  .hl-feed-card__tag { display: inline-block; padding: 1px 6px; border-radius: 3px; background: var(--g1); color: var(--g6); font-size: 10px; margin-right: 4px; }
+
+  /* TBD panel grouped layout */
+  .tbd-group { margin-bottom: 12px; }
+  .tbd-group__title { font-size: 11px; font-weight: var(--weight-title); color: var(--g0); padding: 4px 8px; background: var(--g6); border-radius: 4px; margin-bottom: 6px; letter-spacing: 0.05em; }
+  .tbd-promise {
+    margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--g3);
+  }
+  .tbd-promise h4 { margin: 0 0 6px; font-size: 11px; color: var(--tbd); letter-spacing: 0.06em; }
+  .tbd-promise ul { margin: 0; padding-left: 16px; font-size: 11px; color: var(--g6); line-height: 1.7; }
+  .tbd-promise ul li { margin-bottom: 2px; }
+
+  /* Collection grid in sheet */
+  .coll-cat-title { font-size: 12px; font-weight: var(--weight-title); margin: 12px 0 6px; padding-bottom: 4px; border-bottom: var(--hairline); }
+  .coll-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .coll-item { background: var(--g1); border-radius: 6px; padding: 10px 6px; text-align: center; font-size: 10px; color: var(--g5); }
+  .coll-item__icon { width: 100%; aspect-ratio: 1; border-radius: 6px; background-image: repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 6px, var(--g2) 6px, var(--g2) 12px); border: var(--hairline); margin-bottom: 6px; }
+  .coll-item__name { font-size: 10px; color: var(--g7); font-weight: var(--weight-title); }
+  .coll-item__price { font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: var(--g6); margin-top: 2px; }
+
+</style>
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage-meta"><b>Stage 2 / 4</b> · Tab 1 入场 + Tab 2 看台 · iPhone 15 Pro 393×852</div>
+
+  <!-- =========================================================
+       Device frame
+       ========================================================= -->
+  <div class="device" data-screen-label="Stage 2 Tab 1 + Tab 2">
+    <div class="device-screen">
+
+      <!-- Dynamic Island -->
+      <div class="dynamic-island"></div>
+
+      <!-- Top Bar -->
+      <header class="top-bar" role="banner">
+        <div class="top-bar__title">2026 世界杯 X HelloTalk</div>
+        <button class="top-bar__btn" id="tbdToggle" aria-label="TBD index" title="TBD 索引">!</button>
+      </header>
+
+      <!-- TBD Index Panel -->
+      <aside class="tbd-panel" id="tbdPanel" aria-hidden="true">
+        <div class="tbd-panel__inner">
+          <h3 class="tbd-panel__title">[TBD] 索引</h3>
+          <div id="tbdList" class="tbd-panel__empty">
+            // 点击右上“!”重新汇总
+          </div>
+          <div class="tbd-debug">
+            <h4>调试</h4>
+            <button class="btn-secondary" onclick="WC.resetOnboarding()">重置 Onboarding</button>
+            <button class="btn-secondary" onclick="WC.openOnb(1)">预览 Onboarding</button>
+            <button class="btn-secondary" onclick="WC.openGlobe()">查看环球世界</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Pages container -->
+      <main class="pages">
+
+        <!-- ============== TAB 1 — 入场 ============== -->
+        <section class="page is-active" data-tab="1" data-screen-label="Tab 1 入场">
+          <div class="page-header">
+            <div class="page-header__eyebrow">Tab 1 · Entry</div>
+            <h2 class="page-header__title">入场</h2>
+          </div>
+
+          <article class="module" id="m1-onboarding">
+            <div class="module__head">
+              <div class="module__title">Onboarding 3 步</div>
+              <div class="module__anchor">#m1-onboarding</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="card" style="padding:14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div style="width:40px; height:40px; border-radius:8px; background:var(--g7); color:var(--g0); display:grid; place-items:center; font-size:11px; font-weight:600; flex-shrink:0;">3 步</div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="font-weight:600; font-size:13px;">首次进入 · 全屏引导</div>
+                    <div style="font-size:11px; color:var(--g5); margin-top:2px;">主队球星 → 领取球迷证 → 玩法导览</div>
+                  </div>
+                  <button class="btn-secondary" style="height:32px; padding:0 12px; font-size:12px;" onclick="WC.openOnb(1)">预览</button>
+                </div>
+                <div style="margin-top:10px; font-size:11px; color:var(--g4); padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
+                  首次进入触发；<span class="mono">hasFanId=true</span> 后跳过。调试按钮见 [TBD] 面板。
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="module" id="m1-fanid">
+            <div class="module__head">
+              <div class="module__title">球迷证 FAN ID</div>
+              <div class="module__anchor">#m1-fanid</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="fanid-resident">
+                <div class="fanid-resident__inner">
+                  <div class="fanid-resident__top">
+                    <div class="fanid-avatar">头像</div>
+                    <div class="fanid-info" style="flex:1; min-width:0;">
+                      <div class="fanid-info__star" id="fanidStarLabel">支持球星 · [TBD: 未选择]</div>
+                      <div class="fanid-info__name" id="fanidName">[TBD: 未选择主队]</div>
+                      <div class="fanid-info__stats">
+                        <div class="fanid-stat--clickable" onclick="WC.modal({title:'GOAL 贡献',html:'<span class=&quot;tbd&quot;>[TBD: GOAL 来源/消耗则明]</span>'})">
+                          <div class="fanid-stat-label">贡献 GOAL</div>
+                          <div class="fanid-stat-value">0</div>
+                        </div>
+                        <div class="fanid-stat--clickable" onclick="WC.modal({title:'历史最高排名',html:'<span class=&quot;tbd&quot;>[TBD: 最高排名计算则明]</span>'})">
+                          <div class="fanid-stat-label">最高排名</div>
+                          <div class="fanid-stat-value">9999+</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="fanid-resident__bot">
+                    <button onclick="WC.openGlobe()">环球世界</button>
+                    <button class="alt" onclick="WC.toast('前往 3F 球场 · 射门助力'); WC.go('3');">射门助力</button>
+                    <button class="alt" onclick="WC.toast('前往 3F 球场 · 焦点竞猜'); WC.go('3');">焦点竞猜</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="module" id="m1-task">
+            <div class="module__head">
+              <div class="module__title">应援任务 MATCH TASK</div>
+              <div class="module__anchor">#m1-task</div>
+            </div>
+            <div class="module__body module__body--fill" id="taskMount"></div>
+          </article>
+        </section>
+
+        <!-- ============== TAB 2 — 看台 ============== -->
+        <section class="page" data-tab="2" data-screen-label="Tab 2 看台">
+          <div class="page-header">
+            <div class="page-header__eyebrow">Tab 2 · Stand</div>
+            <h2 class="page-header__title">看台</h2>
+          </div>
+
+          <article class="module" id="m2-wave">
+            <div class="module__head">
+              <div class="module__title">看台人浪 + 开屏曝光</div>
+              <div class="module__anchor">#m2-wave</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="wave-zone" id="waveZone">
+                <div class="wave-zone__top-controls">
+                  <div class="wave-zone__pill" id="waveHelp">?</div>
+                </div>
+                <div class="wave-zone__banner" id="waveBanner">
+                  <div class="placeholder-gif" style="font-size:9px;"></div>
+                  <div class="placeholder-gif" style="font-size:9px;"></div>
+                  <div class="wave-zone__banner-info">
+                    <b id="waveBannerCountry">[TBD: 昨日结算 · 国家 1]</b>
+                    <span style="color:var(--g5);">应援 GIF + 国旗 GIF</span>
+                  </div>
+                </div>
+                <div class="wave-zone__banner-pager" id="waveBannerPager">轮播 1 / 3</div>
+                <div class="wave-zone__bot">
+                  <button class="wave-icon" id="waveIcon" title="发出人浪">人浪</button>
+                  <div class="wave-stats">
+                    <span>历史 <span class="tbd">[TBD: wave_history]</span></span>
+                    <span style="color:var(--g0);">今日 <span class="tbd">[TBD: wave_today]</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="module" id="m2-coach">
+            <div class="module__head">
+              <div class="module__title">我是教练 + 环球世界</div>
+              <div class="module__anchor">#m2-coach</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="coach-card">
+                <div class="coach-head">
+                  <div class="coach-head__left">
+                    <button class="coach-pitch-btn">入场</button>
+                    <div class="coach-head__stats">
+                      <div class="coach-head__stat coach-head__stat--dim">历史 GOAL <b><span class="tbd">[TBD]</span></b></div>
+                      <div class="coach-head__stat">可消耗 <b id="coachGoal">128</b></div>
+                    </div>
+                  </div>
+                  <button class="coach-feedback__globe" onclick="WC.openGlobe()" title="环球世界">🌍</button>
+                </div>
+                <div class="coach-pitch">
+                  <div class="coach-grid" id="coachGrid"></div>
+                </div>
+                <div class="coach-feedback">
+                  <div class="coach-feedback__mic">🎙</div>
+                  <div class="coach-feedback__main">
+                    <div class="coach-feedback__text" id="coachText">点击九宫格调度球队·每次扣 1 GOAL</div>
+                    <div class="coach-feedback__progress">
+                      <div class="coach-ball" id="coachBall0">铜</div>
+                      <div class="coach-ball" id="coachBall1">银</div>
+                      <div class="coach-ball" id="coachBall2">金</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="module" id="m2-rank">
+            <div class="module__head">
+              <div class="module__title">实时榜单</div>
+              <div class="module__anchor">#m2-rank</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="rank-card">
+                <div class="rank-tabs">
+                  <button class="rank-tab is-active" data-rdim="personal" onclick="WC.setRankDim('personal')">个人</button>
+                  <button class="rank-tab" data-rdim="country" onclick="WC.setRankDim('country')">国家</button>
+                  <button class="rank-tab" data-rdim="star" onclick="WC.setRankDim('star')">球星</button>
+                  <button class="rank-tab" style="flex:0.5;" onclick="WC.toast('[TBD: 榜单玩法介绍]')">?</button>
+                </div>
+                <div class="rank-podium">
+                  <div class="rank-podium__title">
+                    <span id="rankDimLabel">个人</span> · <span id="rankPeriodLabel">今日</span>
+                    <button onclick="WC.modal({title:'分享',html:'<span class=&quot;tbd&quot;>[TBD]</span>'})" style="background:transparent; border:0; color:var(--g3); font-size:11px; cursor:pointer;">分享</button>
+                  </div>
+                  <div class="rank-podium__row">
+                    <div class="rank-podium__col second">
+                      <div class="rank-podium__avatar">2</div>
+                      <div class="rank-podium__name tbd" style="color:var(--g0); background:transparent; border:0;">[TBD]</div>
+                      <div class="rank-podium__bar">2,180</div>
+                    </div>
+                    <div class="rank-podium__col first">
+                      <div class="rank-podium__avatar">1</div>
+                      <div class="rank-podium__name tbd" style="color:var(--g0); background:transparent; border:0;">[TBD]</div>
+                      <div class="rank-podium__bar">3,420</div>
+                    </div>
+                    <div class="rank-podium__col third">
+                      <div class="rank-podium__avatar">3</div>
+                      <div class="rank-podium__name tbd" style="color:var(--g0); background:transparent; border:0;">[TBD]</div>
+                      <div class="rank-podium__bar">1,540</div>
+                    </div>
+                  </div>
+                  <div class="rank-podium__note"><span class="tbd">[TBD: GOAL 来源说明 · 30 字以内]</span></div>
+                </div>
+                <div class="rank-tabs row2">
+                  <button class="rank-tab is-active" data-rperiod="today" onclick="WC.setRankPeriod('today')">今日</button>
+                  <button class="rank-tab" data-rperiod="stage" onclick="WC.setRankPeriod('stage')">赛事阶段</button>
+                  <button class="rank-tab" data-rperiod="history" onclick="WC.setRankPeriod('history')">历史</button>
+                </div>
+                <div class="rank-self">
+                  <div class="rank-self__rank">87</div>
+                  <div class="rank-self__avatar">我</div>
+                  <div class="rank-self__name">我 · <span class="tbd">[TBD: nickname]</span></div>
+                  <div class="rank-self__goal">126</div>
+                </div>
+                <div class="rank-list" id="rankList"></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- ============== TAB 3 — 球场 ============== -->
+        <section class="page" data-tab="3" data-screen-label="Tab 3 球场">
+          <div class="page-header">
+            <div class="page-header__eyebrow">Tab 3 · Pitch</div>
+            <h2 class="page-header__title">球场</h2>
+          </div>
+
+          <article class="module" id="m3-goal">
+            <div class="module__head">
+              <div class="module__title">进球助力 + 活力榜单</div>
+              <div class="module__anchor">#m3-goal</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="subpage-stack">
+                <!-- ===== 子页 A · 进球助力 ===== -->
+                <div class="subpage is-active" data-sub="goal">
+                  <div class="col-head" style="border:0; padding:0; color:var(--g6); margin-bottom:8px;">活动指定礼物 · 不同价值对应射门次数</div>
+                  <div class="gift-strip" id="giftStrip"></div>
+
+                  <div class="pk-stage">
+                    <div class="pk-goal"></div>
+                    <div class="pk-meta">
+                      <button class="pk-meta__help" id="pkHelp" title="概率公示">?</button>
+                      <span>剩余射门次数 <b id="pkRemain" class="mono">[TBD]</b></span>
+                    </div>
+                    <div class="pk-power" id="pkPower"><span class="pk-power__pointer" id="pkPointer"></span></div>
+                    <div class="pk-actions">
+                      <button class="btn-secondary" onclick="WC.pkShoot(1)">射门 1 次</button>
+                      <button class="btn-primary" onclick="WC.pkShoot(10)">射门 10 次</button>
+                    </div>
+                  </div>
+
+                  <div class="exchange-head">
+                    <span>奖励兑换</span>
+                    <span>道具余额 <b id="pkProps">[TBD]</b></span>
+                  </div>
+                  <div class="exchange-list" id="exchangeList"></div>
+
+                  <button class="ranking-entry-btn" onclick="WC.subGo('rank')">活力榜单 →</button>
+                </div>
+
+                <!-- ===== 子页 B · 活力榜单 ===== -->
+                <div class="subpage" data-sub="rank">
+                  <div class="subpage__head">
+                    <button class="subpage__back" onclick="WC.subGo('goal')">‹</button>
+                    <div class="subpage__title">活力榜单</div>
+                  </div>
+
+                  <div class="rk-tabs" id="rkMainTabs">
+                    <button class="rk-tab is-active" data-rkmain="contrib">贡献榜 · 个人送礼</button>
+                    <button class="rk-tab" data-rkmain="popular">人气榜 · 收礼</button>
+                  </div>
+
+                  <div class="rk-tabs" id="rkSubTabs" data-mainonly="contrib">
+                    <button class="rk-tab is-active" data-rksub="stage">赛程榜</button>
+                    <button class="rk-tab" data-rksub="total">总榜</button>
+                  </div>
+
+                  <div class="rk-stage-row" id="rkStageRow"></div>
+
+                  <div class="rk-countdown">
+                    <span>距离结算还剩</span>
+                    <b id="rkCountdown">[TBD: 倒计时]</b>
+                  </div>
+
+                  <div class="rk-rewards">
+                    <div class="rk-rewards__title" id="rkRewardsTitle">奖励 · 当前赛段 TOP 5</div>
+                    <div class="rk-rewards__row">
+                      <div class="rk-rewards__cell"><b>1</b><span class="tbd">[TBD]</span></div>
+                      <div class="rk-rewards__cell"><b>2</b><span class="tbd">[TBD]</span></div>
+                      <div class="rk-rewards__cell"><b>3</b><span class="tbd">[TBD]</span></div>
+                      <div class="rk-rewards__cell"><b>4</b><span class="tbd">[TBD]</span></div>
+                      <div class="rk-rewards__cell"><b>5</b><span class="tbd">[TBD]</span></div>
+                    </div>
+                    <div class="rk-rewards__note">奖励将自动发送到背包</div>
+                  </div>
+
+                  <div class="rk-board">
+                    <div class="rk-top3" id="rkTop3"></div>
+                    <div class="rk-pager">
+                      <span id="rkPagerLabel">4-13 名 / 共 50</span>
+                      <span style="display:flex; gap:6px;">
+                        <button onclick="WC.rkPage(-1)">‹</button>
+                        <button onclick="WC.rkPage(1)">›</button>
+                      </span>
+                    </div>
+                    <div id="rkBoardList"></div>
+                    <button class="btn-secondary" style="width:100%; margin-top:8px;" onclick="WC.toast('查看完整 50 名榜单 · [TBD: 跳全榜页]')">查看更多</button>
+                  </div>
+
+                  <div class="rk-self">
+                    <div class="rk-self__rank" id="rkSelfRank">23</div>
+                    <div class="rk-self__avatar"></div>
+                    <div class="rk-self__name">[TBD: 当前用户昵称溢出 …]</div>
+                    <div class="rk-self__goal" id="rkSelfGoal">86</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="module" id="m3-bet">
+            <div class="module__head">
+              <div class="module__title">焦点竞猜 · MATCH PK</div>
+              <div class="module__anchor">#m3-bet</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <!-- 第一屏 焦点战 -->
+              <div class="focus-card" id="focusCard">
+                <div class="focus-card__eyebrow">今日焦点战<span class="focus-card__live">LIVE</span></div>
+                <div class="focus-card__teams">
+                  <div class="focus-team"><div class="focus-team__flag"></div><div class="focus-team__name">[TBD: 国家 A]</div></div>
+                  <div class="focus-card__vs">VS</div>
+                  <div class="focus-team"><div class="focus-team__flag"></div><div class="focus-team__name">[TBD: 国家 B]</div></div>
+                </div>
+                <div class="focus-card__countdown">距开赛 <span class="tbd">[TBD: 倒计时]</span></div>
+                <div class="focus-heat">
+                  <div class="focus-heat__a" style="flex: 56;"></div>
+                  <div class="focus-heat__b" style="flex: 44;"></div>
+                </div>
+                <div class="focus-heat-meta"><span>56% 看好 A</span><span>B 看好 44%</span></div>
+                <div class="focus-buttons" id="focusButtons">
+                  <button class="bet" onclick="WC.focusBet('A')">助力国家 A ⚡</button>
+                  <button class="bet" onclick="WC.focusBet('B')">助力国家 B ⚡</button>
+                </div>
+                <div class="focus-rule">
+                  <span class="tbd">[TBD: 焦点战选取规则]</span> · <span class="tbd">[TBD: 是否支持平局]</span> · <span class="tbd">[TBD: 免费次数 / 单次消耗 GOAL]</span>
+                </div>
+              </div>
+
+              <div class="pk-section-head">
+                <div class="pk-section-head__title">MATCH PK 竞猜</div>
+                <div class="pk-section-head__more" onclick="WC.openMoreEvents()">更多赛事 ›</div>
+              </div>
+
+              <div class="pk-cards">
+                <div class="pk-cards__track" id="pkCardsTrack"></div>
+                <div class="pk-cards__dots" id="pkCardsDots"></div>
+              </div>
+
+              <div class="focus-rule">
+                结果反馈 · 按北京时间,当天结束的比赛 → 次日 11:00 am 自动导入。<br>
+                <button class="btn-secondary" style="height:28px; padding:0 12px; font-size:11px; margin-top:6px;" onclick="WC.simulateBetResult()">模拟首次进入 · 弹结果</button>
+                · <span class="tbd">[TBD: 关注上限]</span> · <span class="tbd">[TBD: 中奖奖励内容]</span>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- ============== TAB 4 — 媒体 ============== -->
+        <section class="page" data-tab="4" data-screen-label="Tab 4 媒体">
+          <div class="page-header">
+            <div class="page-header__eyebrow">Tab 4 · Media</div>
+            <h2 class="page-header__title">媒体</h2>
+          </div>
+
+          <article class="module" id="m4-live">
+            <div class="module__head">
+              <div class="module__title">正在直播 · ON AIR</div>
+              <div class="module__anchor">#m4-live</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="col-head" style="border:0; padding:0; color:var(--g6); margin-bottom:8px;">节目单 · 开播中置顶 · 已结束置底</div>
+              <div id="liveList"></div>
+              <button class="card" style="width:100%; margin-top:12px; background:var(--g7); color:var(--g0); padding:14px; border:0; cursor:pointer; display:flex; align-items:center; gap:12px;" onclick="WC.openKoc()">
+                <div style="width:36px; height:36px; border-radius:50%; background:var(--g0); color:var(--g7); display:grid; place-items:center; font-weight:600; font-size:11px;">KOC</div>
+                <div style="flex:1; min-width:0; text-align:left;">
+                  <div style="font-weight:600; font-size:13px;">球迷 KOC 招募</div>
+                  <div style="font-size:11px; opacity:.8; margin-top:2px;">报名成为世界杯官方推荐主播</div>
+                </div>
+                <div style="font-size:18px; opacity:.7;">›</div>
+              </button>
+            </div>
+          </article>
+
+          <article class="module" id="m4-org">
+            <div class="module__head">
+              <div class="module__title">FAN CLUB · 球迷组织</div>
+              <div class="module__anchor">#m4-org</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="subpage-stack">
+                <div class="subpage is-active" data-orgsub="home">
+                  <div class="org-grid">
+                    <button class="org-cell" onclick="WC.toast(\'跳主 app 动态 tab·默认筛选世界杯主题·[TBD: 筛选规则]\')">
+                      <div class="org-cell__icon">CIR</div>
+                      <div class="org-cell__title">CIRCLE</div>
+                      <div class="org-cell__sub">世界杯圈子</div>
+                      <div class="org-cell__arrow">›</div>
+                    </button>
+                    <button class="org-cell" onclick="WC.subOrg(\'meetup\')">
+                      <div class="org-cell__icon">MTP</div>
+                      <div class="org-cell__title">MEETUP</div>
+                      <div class="org-cell__sub">线下观赛</div>
+                      <div class="org-cell__arrow">›</div>
+                    </button>
+                    <button class="org-cell" onclick="WC.openGroupSheet()">
+                      <div class="org-cell__icon">GRP</div>
+                      <div class="org-cell__title">GROUP</div>
+                      <div class="org-cell__sub">球迷群</div>
+                      <div class="org-cell__arrow">›</div>
+                    </button>
+                  </div>
+                </div>
+                <div class="subpage" data-orgsub="meetup">
+                  <div class="subpage__head">
+                    <button class="subpage__back" onclick="WC.subOrg(\'home\')">‹</button>
+                    <div class="subpage__title">MEETUP · 城市列表</div>
+                  </div>
+                  <div class="city-grid" id="cityGrid"></div>
+                  <div style="font-size:11px; color:var(--g4); margin-top:10px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
+                    <span class="tbd">[TBD: 城市排序]</span> · <span class="tbd">[TBD: 满员态]</span> · <span class="tbd">[TBD: 详情页字段]</span> · <span class="tbd">[TBD: 报名表单字段]</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="module" id="m4-highlights">
+            <div class="module__head">
+              <div class="module__title">HIGHLIGHTS · 精彩集锦</div>
+              <div class="module__anchor">#m4-highlights</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="subpage-stack">
+                <div class="subpage is-active" data-hlsub="home">
+                  <div class="pk-section-head">
+                    <div class="pk-section-head__title">今日集锦</div>
+                    <div class="pk-section-head__more" onclick="WC.subHl(\'feed\')">更多集锦 ›</div>
+                  </div>
+                  <div class="hl-strip" id="hlStrip"></div>
+                  <div style="font-size:11px; color:var(--g4); margin-top:8px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
+                    <span class="tbd">[TBD: 缩略图数量]</span> · <span class="tbd">[TBD: 素材来源]</span> · <span class="tbd">[TBD: 标签体系]</span> · <span class="tbd">[TBD: 审核]</span> · <span class="tbd">[TBD: 排序]</span> · <span class="tbd">[TBD: 状态规则]</span> · <span class="tbd">[TBD: 互动数值与任务]</span>
+                  </div>
+                </div>
+                <div class="subpage" data-hlsub="feed">
+                  <div class="subpage__head">
+                    <button class="subpage__back" onclick="WC.subHl(\'home\')">‹</button>
+                    <div class="subpage__title">短视频集合页</div>
+                  </div>
+                  <div class="hl-feed" id="hlFeed"></div>
+                  <div style="font-size:11px; color:var(--g4); margin-top:6px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
+                    <span class="tbd">[TBD: 列表排序]</span> · <span class="tbd">[TBD: 分页]</span> · <span class="tbd">[TBD: 互动字段]</span>
+                  </div>
+                </div>
+                <div class="subpage" data-hlsub="watch">
+                  <div class="subpage__head">
+                    <button class="subpage__back" onclick="WC.subHl(\'feed\')">‹</button>
+                    <div class="subpage__title">观看视频页</div>
+                  </div>
+                  <div class="placeholder-video" style="height:240px; border-radius:8px; margin-bottom:10px;">视频播放 placeholder</div>
+                  <div style="font-size:13px; font-weight:var(--weight-title); margin-bottom:4px;">[TBD: 视频标题]</div>
+                  <div style="font-size:11px; color:var(--g5); line-height:1.5;"><span class="tbd">[TBD: 观看页字段 · A 全屏 / B 信息流详情]</span></div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- ============== TAB 5 — 商店 ============== -->
+        <section class="page" data-tab="5" data-screen-label="Tab 5 商店">
+          <div class="page-header">
+            <div class="page-header__eyebrow">Tab 5 · Store</div>
+            <h2 class="page-header__title">商店</h2>
+          </div>
+
+          <article class="module" id="m5-vip">
+            <div class="module__head">
+              <div class="module__title">会员促销 · VIP SALES</div>
+              <div class="module__anchor">#m5-vip</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <div class="vip-card">
+                <div class="vip-card__eyebrow">VIP · YEAR PASS</div>
+                <div class="vip-card__title"><span class="tbd">[TBD: @钱淇 Kiana · 年卡标题]</span></div>
+                <div class="vip-card__row">
+                  <div class="vip-card__price"><span class="tbd">[TBD: 年卡价格]</span></div>
+                  <button class="vip-card__btn" onclick="WC.openSku('year')">购买</button>
+                </div>
+              </div>
+
+              <div class="vip-card vip-card--lifetime">
+                <div class="vip-card__eyebrow">VIP · LIFETIME</div>
+                <div class="vip-card__title"><span class="tbd">[TBD: @钱淇 Kiana · 终身卡标题]</span></div>
+                <div class="vip-card__row">
+                  <div class="vip-card__price"><span class="tbd">[TBD: 终身卡价格]</span></div>
+                  <button class="vip-card__btn" onclick="WC.openSku('lifetime')">购买</button>
+                </div>
+              </div>
+
+              <div class="pkg-card">
+                <div class="pkg-card__title">年卡赠送礼包 <small>购买年卡赠送</small></div>
+                <div class="pkg-go">
+                  <div class="pkg-go__icon">GO</div>
+                  <div>
+                    <div style="font-size:11px; color:var(--g5);">GO 值赠送</div>
+                    <div class="pkg-go__num"><span class="tbd">[TBD: GO 数值]</span></div>
+                  </div>
+                </div>
+                <div class="pkg-cosmetic-grid">
+                  <div class="pkg-cosmetic"><b>主题</b>应用</div>
+                  <div class="pkg-cosmetic"><b>铭牌</b>身份</div>
+                  <div class="pkg-cosmetic"><b>气泡</b>聊天</div>
+                  <div class="pkg-cosmetic"><b>挂件</b>头像</div>
+                  <div class="pkg-cosmetic"><b>背景</b>profile</div>
+                </div>
+              </div>
+
+              <div class="cosmetic-shop">
+                <div class="cosmetic-shop__banner">装扮商城 · 轮播 placeholder · <span class="tbd">[TBD: 主推装扮]</span></div>
+                <div class="cosmetic-shop__cats">
+                  <div class="cosmetic-cat">主题</div>
+                  <div class="cosmetic-cat">铭牌</div>
+                  <div class="cosmetic-cat">气泡</div>
+                  <div class="cosmetic-cat">挂件</div>
+                  <div class="cosmetic-cat">背景</div>
+                </div>
+                <button class="btn-primary cosmetic-shop__cta" onclick="WC.toast('跳商城 · [TBD: 装扮商城路由]')">去商城</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="module" id="m5-team">
+            <div class="module__head">
+              <div class="module__title">球队套系 · COLLECTION</div>
+              <div class="module__anchor">#m5-team</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <button class="card" style="width:100%; text-align:left; background:var(--g0); border:var(--hairline); padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px;" onclick="WC.openCollection()">
+                <div style="flex:1; min-width:0;">
+                  <div style="font-weight:var(--weight-title); font-size:14px;">球队限定礼物套系</div>
+                  <div style="font-size:11px; color:var(--g5); margin-top:4px;">按球队组合定制礼物 · <span class="tbd">[TBD: 礼物总数]</span></div>
+                  <div style="display:flex; gap:6px; margin-top:8px;">
+                    <div style="width:32px; height:32px; border-radius:6px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px); border:var(--hairline);"></div>
+                    <div style="width:32px; height:32px; border-radius:6px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px); border:var(--hairline);"></div>
+                    <div style="width:32px; height:32px; border-radius:6px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px); border:var(--hairline);"></div>
+                    <div style="width:32px; height:32px; border-radius:6px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px); border:var(--hairline);"></div>
+                    <div style="width:32px; height:32px; border-radius:6px; background:var(--g1); border:var(--hairline); display:grid; place-items:center; font-size:10px; color:var(--g4);">+N</div>
+                  </div>
+                </div>
+                <div style="font-size:20px; color:var(--g4);">›</div>
+              </button>
+              <div style="font-size:11px; color:var(--g4); margin-top:8px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
+                <span class="tbd">[TBD: 礼物清单]</span> · <span class="tbd">[TBD: 分类规则]</span> · <span class="tbd">[TBD: GOAL 兑换价格]</span> · <span class="tbd">[TBD: 兑换流程]</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="module" id="m5-gift">
+            <div class="module__head">
+              <div class="module__title">限定礼物 · LIMITED EDITION</div>
+              <div class="module__anchor">#m5-gift</div>
+            </div>
+            <div class="module__body module__body--fill">
+              <button class="card" style="width:100%; text-align:left; background:var(--g0); border:var(--hairline); padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px;" onclick="WC.toast('待补充模块')">
+                <div style="width:48px; height:48px; border-radius:8px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 6px, var(--g2) 6px, var(--g2) 12px); border:var(--hairline); flex:none;"></div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-weight:var(--weight-title); font-size:14px;">限定礼物入口</div>
+                  <div style="font-size:11px; color:var(--g5); margin-top:4px;"><span class="tbd">[TBD: 全部待补充]</span></div>
+                </div>
+                <div style="font-size:20px; color:var(--g4);">›</div>
+              </button>
+            </div>
+          </article>
+        </section>
+
+      </main>
+
+      <!-- Toast (single instance) -->
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+      <!-- ===== Onboarding Full-Screen Overlay (Stage 2) ===== -->
+      <div class="onb" id="onb" aria-hidden="true">
+        <header class="onb__head">
+          <div class="onb__step-label" id="onbLabel">1 请选择主队和球星</div>
+          <button class="onb__close" id="onbClose" aria-label="关闭">×</button>
+        </header>
+        <div class="onb__body">
+          <div class="onb__step is-current" data-step="1">
+            <div class="onb-pick">
+              <div class="onb-pick__col left"><div class="con-tabs" id="conTabs"></div></div>
+              <div class="onb-pick__col center">
+                <div class="col-head">主队 · A–Z</div>
+                <div class="list-scroll" id="countryList"></div>
+              </div>
+              <div class="onb-pick__col right">
+                <div class="col-head">球星</div>
+                <div class="list-scroll" id="playerList"></div>
+              </div>
+            </div>
+            <div class="banner-zone" data-banner-cycle data-bset="play8">
+              <div class="banner-zone__head"><div class="banner-zone__title">8 玩法 · 2×2 轮播</div><div class="banner-zone__pager"></div></div>
+              <div class="banner-grid"></div>
+            </div>
+          </div>
+          <div class="onb__step" data-step="2">
+            <div class="col-head" style="border:0; padding:0 4px; color:var(--g6);">领取你的球迷证</div>
+            <div class="fanid-preview">
+              <div class="fanid-avatar">头像</div>
+              <div class="fanid-info">
+                <div class="fanid-info__star" id="onbStarLabel">支持球星 · [TBD]</div>
+                <div class="fanid-info__name" id="onbCountryLabel">[TBD]</div>
+                <div class="fanid-info__stats">
+                  <div><div class="fanid-stat-label">贡献 GOAL</div><div class="fanid-stat-value">0</div></div>
+                  <div><div class="fanid-stat-label">个人最高排名</div><div class="fanid-stat-value">9999+</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="onb-hint"><span class="tbd">[TBD: PRD 文案1 · 球迷证价值]</span></div>
+            <div class="onb-hint"><span class="tbd">[TBD: PRD 文案2 · 贡献/排名规则]</span></div>
+            <div class="banner-zone" data-banner-cycle data-bset="priv6">
+              <div class="banner-zone__head"><div class="banner-zone__title">6 视觉权益 · 2×2 轮播</div><div class="banner-zone__pager"></div></div>
+              <div class="banner-grid"></div>
+            </div>
+          </div>
+          <div class="onb__step" data-step="3">
+            <div class="col-head" style="border:0; padding:0 4px; color:var(--g6);">点卡片跳转 · 右上 X 落地 Tab 3</div>
+            <div class="gameplay-grid" id="gameplayGrid"></div>
+          </div>
+        </div>
+        <footer class="onb__foot">
+          <button class="btn-secondary" id="onbPrev" hidden>上一步</button>
+          <button class="btn-disabled" id="onbNext" disabled>选择主队</button>
+        </footer>
+      </div>
+
+      <!-- Modal (reusable) -->
+      <div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal__card">
+          <button class="modal__close" id="modalClose" aria-label="关闭">×</button>
+          <h3 class="modal__title" id="modalTitle">Modal 标题</h3>
+          <div id="modalBody"><span class="tbd">[TBD: 阶段 2-4 填充内容]</span></div>
+        </div>
+      </div>
+
+      <!-- Half sheet (reusable) -->
+      <div class="sheet-half" id="sheet" aria-hidden="true">
+        <div class="sheet-half__handle"></div>
+        <h3 class="sheet-half__title" id="sheetTitle">Half Sheet 标题</h3>
+        <div id="sheetBody"><span class="tbd">[TBD: 阶段 2-4 填充内容]</span></div>
+      </div>
+
+      <!-- Tab Bar -->
+      <nav class="tab-bar" role="tablist">
+        <button class="tab is-active" data-go="1" role="tab" aria-selected="true">
+          <span class="tab__num">1</span><span class="tab__label">入场</span>
+        </button>
+        <button class="tab" data-go="2" role="tab">
+          <span class="tab__num">2</span><span class="tab__label">看台</span>
+        </button>
+        <button class="tab" data-go="3" role="tab">
+          <span class="tab__num">3</span><span class="tab__label">球场</span>
+        </button>
+        <button class="tab" data-go="4" role="tab">
+          <span class="tab__num">4</span><span class="tab__label">媒体</span>
+        </button>
+        <button class="tab" data-go="5" role="tab">
+          <span class="tab__num">5</span><span class="tab__label">商店</span>
+        </button>
+      </nav>
+
+      <!-- Home Indicator -->
+      <div class="home-indicator"></div>
+
+    </div>
+  </div>
+
+  <!-- Component reference legend (dev aid; outside the device) -->
+  <div class="legend">
+    <h4>Stage 4 · 已填充模块</h4>
+    Tab 4 · <code>ON AIR</code> <code>FAN CLUB</code> <code>HIGHLIGHTS</code>&nbsp;·&nbsp;
+    全局·<code>[TBD] 分组索引</code> <code>未实现承诺</code>
+    <br><br>
+    <h4>Stage 3 · 已填充模块</h4>
+    Tab 3 · <code>进球助力</code> <code>活力榜单</code> <code>焦点竞猜</code>&nbsp;·&nbsp;
+    Tab 5 · <code>VIP SALES</code> <code>COLLECTION</code> <code>LIMITED</code>
+    <br><br>
+    <h4>Stage 2 · 已填充模块</h4>
+    Tab 1 · <code>Onboarding</code> <code>FAN ID</code> <code>MATCH TASK</code>&nbsp;·&nbsp;
+    Tab 2 · <code>人浪/曝光</code> <code>教练+环球</code> <code>实时榜单</code>
+    <br><br>
+    <h4>JS API</h4>
+    <code>WC.go(n)</code> · <code>WC.toast(msg)</code> · <code>WC.modal()</code> ·
+    <code>WC.sheet()</code> · <code>WC.openOnb(step)</code> ·
+    <code>WC.openGlobe()</code> · <code>WC.pkShoot(n)</code> ·
+    <code>WC.subGo(k)</code> · <code>WC.openMoreEvents()</code>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ============================================================
+  // Tab switching
+  // ============================================================
+  const pages = document.querySelectorAll('.page');
+  const tabs = document.querySelectorAll('.tab');
+
+  function go(n) {
+    n = String(n);
+    pages.forEach(p => p.classList.toggle('is-active', p.dataset.tab === n));
+    tabs.forEach(t => {
+      const active = t.dataset.go === n;
+      t.classList.toggle('is-active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    // Reset scroll on activated page
+    const active = document.querySelector('.page.is-active');
+    if (active) active.scrollTop = 0;
+  }
+  tabs.forEach(t => t.addEventListener('click', () => go(t.dataset.go)));
+
+  // ============================================================
+  // Toast (single-instance)
+  // ============================================================
+  const toastEl = document.getElementById('toast');
+  let toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('is-visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove('is-visible');
+    }, 3000);
+  }
+
+  // ============================================================
+  // Modal
+  // ============================================================
+  const modalEl = document.getElementById('modal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const modalClose = document.getElementById('modalClose');
+  function openModal(opts) {
+    opts = opts || {};
+    modalTitle.textContent = opts.title || '';
+    modalBody.innerHTML = opts.html || '<span class="tbd">[TBD]</span>';
+    modalEl.classList.add('is-open');
+    modalEl.setAttribute('aria-hidden', 'false');
+  }
+  function closeModal() {
+    modalEl.classList.remove('is-open');
+    modalEl.setAttribute('aria-hidden', 'true');
+  }
+  modalClose.addEventListener('click', closeModal);
+  modalEl.addEventListener('click', (e) => {
+    if (e.target === modalEl) closeModal();
+  });
+
+  // ============================================================
+  // Half Sheet
+  // ============================================================
+  const sheetEl = document.getElementById('sheet');
+  const sheetTitle = document.getElementById('sheetTitle');
+  const sheetBody = document.getElementById('sheetBody');
+  function openSheet(opts) {
+    opts = opts || {};
+    sheetTitle.textContent = opts.title || '';
+    sheetBody.innerHTML = opts.html || '<span class="tbd">[TBD]</span>';
+    sheetEl.classList.add('is-open');
+    sheetEl.setAttribute('aria-hidden', 'false');
+  }
+  function closeSheet() {
+    sheetEl.classList.remove('is-open');
+    sheetEl.setAttribute('aria-hidden', 'true');
+  }
+
+  // ============================================================
+  // [TBD] Index Panel
+  // ============================================================
+  const tbdToggle = document.getElementById('tbdToggle');
+  const tbdPanel = document.getElementById('tbdPanel');
+  const tbdList = document.getElementById('tbdList');
+
+  function collectTBDs() {
+    const nodes = document.querySelectorAll('.tbd');
+    if (!nodes.length) {
+      tbdList.className = 'tbd-panel__empty';
+      tbdList.innerHTML = '// 暂无 [TBD] 标记';
+      return;
+    }
+    const items = [];
+    nodes.forEach((n, i) => {
+      const module = n.closest('.module');
+      const page = n.closest('.page');
+      const onb = n.closest('.onb');
+      let label, tab = '·';
+      if (module) {
+        label = (module.querySelector('.module__title')?.textContent) || ('item ' + i);
+        tab = page ? page.dataset.tab : '?';
+      } else if (onb) { label = 'Onboarding'; tab = '1'; }
+      else { label = 'Modal/Sheet'; }
+      const id = module ? module.id : (onb ? 'm1-onboarding' : '');
+      if (!n.id) n.id = 'tbd-' + i;
+      items.push({ idx: i+1, label: 'Tab ' + tab + ' · ' + label, text: n.textContent.trim(), anchor: id || n.id, tab: tab });
+    });
+    tbdList.className = '';
+    const ul = document.createElement('ul');
+    ul.className = 'tbd-list';
+    items.forEach(it => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + it.anchor;
+      a.dataset.tab = it.tab;
+      a.innerHTML = '<span>' + it.label + '</span><span>' + it.text + '</span>';
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        go(it.tab);
+        tbdPanel.classList.remove('is-open');
+        setTimeout(() => {
+          const target = document.getElementById(it.anchor);
+          if (target) {
+            const page = target.closest('.page');
+            if (page) page.scrollTop = target.offsetTop - 12;
+          }
+        }, 80);
+      });
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    tbdList.innerHTML = '';
+    tbdList.appendChild(ul);
+  }
+
+  tbdToggle.addEventListener('click', () => {
+    const open = tbdPanel.classList.toggle('is-open');
+    tbdPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+    if (open) collectTBDs();
+  });
+
+  // ============================================================
+  // Public API
+  // ============================================================
+  window.WC = {
+    go: go,
+    toast: toast,
+    modal: openModal,
+    closeModal: closeModal,
+    sheet: openSheet,
+    closeSheet: closeSheet,
+    collectTBDs: collectTBDs
+  };
+
+  // ============================================================
+  // STAGE 2 — Tab 1 + Tab 2 logic
+  // ============================================================
+
+  // Sample data
+  const CONTINENTS = [
+    { key:'eu', label:'欧' }, { key:'am', label:'美' },
+    { key:'as', label:'亚' }, { key:'af', label:'非' }
+  ];
+  const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const COUNTRIES = [];
+  for (let i = 0; i < 48; i++) {
+    COUNTRIES.push({
+      letter: LETTERS[i % 26],
+      name: '[TBD: 国家 ' + String(i+1).padStart(2,'0') + ']',
+      continent: CONTINENTS[i % 4].key
+    });
+  }
+  const PLAYERS = [];
+  for (let i = 0; i < 16; i++) {
+    PLAYERS.push({
+      num: [7,9,10,11,4,5,8,6,1,3,2,14,17,21,22,23][i],
+      name: '[TBD: 球星 ' + String.fromCharCode(65+i) + ']',
+      pos: ['前锋','中场','后卫','门将'][i % 4]
+    });
+  }
+  const PLAY8 = ['神奇教练','环球世界','射门助力','焦点竞猜','榜单人浪','球迷协会','队伍 PK','球迷商城'];
+  const PRIV6 = ['专属礼物','头像声波','队伍铭牌','评论气泡','入场特效','房间背景'];
+  const PLAY6 = [
+    { name:'看台人浪',  land:'Tab 2 → 看台人浪',  go:'2', anchor:'m2-wave' },
+    { name:'教练指挥球队', land:'Tab 2 → 我是教练', go:'2', anchor:'m2-coach' },
+    { name:'寻找球迷圈子', land:'Tab 4 → 球迷组织', go:'4', anchor:'m4-org' },
+    { name:'射门助力主队', land:'Tab 3 → 进球助力', go:'3', anchor:'m3-goal' },
+    { name:'竞猜焦点赛事', land:'Tab 3 → 焦点竞猜', go:'3', anchor:'m3-bet' },
+    { name:'实时队伍 PK', land:'Tab 2 → 实时榜单', go:'2', anchor:'m2-rank' }
+  ];
+  const COACH_FAIL = ['被断球','传球失误','受伤','犯规','被铲断','拼抢失败'];
+  const COACH_SUCCESS = ['大脚解围','短传渗透','禁区妙传','任意球','角球','界外球'];
+  const COACH_JACKPOT = ['远射进球','头球得分','抢点得分','挑射进球','抽射远角','推射近角'];
+  const TASK_TARGETS = ['语聊房','直播间聚合','发帖页','个人动态','话题讨论','商城','VIP 促销 H5','开屏曝光 H5','加热中心'];
+
+  // LocalStorage helpers
+  const LS = {
+    get(k) { try { return JSON.parse(localStorage.getItem('htwc26.' + k)); } catch(e) { return null; } },
+    set(k,v) { try { localStorage.setItem('htwc26.' + k, JSON.stringify(v)); } catch(e){} },
+    del(k) { try { localStorage.removeItem('htwc26.' + k); } catch(e){} }
+  };
+
+  // ---------- Onboarding state machine ----------
+  const onbEl = document.getElementById('onb');
+  const onbLabel = document.getElementById('onbLabel');
+  const onbCloseBtn = document.getElementById('onbClose');
+  const onbPrevBtn = document.getElementById('onbPrev');
+  const onbNextBtn = document.getElementById('onbNext');
+  const onbState = { step:1, continent:'eu', country:null, player:null };
+
+  function openOnb(step) {
+    onbState.step = step || 1;
+    renderStep1();
+    renderStep3();
+    goStep(onbState.step);
+    onbEl.classList.add('is-open');
+    onbEl.setAttribute('aria-hidden','false');
+    refreshOnbStep2Labels();
+  }
+  function closeOnb() {
+    onbEl.classList.remove('is-open');
+    onbEl.setAttribute('aria-hidden','true');
+  }
+  function goStep(n) {
+    onbState.step = n;
+    document.querySelectorAll('.onb__step').forEach(s => s.classList.toggle('is-current', +s.dataset.step === n));
+    onbLabel.textContent = ({1:'1 请选择主队和球星', 2:'2 领取球迷证', 3:'3 开始世界杯之旅'})[n];
+    if (n === 1) { onbPrevBtn.hidden = true; updateStep1Cta(); }
+    else if (n === 2) {
+      onbPrevBtn.hidden = false;
+      onbNextBtn.className = 'btn-primary';
+      onbNextBtn.disabled = false;
+      onbNextBtn.textContent = '下一步';
+      refreshOnbStep2Labels();
+    } else {
+      onbPrevBtn.hidden = false;
+      onbNextBtn.className = 'btn-primary';
+      onbNextBtn.disabled = false;
+      onbNextBtn.textContent = '完成';
+    }
+  }
+  function updateStep1Cta() {
+    if (!onbState.country) {
+      onbNextBtn.className = 'btn-disabled'; onbNextBtn.disabled = true; onbNextBtn.textContent = '选择主队';
+    } else if (!onbState.player) {
+      onbNextBtn.className = 'btn-disabled'; onbNextBtn.disabled = true; onbNextBtn.textContent = '选择球星';
+    } else {
+      onbNextBtn.className = 'btn-primary'; onbNextBtn.disabled = false; onbNextBtn.textContent = '下一步';
+    }
+  }
+  function refreshOnbStep2Labels() {
+    const c = onbState.country, p = onbState.player;
+    const sl = document.getElementById('onbStarLabel');
+    const cl = document.getElementById('onbCountryLabel');
+    if (sl) sl.textContent = p ? ('支持球星 · #' + p.num + ' ' + p.name) : '支持球星 · [TBD: 未选择]';
+    if (cl) cl.textContent = c ? c.name : '[TBD: 未选择主队]';
+  }
+  function renderStep1() {
+    const tabs = document.getElementById('conTabs');
+    tabs.innerHTML = '';
+    CONTINENTS.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'con-tab' + (c.key === onbState.continent ? ' is-active' : '');
+      btn.textContent = c.label;
+      btn.addEventListener('click', () => { onbState.continent = c.key; renderStep1(); });
+      tabs.appendChild(btn);
+    });
+    const list = document.getElementById('countryList');
+    list.innerHTML = '';
+    COUNTRIES.filter(c => c.continent === onbState.continent).forEach(c => {
+      const item = document.createElement('div');
+      const sel = onbState.country && onbState.country.name === c.name;
+      item.className = 'country-item' + (sel ? ' is-selected' : '');
+      item.innerHTML = '<div class="country-letter">' + c.letter + '</div><div class="country-flag"></div><div class="country-name">' + c.name + '</div>';
+      item.addEventListener('click', () => {
+        onbState.country = c; onbState.player = null;
+        renderStep1(); updateStep1Cta();
+      });
+      list.appendChild(item);
+    });
+    const players = document.getElementById('playerList');
+    players.innerHTML = '';
+    PLAYERS.forEach(p => {
+      const it = document.createElement('div');
+      const sel = onbState.player && onbState.player.name === p.name;
+      it.className = 'player-item' + (sel ? ' is-selected' : '');
+      it.innerHTML = '<div class="player-num">' + p.num + '</div><div class="player-meta"><div class="player-name">' + p.name + '</div><div class="player-pos">' + p.pos + '</div></div>';
+      it.addEventListener('click', () => { onbState.player = p; renderStep1(); updateStep1Cta(); });
+      players.appendChild(it);
+    });
+  }
+  function renderStep3() {
+    const grid = document.getElementById('gameplayGrid');
+    grid.innerHTML = '';
+    PLAY6.forEach(g => {
+      const c = document.createElement('button');
+      c.className = 'gameplay-card';
+      c.innerHTML = '<div class="gameplay-card__name">' + g.name + '</div><div class="gameplay-card__landing">→ ' + g.land + '</div><div class="gameplay-card__hint"><span class="tbd">[TBD: 玩法文案]</span></div>';
+      c.addEventListener('click', () => {
+        LS.set('hasFanId', true);
+        closeOnb();
+        go(g.go);
+        setTimeout(() => {
+          const t = document.getElementById(g.anchor);
+          const p = t && t.closest('.page');
+          if (t && p) p.scrollTop = t.offsetTop - 12;
+        }, 80);
+      });
+      grid.appendChild(c);
+    });
+  }
+
+  // Banner cycle
+  function setupBannerCycles() {
+    document.querySelectorAll('[data-banner-cycle]').forEach(zone => {
+      const set = zone.dataset.bset;
+      const items = set === 'play8' ? PLAY8 : (set === 'priv6' ? PRIV6 : []);
+      const grid = zone.querySelector('.banner-grid');
+      const pager = zone.querySelector('.banner-zone__pager');
+      let page = 0;
+      const total = Math.ceil(items.length / 4);
+      function render() {
+        grid.innerHTML = '';
+        const slice = items.slice(page * 4, page * 4 + 4);
+        while (slice.length < 4) slice.push(null);
+        slice.forEach((name, idx) => {
+          const t = document.createElement('button');
+          t.className = 'banner-tile';
+          if (name) {
+            t.innerHTML = '<div class="banner-tile__num">' + String(page * 4 + idx + 1).padStart(2,'0') + '</div><div class="banner-tile__name">' + name + '</div><div class="banner-tile__hint"><span class="tbd">[TBD: 说明]</span></div>';
+          } else {
+            t.style.visibility = 'hidden';
+          }
+          grid.appendChild(t);
+        });
+        if (pager) pager.textContent = (page + 1) + ' / ' + total;
+      }
+      render();
+      setInterval(() => { page = (page + 1) % total; render(); }, 3500);
+    });
+  }
+
+  // Onboarding events
+  onbCloseBtn.addEventListener('click', () => {
+    if (onbState.step === 3) { LS.set('hasFanId', true); closeOnb(); go('3'); }
+    else closeOnb();
+  });
+  onbPrevBtn.addEventListener('click', () => goStep(Math.max(1, onbState.step - 1)));
+  onbNextBtn.addEventListener('click', () => {
+    if (onbNextBtn.disabled) return;
+    if (onbState.step === 3) {
+      LS.set('hasFanId', true);
+      closeOnb();
+      toast('球迷证已激活,欢迎入场!');
+      refreshFanId();
+    } else {
+      if (onbState.step === 1) refreshOnbStep2Labels();
+      goStep(onbState.step + 1);
+    }
+  });
+
+  // ---------- FAN ID resident ----------
+  function refreshFanId() {
+    const c = onbState.country, p = onbState.player;
+    const sl = document.getElementById('fanidStarLabel');
+    const nm = document.getElementById('fanidName');
+    if (sl) sl.textContent = p ? ('支持球星 · #' + p.num + ' ' + p.name) : '支持球星 · [TBD: 未选择]';
+    if (nm) nm.textContent = c ? c.name : '[TBD: 未选择主队]';
+  }
+
+  // ---------- Tasks ----------
+  const TASK_DATA = {
+    daily: [
+      { icon:'语聊', desc:'语聊房 + 直播间停留时长', progress:'10/20 分钟', goal:'+5', extra:'TBD' },
+      { icon:'发帖', desc:'发布世界杯话题帖子', progress:'0/1', goal:'+8', extra:'TBD' },
+      { icon:'互动', desc:'对世界杯帖子点赞/评论', progress:'3/5', goal:'+3', extra:'TBD' }
+    ],
+    once: [
+      { icon:'认证', desc:'激活球迷证 FAN ID', progress:'已完成', goal:'+20', extra:'TBD', done:true },
+      { icon:'分享', desc:'分享 H5 给好友', progress:'0/1', goal:'+10', extra:'TBD' },
+      { icon:'入场', desc:'首次发出 1 次人浪', progress:'0/1', goal:'+10', extra:'TBD' }
+    ],
+    multi: [
+      { icon:'人浪', desc:'累计发出人浪', progress:'累计 0 次', goal:'+1/次', extra:'TBD' },
+      { icon:'教练', desc:'担任教练成功传球', progress:'累计 0 次', goal:'+1/次', extra:'TBD' },
+      { icon:'竞猜', desc:'参与焦点赛事竞猜', progress:'累计 0 次', goal:'+2/次', extra:'TBD' }
+    ]
+  };
+  function renderTasks() {
+    const mount = document.getElementById('taskMount');
+    if (!mount) return;
+    const groups = [
+      { key:'daily', title:'每日任务', hint:'每日 0:00 重置', items: TASK_DATA.daily },
+      { key:'once',  title:'一次性任务', hint:'完成后消失', items: TASK_DATA.once },
+      { key:'multi', title:'不限次任务', hint:'累计计数',  items: TASK_DATA.multi }
+    ];
+    let html = '';
+    groups.forEach(g => {
+      html += '<div class="task-group"><div class="task-group__title"><span>' + g.title + '</span><span class="task-group__hint">' + g.hint + '</span></div><div class="task-list">';
+      g.items.forEach(it => {
+        html += '<div class="task-card" onclick="WC.clickTask()">'
+          + '<div class="task-icon">' + it.icon + '</div>'
+          + '<div class="task-body"><div class="task-desc">' + it.desc + '</div><div class="task-progress">' + it.progress + '</div></div>'
+          + '<div class="task-rewards">'
+          +   '<div class="task-reward">GOAL ' + it.goal + '</div>'
+          +   '<div class="task-reward"><span class="tbd">[TBD: HT 币/RMB]</span></div>'
+          +   '<div class="task-status ' + (it.done?'done':'pending') + '">' + (it.done?'已完成':'待完成') + '</div>'
+          + '</div></div>';
+      });
+      html += '</div></div>';
+    });
+    mount.innerHTML = html;
+  }
+  let _taskIdx = 0;
+  function clickTask() {
+    toast('跳转:' + TASK_TARGETS[_taskIdx]);
+    _taskIdx = (_taskIdx + 1) % TASK_TARGETS.length;
+  }
+
+  // ---------- Wave (Tab 2) ----------
+  let _wavePage = 0;
+  function setupWave() {
+    const banner = document.getElementById('waveBanner');
+    const country = document.getElementById('waveBannerCountry');
+    const pager = document.getElementById('waveBannerPager');
+    const help = document.getElementById('waveHelp');
+    const icon = document.getElementById('waveIcon');
+    if (!banner) return;
+    function render() {
+      country.textContent = '[TBD: 昨日 TOP ' + (_wavePage+1) + ' · 国家]';
+      pager.textContent = '轮播 ' + (_wavePage+1) + ' / 3';
+    }
+    render();
+    setInterval(() => { _wavePage = (_wavePage + 1) % 3; render(); }, 3500);
+    banner.addEventListener('click', () => WC.modal({ title:'跳转', html:'跳商业化-世界杯-自定义页<br><span class="tbd">[TBD: 落地内容]</span>' }));
+    if (help) help.addEventListener('click', () => toast('[TBD: 看台人浪玩法介绍]'));
+    if (icon) icon.addEventListener('click', openWaveConfirm);
+  }
+  function openWaveConfirm() {
+    WC.modal({
+      title:'购买人浪',
+      html: '<div style="display:flex; flex-direction:column; gap:12px; align-items:center;">'
+        + '<div style="display:flex; gap:10px; align-items:center;">'
+        +   '<div style="width:54px; height:54px; border-radius:50%; background:var(--g1); border:var(--hairline); display:grid; place-items:center; font-size:11px; color:var(--g4);">头像</div>'
+        +   '<div style="width:54px; height:54px; border-radius:6px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 6px, var(--g2) 6px, var(--g2) 12px); border:var(--hairline); display:grid; place-items:center; font-size:11px; color:var(--g5);">球衣</div>'
+        + '</div>'
+        + '<div style="display:flex; align-items:center; gap:6px; font-size:13px;">'
+        +   '<span style="width:20px; height:20px; border-radius:50%; background:var(--g7); color:var(--g0); display:grid; place-items:center; font-size:11px; font-weight:600;">¢</span>'
+        +   '<span class="mono" style="font-weight:600;">HT Coins</span>'
+        +   '<span class="tbd">[TBD: price_default_wave]</span>'
+        + '</div>'
+        + '<button class="btn-primary" style="width:100%;" onclick="WC.closeModal(); WC.toast(\'人浪已发出 [TBD: 应援动效]\');">确认</button>'
+        + '</div>'
+    });
+  }
+
+  // ---------- Coach 9-grid ----------
+  const coach = { successCount:0, text:'点击九宫格调度球队 · 每次扣 1 GOAL', goal: 128, earned: 0 };
+  function buildCoachGrid() {
+    const grid = document.getElementById('coachGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    for (let i = 0; i < 9; i++) {
+      const c = document.createElement('button');
+      c.className = 'coach-cell';
+      c.addEventListener('click', () => coachClick(i));
+      grid.appendChild(c);
+    }
+  }
+  function refreshCoach() {
+    const fb = document.getElementById('coachText');
+    if (fb) fb.textContent = coach.text;
+    for (let i = 0; i < 3; i++) {
+      const b = document.getElementById('coachBall' + i);
+      if (b) b.classList.toggle('lit', i < coach.successCount);
+    }
+    const g = document.getElementById('coachGoal');
+    if (g) g.textContent = coach.goal;
+  }
+  function coachClick() {
+    if (coach.goal <= 0) { toast('GOAL 不足'); return; }
+    coach.goal -= 1;
+    const r = Math.random();
+    let pool, prefix;
+    if (r < 0.4) { pool = COACH_FAIL; prefix = '失败 · '; }
+    else if (r < 0.85) { pool = COACH_SUCCESS; prefix = '成功 · '; }
+    else { pool = COACH_JACKPOT; prefix = '抽中 · '; }
+    coach.text = prefix + pool[Math.floor(Math.random() * pool.length)];
+    if (prefix !== '失败 · ') {
+      coach.successCount += 1;
+      if (coach.successCount >= 3) {
+        coach.successCount = 0;
+        coach.earned += 1;
+        setTimeout(showCountryReward, 400);
+      }
+    }
+    refreshCoach();
+  }
+  function showCountryReward() {
+    WC.modal({
+      title:'获得国家卡片',
+      html: '<div style="text-align:center;">'
+        + '<div style="width:140px; height:90px; margin:6px auto 12px; border-radius:8px; border:var(--hairline); background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 8px, var(--g2) 8px, var(--g2) 16px);"></div>'
+        + '<div style="font-weight:600; margin-bottom:8px;">[TBD: 国家 ' + coach.earned + ']</div>'
+        + '<div style="font-size:12px; color:var(--g5); line-height:1.6;"><span class="tbd">[TBD: 文化]</span> · <span class="tbd">[TBD: 历史]</span> · <span class="tbd">[TBD: 球星]</span></div>'
+        + '<button class="btn-primary" style="margin-top:14px; width:100%;" onclick="WC.closeModal(); WC.openGlobe();">查看环球世界</button>'
+        + '</div>'
+    });
+  }
+
+  // ---------- Globe (48 stamps) ----------
+  const globeState = { owned:new Set(), unlocked:new Set() };
+  function openGlobe() {
+    if (coach.earned > globeState.owned.size) {
+      let i = 0;
+      while (globeState.owned.has(i) && i < 48) i++;
+      if (i < 48) globeState.owned.add(i);
+    }
+    let html = '<div class="globe-wrap">';
+    const zones = [{c:'z1',l:'区域 1 / 3'},{c:'z2',l:'区域 2 / 3'},{c:'z3',l:'区域 3 / 3'}];
+    for (let z = 0; z < 3; z++) {
+      const zoneOwned = [...Array(16).keys()].filter(i => globeState.owned.has(z*16+i)).length;
+      html += '<div class="globe-zone ' + zones[z].c + '"><div class="globe-zone__label"><span>' + zones[z].l + '</span><span class="mono">' + zoneOwned + ' / 16</span></div><div class="globe-row">';
+      for (let i = 0; i < 16; i++) {
+        const idx = z * 16 + i;
+        const isLast = (i === 15);
+        const isOwned = globeState.owned.has(idx);
+        let cls = 'globe-stamp', content = '?';
+        if (isOwned) { cls += ' owned'; content = ''; }
+        else if (isLast) { cls += ' locked'; content = '🔒'; }
+        html += '<button class="' + cls + '" data-stamp="' + idx + '" data-zone="' + z + '">' + content + '</button>';
+      }
+      html += '</div></div>';
+    }
+    html += '<div class="globe-foot"><span>已收集</span><span class="globe-foot__count">' + globeState.owned.size + ' / 48</span><span>商城权益 <span class="tbd">[TBD: 0-3]</span></span></div>';
+    html += '<div style="font-size:11px; color:var(--g4); padding:10px 4px; line-height:1.5;">备注:<span class="tbd">[TBD: 状态规则]</span> · <span class="tbd">[TBD: 重复邮票转化]</span></div>';
+    html += '</div>';
+    WC.sheet({ title:'环球世界', html });
+    setTimeout(() => {
+      document.querySelectorAll('#sheetBody [data-stamp]').forEach(b => {
+        b.addEventListener('click', () => {
+          const idx = +b.dataset.stamp, zone = +b.dataset.zone;
+          if (b.classList.contains('owned')) {
+            WC.modal({ title:'[TBD: 国家 ' + (idx+1) + ']', html:'<div style="height:80px; border-radius:6px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 8px, var(--g2) 8px, var(--g2) 16px); border:var(--hairline); margin-bottom:10px;"></div><span class="tbd">[TBD: 文化/历史/球星 · 国家卡片详情]</span>' });
+          } else if (b.classList.contains('locked')) {
+            const zoneOwned = [...Array(16).keys()].filter(i => globeState.owned.has(zone*16+i)).length;
+            if (zoneOwned >= 16 && !globeState.unlocked.has(zone)) {
+              globeState.unlocked.add(zone);
+              WC.modal({ title:'权益解锁', html:'<div style="text-align:center;"><div style="font-size:32px; margin:10px 0;">🎁</div><div style="font-weight:600; margin-bottom:8px;">恭喜解锁兑换商城限定礼物权益 1 次</div><div style="display:flex; gap:8px; margin-top:14px;"><button class="btn-secondary" style="flex:1;" onclick="WC.closeModal(); WC.openGlobe();">继续收集</button><button class="btn-primary" style="flex:1;" onclick="WC.closeModal(); WC.go(\'5\');">前往领取</button></div></div>' });
+            } else {
+              WC.toast('集齐该区域 16 个球形国旗,将获得兑换商城权益资格');
+            }
+          } else {
+            WC.toast('通过我是教练抽奖获得球形国旗');
+          }
+        });
+      });
+    }, 100);
+  }
+
+  // ---------- Ranking ----------
+  const rankState = { dim:'personal', period:'today' };
+  function refreshRank() {
+    const dimMap = { personal:'个人', country:'国家', star:'球星' };
+    const perMap = { today:'今日', stage:'赛事阶段', history:'历史' };
+    const dl = document.getElementById('rankDimLabel');
+    const pl = document.getElementById('rankPeriodLabel');
+    if (dl) dl.textContent = dimMap[rankState.dim];
+    if (pl) pl.textContent = perMap[rankState.period];
+    const list = document.getElementById('rankList');
+    if (!list) return;
+    list.innerHTML = '';
+    const goals = [1320, 1180, 1040, 920, 860, 780, 720, 680, 640, 600, 560, 520, 480];
+    for (let i = 0; i < 13; i++) {
+      const r = i + 4;
+      const row = document.createElement('div');
+      row.className = 'rank-row';
+      const isCountry = rankState.dim === 'country';
+      const isStar = rankState.dim === 'star';
+      row.innerHTML = '<div class="rank-row__rank">' + r + '</div>'
+        + '<div class="rank-row__avatar' + (isCountry?' flag':'') + '" onclick="event.stopPropagation(); ' + (isCountry?"WC.modal({title:'[TBD: 国家卡片]',html:'<span class=&quot;tbd&quot;>[TBD: 国家详情]</span>'})":(isStar?"WC.openPlayerCard()":"")) + '"></div>'
+        + '<div class="rank-row__name"><span class="tbd">[TBD: ' + (isCountry?'国家':isStar?'球星':'昵称') + ' ' + r + ']</span></div>'
+        + '<div class="rank-row__goal">' + goals[i] + '</div>';
+      list.appendChild(row);
+    }
+  }
+  function setRankDim(d) { rankState.dim = d; document.querySelectorAll('[data-rdim]').forEach(b => b.classList.toggle('is-active', b.dataset.rdim === d)); refreshRank(); }
+  function setRankPeriod(p) { rankState.period = p; document.querySelectorAll('[data-rperiod]').forEach(b => b.classList.toggle('is-active', b.dataset.rperiod === p)); refreshRank(); }
+  function openPlayerCard() {
+    WC.modal({
+      title:'球员卡片',
+      html: '<div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">'
+        +   '<div style="width:48px; height:48px; border:1px solid var(--g3); border-radius:6px; display:grid; place-items:center; font-family:ui-monospace,Menlo,monospace; font-weight:600;">10</div>'
+        +   '<div><div style="font-weight:600;"><span class="tbd">[TBD: 球员姓名]</span></div><div style="font-size:11px; color:var(--g5); margin-top:2px;"><span class="tbd">[TBD: 简介]</span></div></div>'
+        + '</div>'
+        + '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">'
+        +   '<div style="background:var(--g1); border-radius:6px; padding:8px;"><div style="color:var(--g5); font-size:10px;">荣誉</div><div class="mono"><span class="tbd">[TBD]</span></div></div>'
+        +   '<div style="background:var(--g1); border-radius:6px; padding:8px;"><div style="color:var(--g5); font-size:10px;">GOAL</div><div class="mono"><span class="tbd">[TBD]</span></div></div>'
+        +   '<div style="background:var(--g1); border-radius:6px; padding:8px;"><div style="color:var(--g5); font-size:10px;">进球数</div><div class="mono"><span class="tbd">[TBD]</span></div></div>'
+        +   '<div style="background:var(--g1); border-radius:6px; padding:8px;"><div style="color:var(--g5); font-size:10px;">进球率</div><div class="mono"><span class="tbd">[TBD]</span></div></div>'
+        + '</div>'
+    });
+  }
+
+  // ---------- Public API extensions ----------
+  WC.openOnb = openOnb;
+  WC.closeOnb = closeOnb;
+  WC.openGlobe = openGlobe;
+  WC.openWaveConfirm = openWaveConfirm;
+  WC.clickTask = clickTask;
+  WC.setRankDim = setRankDim;
+  WC.setRankPeriod = setRankPeriod;
+  WC.openPlayerCard = openPlayerCard;
+  WC.resetOnboarding = function() {
+    LS.del('hasFanId');
+    onbState.country = null; onbState.player = null; onbState.continent = 'eu';
+    coach.successCount = 0; coach.earned = 0; coach.goal = 128; coach.text = '点击九宫格调度球队 · 每次扣 1 GOAL';
+    globeState.owned.clear(); globeState.unlocked.clear();
+    refreshFanId(); refreshCoach();
+    toast('已重置 · 刷新或预览即可重启 Onboarding');
+  };
+
+  // ---------- Boot ----------
+  setupBannerCycles();
+  buildCoachGrid();
+  refreshCoach();
+  refreshRank();
+  refreshFanId();
+  renderTasks();
+  setupWave();
+
+  // ============================================================
+  // STAGE 3 — Tab 3 (Pitch) + Tab 5 (Store)
+  // ============================================================
+
+  // ---------- Goal-shooting (penalty kick) ----------
+  const pkState = { remain: 6, props: 12, pointer: 50, swinging: true, dontAsk: false };
+  const GIFTS = [
+    { name:'小鲜花', price:'[TBD]', rule:'1 礼物 = 1 次射门' },
+    { name:'幸运馆', price:'[TBD]', rule:'1 礼物 = 5 次射门' },
+    { name:'大动画',  price:'[TBD]', rule:'1 礼物 = 20 次射门' }
+  ];
+  const EX_LIST = [
+    { name:'头像挂件 · 7 天', price:'[TBD]', limit:'0/3', icon:'头饰' },
+    { name:'聊天气泡 · 30 天', price:'[TBD]', limit:'0/2', icon:'气泡' },
+    { name:'入场特效 · 1 个',  price:'[TBD]', limit:'1/2', icon:'特效' }
+  ];
+  function renderGifts() {
+    const m = document.getElementById('giftStrip');
+    if (!m) return;
+    m.innerHTML = GIFTS.map(g =>
+      '<div class="gift-card"><div class="gift-card__icon">img</div><div class="gift-card__name">' + g.name + '</div><div class="gift-card__price"><span class="tbd">' + g.price + '</span></div><div class="gift-card__rule"><span class="tbd">[TBD: ' + g.rule + ']</span></div></div>'
+    ).join('');
+    document.getElementById('pkRemain').textContent = pkState.remain;
+    document.getElementById('pkProps').textContent = pkState.props;
+  }
+  function renderExchange() {
+    const m = document.getElementById('exchangeList');
+    if (!m) return;
+    m.innerHTML = EX_LIST.map((it, i) =>
+      '<div class="ex-row"><div class="ex-row__icon"></div>'
+      + '<div class="ex-row__body"><div class="ex-row__name">' + it.name + '</div>'
+      + '<div class="ex-row__meta">价格 <span class="tbd">' + it.price + '</span> · 今日兑换 <span class="tbd">[TBD: ' + it.limit + ']</span></div></div>'
+      + '<button class="ex-row__btn" onclick="WC.exClick(' + i + ')">兑换</button></div>'
+    ).join('');
+  }
+  function pkHelp() {
+    WC.modal({ title:'概率公示', html:'<div style="font-size:12px; color:var(--g6); line-height:1.7;">力度 vs 进球成功率:<br><span class="tbd">[TBD: 力度-成功率对照表]</span><br>· 低力度: 安全区<br>· 中力度: 平衡区<br>· 高力度: 冲击区</div>' });
+  }
+  function pkShoot(n) {
+    if (pkState.remain < n) {
+      toast('剩余次数不足,去直播间 / 语聊房送礼获得射门次数吧');
+      return;
+    }
+    pkState.remain -= n;
+    if (n === 1) {
+      const ok = Math.random() < 0.5;
+      WC.modal({
+        title: ok ? '恭喜进球' : '很遗憾',
+        html: ok
+          ? '<div style="text-align:center;"><div style="font-size:32px; margin:8px 0;">⚽</div><div style="font-weight:600;">恭喜,进球成功!</div><div style="font-size:12px; color:var(--g5); margin-top:6px;">获得 <b>道具 × 1</b></div></div>'
+          : '<div style="text-align:center;"><div style="font-size:32px; margin:8px 0; opacity:.5;">⚽</div><div style="font-weight:600;">很遗憾,再试一次吧</div></div>'
+      });
+      if (ok) pkState.props += 1;
+    } else {
+      let s = 0;
+      for (let i = 0; i < 10; i++) if (Math.random() < 0.5) s++;
+      pkState.props += s;
+      WC.modal({
+        title: '10 连击 结果',
+        html: '<div style="text-align:center;"><div style="font-size:13px; margin-bottom:8px;">本轮 10 次射门</div><div style="display:flex; gap:8px; justify-content:center;"><div style="background:var(--g1); padding:10px 16px; border-radius:6px;"><div style="font-size:10px; color:var(--g5);">成功</div><div style="font-family:ui-monospace,Menlo,monospace; font-size:20px; font-weight:600;">' + s + '</div></div><div style="background:var(--g1); padding:10px 16px; border-radius:6px;"><div style="font-size:10px; color:var(--g5);">失败</div><div style="font-family:ui-monospace,Menlo,monospace; font-size:20px; font-weight:600;">' + (10-s) + '</div></div></div><div style="font-size:12px; color:var(--g5); margin-top:10px;">获得 <b>道具 × ' + s + '</b></div></div>'
+      });
+    }
+    renderGifts();
+    renderExchange();
+  }
+  function exClick(i) {
+    const it = EX_LIST[i];
+    const limitParts = it.limit.split('/');
+    if (+limitParts[0] >= +limitParts[1]) { toast('今日已达兑换上限,明天再来!'); return; }
+    if (pkState.props < 5) { toast('数量不足,快去射门获得吧!'); return; }
+    WC.modal({
+      title: '确认兑换',
+      html: '<div style="text-align:center;"><div>兑换 <b>' + it.name + '</b>?</div><div style="font-size:11px; color:var(--g5); margin:8px 0;">消耗道具 <span class="tbd">' + it.price + '</span></div><div style="display:flex; gap:8px; margin-top:14px;"><button class="btn-secondary" style="flex:1;" onclick="WC.closeModal();">取消</button><button class="btn-primary" style="flex:1;" onclick="WC.exConfirm(' + i + ')">确定</button></div></div>'
+    });
+  }
+  function exConfirm(i) {
+    const it = EX_LIST[i];
+    pkState.props = Math.max(0, pkState.props - 5);
+    const parts = it.limit.split('/'); parts[0] = +parts[0] + 1; it.limit = parts.join('/');
+    WC.closeModal();
+    setTimeout(() => WC.modal({
+      title:'恭喜获得!',
+      html: '<div style="text-align:center;"><div style="font-size:32px; margin:8px 0;">🎁</div><div style="font-weight:600;">' + it.name + '</div><div style="font-size:12px; color:var(--g5); margin:8px 0;">奖励已发放至背包</div><button class="btn-primary" style="width:100%; margin-top:8px;" onclick="WC.closeModal();">开心收下</button></div>'
+    }), 200);
+    renderGifts(); renderExchange();
+  }
+
+  // ---------- Sub-page switcher (Tab 3 within m3-goal) ----------
+  function subGo(k) {
+    document.querySelectorAll('#m3-goal .subpage').forEach(p => p.classList.toggle('is-active', p.dataset.sub === k));
+    if (k === 'rank') renderActivityRank();
+  }
+
+  // ---------- Activity ranking sub-page ----------
+  const ARK_STAGES = [
+    { key:'g1', label:'小组开赛', range:'6.9 11:00 – 6.19 11:00', past:true },
+    { key:'g2', label:'小组决战', range:'6.19 – 6.27', past:true },
+    { key:'r32', label:'32 强', range:'6.27 – 7.3', past:false, current:true },
+    { key:'r8',  label:'8 强', range:'7.3 – 7.11', past:false },
+    { key:'fin', label:'决赛', range:'7.11 – 7.19', past:false }
+  ];
+  const arkState = { main:'contrib', sub:'stage', stage:'r32', page:0 };
+  function renderActivityRank() {
+    const stageRow = document.getElementById('rkStageRow');
+    if (stageRow) {
+      stageRow.innerHTML = '';
+      stageRow.style.display = (arkState.main === 'contrib' && arkState.sub === 'stage') ? '' : 'none';
+      ARK_STAGES.forEach(s => {
+        const b = document.createElement('button');
+        const locked = !s.past && !s.current;
+        b.className = 'rk-stage' + (s.key === arkState.stage ? ' is-active' : '') + (locked ? ' is-locked' : '');
+        b.innerHTML = s.label + ' <span style="opacity:.6;">' + s.range + '</span>';
+        b.addEventListener('click', () => {
+          if (locked) { toast('敬请期待'); return; }
+          arkState.stage = s.key; arkState.page = 0; renderActivityRank();
+        });
+        stageRow.appendChild(b);
+      });
+    }
+    const subTabs = document.getElementById('rkSubTabs');
+    if (subTabs) subTabs.style.display = arkState.main === 'contrib' ? '' : 'none';
+
+    // countdown
+    const cd = document.getElementById('rkCountdown');
+    if (cd) {
+      const farMs = 5 * 86400 * 1000 + 4 * 3600 * 1000;
+      const nearMs = 23 * 3600 * 1000 + 12 * 60 * 1000 + 47 * 1000;
+      const sample = arkState.stage === 'fin' ? farMs : nearMs;
+      if (sample >= 48 * 3600 * 1000) cd.textContent = Math.floor(sample / 86400 / 1000) + ' 天';
+      else {
+        const h = Math.floor(sample / 3600000), m = Math.floor((sample % 3600000) / 60000), s = Math.floor((sample % 60000) / 1000);
+        cd.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+      }
+    }
+    // top 3
+    const t3 = document.getElementById('rkTop3');
+    if (t3) {
+      const ranks = [2, 1, 3];
+      t3.innerHTML = ranks.map(r =>
+        '<div class="rk-top rk-top--' + r + '"><div class="rk-top__rank">No.' + r + '</div><div class="rk-top__avatar"></div><div class="rk-top__name"><span class="tbd">[TBD: 昵称' + r + ']</span></div><div class="rk-top__goal">' + (1500 - r * 120) + '</div></div>'
+      ).join('');
+    }
+    // page list 4-13
+    const list = document.getElementById('rkBoardList');
+    if (list) {
+      list.innerHTML = '';
+      const start = 4 + arkState.page * 10;
+      const goals = [880, 820, 770, 720, 680, 640, 610, 580, 560, 540];
+      for (let i = 0; i < 10; i++) {
+        const r = start + i;
+        const isCountry = arkState.main === 'popular';
+        const row = document.createElement('div');
+        row.className = 'rk-row';
+        row.innerHTML = '<div class="rk-row__rank">' + r + '</div>'
+          + '<div class="rk-row__avatar" onclick="WC.rankAvatarClick(' + r + ')"></div>'
+          + '<div class="rk-row__name"><span class="tbd">[TBD: ' + (isCountry ? '国家' : '昵称') + ' ' + r + ']</span></div>'
+          + '<div class="rk-row__goal">' + goals[i] + '</div>'
+          + '<button class="rk-row__follow" onclick="this.classList.toggle(\'is-followed\'); this.textContent=this.classList.contains(\'is-followed\')?\'已关注\':\'关注\';">关注</button>';
+        list.appendChild(row);
+      }
+      const lbl = document.getElementById('rkPagerLabel');
+      if (lbl) lbl.textContent = (start) + '-' + (start + 9) + ' 名 / 共 50';
+    }
+    // self
+    const self = document.getElementById('rkSelfRank');
+    if (self) self.textContent = 23;
+    document.getElementById('rkRewardsTitle').textContent = '奖励 · ' + (arkState.main === 'popular' ? '人气总榜 TOP 5' : (arkState.sub === 'total' ? '贡献总榜 TOP 5' : '贡献赛段 TOP 5'));
+  }
+  function rkPage(d) {
+    arkState.page = Math.max(0, Math.min(4, arkState.page + d));
+    renderActivityRank();
+  }
+  function rankAvatarClick(r) {
+    const inRoom = Math.random() < 0.5;
+    toast(inRoom ? '跳房间 · [TBD: 语聊房/直播间路由]' : '跳 profile · [TBD: 个人页路由]');
+  }
+
+  // wire main + sub tabs
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-rkmain]');
+    if (t) {
+      arkState.main = t.dataset.rkmain;
+      document.querySelectorAll('[data-rkmain]').forEach(b => b.classList.toggle('is-active', b.dataset.rkmain === arkState.main));
+      renderActivityRank();
+    }
+    const s = e.target.closest('[data-rksub]');
+    if (s) {
+      arkState.sub = s.dataset.rksub;
+      document.querySelectorAll('[data-rksub]').forEach(b => b.classList.toggle('is-active', b.dataset.rksub === arkState.sub));
+      renderActivityRank();
+    }
+  });
+
+  // ---------- Focus betting (Tab 3 m3-bet) ----------
+  const PK_MATCHES = [
+    { home:'[TBD: 国家 C]', away:'[TBD: 国家 D]', codeH:'ARG', codeA:'BRA', date:'10/12 · 03:00', odds:[42, 26, 32], total:'128.6K', enabled:true, picked:null },
+    { home:'[TBD: 国家 E]', away:'[TBD: 国家 F]', codeH:'GER', codeA:'FRA', date:'10/13 · 03:00', odds:[35, 28, 37], total:'92.4K',  enabled:true, picked:null },
+    { home:'[TBD: 国家 G]', away:'[TBD: 国家 H]', codeH:'ESP', codeA:'JPN', date:'10/14 · 21:00', odds:[58, 22, 20], total:'66.0K',  enabled:false, picked:null }
+  ];
+  const focusState = { aBet:false, bBet:false, dontAsk:false };
+  function renderPkCards() {
+    const track = document.getElementById('pkCardsTrack');
+    const dots = document.getElementById('pkCardsDots');
+    if (!track) return;
+    track.innerHTML = '';
+    PK_MATCHES.forEach((m, i) => {
+      const card = document.createElement('div');
+      card.className = 'pk-card';
+      const oddBtns = ['主胜','平局','客胜'].map((lbl, j) => {
+        const active = m.picked === j;
+        const disabled = !m.enabled;
+        let cls = 'odd-btn';
+        if (disabled) cls += ' is-chat';
+        else if (m.picked !== null && !active) cls += ' is-disabled';
+        else if (active) cls += ' is-active';
+        if (disabled) return '<button class="' + cls + '" onclick="WC.go(\'4\')">去聊聊</button>';
+        return '<button class="' + cls + '" onclick="WC.pkBet(' + i + ',' + j + ')">' + lbl + '<small>' + m.odds[j] + '%</small></button>';
+      }).join('');
+      card.innerHTML =
+        '<div class="pk-card__head"><span>' + m.date + '</span><span>' + m.codeH + ' VS ' + m.codeA + '</span></div>'
+        + '<div class="pk-card__teams">'
+        +   '<div class="pk-card__team"><div class="pk-card__flag"></div><div class="pk-card__name">' + m.home + '</div><div class="pk-card__code">' + m.codeH + '</div></div>'
+        +   '<div class="pk-card__vs">VS</div>'
+        +   '<div class="pk-card__team"><div class="pk-card__flag"></div><div class="pk-card__name">' + m.away + '</div><div class="pk-card__code">' + m.codeA + '</div></div>'
+        + '</div>'
+        + '<div class="pk-card__odds">' + oddBtns + '</div>'
+        + '<div class="pk-card__foot"><span>' + m.total + ' 人已参与</span><button onclick="WC.openBetRecord()">记录</button></div>';
+      track.appendChild(card);
+    });
+    dots.innerHTML = PK_MATCHES.map((_, i) => '<i class="' + (i === 0 ? 'is-active' : '') + '"></i>').join('');
+    track.addEventListener('scroll', () => {
+      const idx = Math.round(track.scrollLeft / track.clientWidth);
+      [...dots.children].forEach((d, i) => d.classList.toggle('is-active', i === idx));
+    });
+  }
+  function pkBet(i, j) {
+    const m = PK_MATCHES[i];
+    if (!m.enabled || m.picked !== null) return;
+    function commit() {
+      m.picked = j;
+      renderPkCards();
+      toast('竞猜已提交 · 扣 1 次');
+    }
+    if (focusState.dontAsk) { commit(); return; }
+    const labels = ['主胜','平局','客胜'];
+    WC.modal({
+      title:'确认竞猜吗',
+      html: '<div style="text-align:center;"><div style="font-size:32px; margin:8px 0;">⚽</div>'
+        + '<div>选择 <b>' + labels[j] + '</b> · ' + m.codeH + ' VS ' + m.codeA + '</div>'
+        + '<div style="font-size:11px; color:var(--g5); margin:8px 0;">消耗竞猜次数 <span class="tbd">[TBD]</span></div>'
+        + '<label style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--g5); justify-content:center; margin: 8px 0;"><input type="checkbox" id="pkDontAsk"> 不再提醒</label>'
+        + '<div style="display:flex; gap:8px; margin-top:8px;"><button class="btn-secondary" style="flex:1;" onclick="WC.closeModal();">取消</button><button class="btn-primary" style="flex:1;" onclick="WC.pkBetConfirm(' + i + ',' + j + ')">确定</button></div></div>'
+    });
+  }
+  function pkBetConfirm(i, j) {
+    const cb = document.getElementById('pkDontAsk');
+    if (cb && cb.checked) focusState.dontAsk = true;
+    PK_MATCHES[i].picked = j;
+    WC.closeModal();
+    renderPkCards();
+    toast('竞猜已提交 · 扣 1 次');
+  }
+  function focusBet(side) {
+    if (focusState.aBet || focusState.bBet) return;
+    WC.modal({
+      title:'确认助力',
+      html: '<div style="text-align:center;"><div style="font-size:32px; margin:8px 0;">⚡</div><div>助力 <b>国家 ' + side + '</b></div><div style="font-size:11px; color:var(--g5); margin:8px 0;">消耗竞猜次数 <span class="tbd">[TBD]</span></div><div style="display:flex; gap:8px; margin-top:8px;"><button class="btn-secondary" style="flex:1;" onclick="WC.closeModal();">取消</button><button class="btn-primary" style="flex:1;" onclick="WC.focusBetConfirm(\'' + side + '\')">确定</button></div></div>'
+    });
+  }
+  function focusBetConfirm(side) {
+    if (side === 'A') focusState.aBet = true; else focusState.bBet = true;
+    WC.closeModal();
+    toast('助力成功 · 扣 1 次');
+  }
+  function openBetRecord() {
+    WC.modal({
+      title:'我的竞猜记录',
+      html:'<div style="text-align:center; padding:20px 0; color:var(--g5); font-size:12px;">暂无记录</div><div style="font-size:11px; color:var(--g4); margin-top:6px; line-height:1.5;">表头: 时间 · 选择 · 结果 · 奖励<br><span class="tbd">[TBD: 记录字段填充]</span></div>'
+    });
+  }
+  function openMoreEvents() {
+    const followed = new Set();
+    let html = '<div style="font-size:12px; color:var(--g5); margin-bottom:10px;">关注感兴趣的赛事,即可参与主页竞猜。</div><div class="more-events-list">';
+    for (let i = 0; i < 12; i++) {
+      html += '<div class="me-row"><div class="me-row__flag"></div><div><div class="me-row__title">[TBD: 赛事 ' + (i+1) + ']</div><div class="me-row__time">10/' + (15+i) + ' · ' + ((20+i)%24).toString().padStart(2,'0') + ':00</div></div><button class="me-row__star" data-mei="' + i + '">☆</button></div>';
+    }
+    html += '</div>';
+    WC.sheet({ title:'更多赛事', html });
+    setTimeout(() => {
+      document.querySelectorAll('#sheetBody .me-row__star').forEach(b => {
+        b.addEventListener('click', () => {
+          const i = b.dataset.mei;
+          if (followed.has(i)) { followed.delete(i); b.classList.remove('is-followed'); b.textContent = '☆'; }
+          else if (followed.size >= 5) { toast('已达关注上限 · [TBD: 上限数值]'); }
+          else { followed.add(i); b.classList.add('is-followed'); b.textContent = '★'; }
+        });
+      });
+    }, 100);
+  }
+  function simulateBetResult() {
+    const win = Math.random() < 0.5;
+    WC.modal({
+      title: win ? '恭喜中奖!' : '很遗憾',
+      html: win
+        ? '<div style="text-align:center;"><div style="font-size:32px; margin:8px 0;">🏆</div><div style="font-weight:600;"><span class="tbd">[TBD: 成功文案]</span></div><div style="font-size:12px; color:var(--g5); margin:8px 0;">获得奖励: <span class="tbd">[TBD: 中奖奖励内容]</span></div></div>'
+        : '<div style="text-align:center;"><div style="font-size:32px; margin:8px 0; opacity:.5;">⚽</div><div style="font-weight:600;"><span class="tbd">[TBD: 失败文案]</span></div></div>'
+    });
+  }
+
+  // ---------- Tab 5 store ----------
+  function openSku(kind) {
+    WC.sheet({
+      title: kind === 'year' ? '年卡 SKU 选择' : '终身卡 SKU 选择',
+      html: '<div style="display:flex; flex-direction:column; gap:8px;"><div style="padding:12px; background:var(--g1); border-radius:6px;"><b>SKU 1</b> · <span class="tbd">[TBD]</span></div><div style="padding:12px; background:var(--g1); border-radius:6px;"><b>SKU 2</b> · <span class="tbd">[TBD]</span></div><div style="padding:12px; background:var(--g1); border-radius:6px;"><b>SKU 3</b> · <span class="tbd">[TBD]</span></div><button class="btn-primary" style="margin-top:6px;" onclick="WC.toast(\'跳支付·[TBD]\')">去支付</button></div>'
+    });
+  }
+  function openCollection() {
+    const cats = [
+      { name:'德国队 · 套系', items:['黑鹰金奖','枪骑兵','黑森蛋糕'] },
+      { name:'巴西队 · 套系', items:['桑巴舒者','狂欢节','恫之鼓'] },
+      { name:'日本队 · 套系', items:['樱花营','本井森三郎','寿司拼盘'] }
+    ];
+    let html = '';
+    cats.forEach(c => {
+      html += '<div class="coll-cat-title">' + c.name + '</div><div class="coll-grid">';
+      c.items.forEach(it => {
+        html += '<div class="coll-item"><div class="coll-item__icon"></div><div class="coll-item__name">' + it + '</div><div class="coll-item__price">GOAL <span class="tbd">[TBD]</span></div></div>';
+      });
+      html += '</div>';
+    });
+    WC.sheet({ title:'球队礼物套系', html });
+  }
+
+  // ---------- Boot stage 3 ----------
+  renderGifts();
+  renderExchange();
+  renderPkCards();
+  document.getElementById('pkHelp').addEventListener('click', pkHelp);
+
+  // expose
+  Object.assign(WC, {
+    pkShoot, exClick, exConfirm,
+    subGo, rkPage, rankAvatarClick,
+    pkBet, pkBetConfirm, focusBet, focusBetConfirm,
+    openBetRecord, openMoreEvents, simulateBetResult,
+    openSku, openCollection
+  });
+
+  // ============================================================
+  // STAGE 4 — Tab 4 (Media) + Global Polish
+  // ============================================================
+
+  // ---------- Live program list ----------
+  const LIVES = [
+    { name:'Ana M.',     country:'🇦🇷 ARG', topic:'与Messi聊下月决赛!', time:'现在', state:'live',     followed:false, booked:false, inRoom:true  },
+    { name:'Hiro T.',    country:'🇯🇵 JPN', topic:'梦中门将: J联赛青训上升',  time:'现在', state:'live',     followed:true,  booked:false, inRoom:true  },
+    { name:'Lukas W.',   country:'🇩🇪 GER', topic:'拜仁德魔术师的主场吹咨',     time:'19:30', state:'upcoming', followed:false, booked:false, inRoom:false },
+    { name:'Sofia R.',   country:'🇪🇸 ESP', topic:'走路去你家看世界杯',     time:'21:00', state:'upcoming', followed:false, booked:false, inRoom:false },
+    { name:'Diego F.',   country:'🇧🇷 BRA', topic:'桑巴与几内亚问颗决不兑质!',     time:'15:00 (已结束)', state:'ended', followed:false, booked:false, inRoom:false }
+  ];
+  function sortLives() {
+    return [...LIVES].sort((a, b) => {
+      const order = { live:0, upcoming:1, ended:2 };
+      if (order[a.state] !== order[b.state]) return order[a.state] - order[b.state];
+      return a.time.localeCompare(b.time);
+    });
+  }
+  function renderLives() {
+    const m = document.getElementById('liveList');
+    if (!m) return;
+    m.innerHTML = '';
+    sortLives().forEach((l, i) => {
+      const realIdx = LIVES.indexOf(l);
+      const row = document.createElement('div');
+      row.className = 'live-row';
+      let stateBtn = '';
+      if (l.state === 'live') stateBtn = '<button class="live-btn is-live" onclick="WC.toast(\'跳房间·' + l.name + '\')">开播中</button>';
+      else if (l.state === 'ended') stateBtn = '<button class="live-btn is-ended" disabled>已结束</button>';
+      else stateBtn = '<button class="live-btn ' + (l.booked?'is-booked':'') + '" onclick="WC.bookLive(' + realIdx + ')">' + (l.booked?'已预约':'预约') + '</button>';
+      row.innerHTML =
+        '<div class="live-avatar ' + (l.state==='live'?'live-on':(l.inRoom?'in-room':'')) + '" onclick="WC.liveAvatarClick(' + realIdx + ')"></div>'
+        + '<div class="live-meta">'
+        +   '<div class="live-meta__top">' + l.name + '<small>' + l.country + '</small></div>'
+        +   '<div class="live-meta__topic">' + l.topic + '</div>'
+        +   '<div class="live-meta__time">' + l.time + '</div>'
+        + '</div>'
+        + '<div class="live-actions">'
+        +   '<button class="live-btn ' + (l.followed?'is-followed':'') + '" onclick="WC.followLive(' + realIdx + ', this)">' + (l.followed?'已关注':'关注 +') + '</button>'
+        +   stateBtn
+        + '</div>';
+      m.appendChild(row);
+    });
+  }
+  function liveAvatarClick(i) {
+    const l = LIVES[i];
+    toast(l.inRoom ? '跳房间 · ' + l.name + ' · [TBD: 在房点击行为 A/B]' : '跳 profile · ' + l.name);
+  }
+  function followLive(i, btn) {
+    LIVES[i].followed = !LIVES[i].followed;
+    btn.classList.toggle('is-followed', LIVES[i].followed);
+    btn.textContent = LIVES[i].followed ? '已关注' : '关注 +';
+  }
+  function bookLive(i) {
+    LIVES[i].booked = true;
+    toast('🌟 成功预约 ' + LIVES[i].name + ' 的房间!开播时你将收到特别提醒~');
+    renderLives();
+  }
+  function openKoc() {
+    WC.sheet({
+      title:'球迷 KOC 招募',
+      html:'<div style="font-size:12px; color:var(--g6); line-height:1.7;"><span class="tbd">[TBD: 招募文案]</span></div>'
+        + '<div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">'
+        +   '<div style="padding:10px; background:var(--g1); border-radius:6px;"><b>昵称</b><div class="tbd">[TBD: 表单字段]</div></div>'
+        +   '<div style="padding:10px; background:var(--g1); border-radius:6px;"><b>国籍 / 语种</b><div class="tbd">[TBD]</div></div>'
+        +   '<div style="padding:10px; background:var(--g1); border-radius:6px;"><b>主播经验 / 资料</b><div class="tbd">[TBD]</div></div>'
+        + '</div>'
+        + '<button class="btn-primary" style="margin-top:10px; width:100%;" onclick="WC.toast(\'提交报名·[TBD: 报名名单去向]\')">提交报名</button>'
+    });
+  }
+
+  // ---------- FAN CLUB sub-pages ----------
+  function subOrg(k) {
+    document.querySelectorAll('#m4-org .subpage').forEach(p => p.classList.toggle('is-active', p.dataset.orgsub === k));
+    if (k === 'meetup') renderCities();
+  }
+  const CITIES = ['北京','上海','广州','深圳','成都','杭州'];
+  function renderCities() {
+    const m = document.getElementById('cityGrid');
+    if (!m || m.dataset.rendered) return;
+    m.innerHTML = CITIES.map(c =>
+      '<div class="city-card"><div class="city-card__img" onclick="WC.toast(\'跳 Meetup 详情 · ' + c + '\')">' + c + '</div>'
+      + '<div class="city-card__body"><div class="city-card__name">' + c + ' · 世界杯观赛</div>'
+      + '<div class="city-card__meta"><span class="tbd">[TBD: 时间/地点/人数]</span></div>'
+      + '<button class="city-card__btn" onclick="WC.toast(\'跳报名表单 · ' + c + '\')">报名</button></div></div>'
+    ).join('');
+    m.dataset.rendered = '1';
+  }
+  function openGroupSheet() {
+    const groups = ['阿根廷','巴西','德国','西班牙','日本','法国'];
+    let html = '<div class="group-list">';
+    groups.forEach(g => {
+      html += '<div class="group-row" onclick="WC.toast(\'跳 HT 群聊 · ' + g + ' 球迷群\')"><div class="group-row__flag"></div><div><div class="group-row__name">' + g + ' 球迷群</div><div class="group-row__meta"><span class="tbd">[TBD: 简介 / 群规]</span></div></div><div class="group-row__count">128 / <span class="tbd">[TBD]</span></div></div>';
+    });
+    html += '</div><div style="font-size:11px; color:var(--g4); margin-top:10px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;"><span class="tbd">[TBD: 群卡片字段]</span> · <span class="tbd">[TBD: 人数上限]</span> · <span class="tbd">[TBD: 满员策略]</span> · <span class="tbd">[TBD: 国家清单 A 同 48 国 / B 单独配置]</span></div>';
+    WC.sheet({ title:'球迷群 · GROUP', html });
+  }
+
+  // ---------- HIGHLIGHTS ----------
+  function subHl(k) {
+    document.querySelectorAll('#m4-highlights .subpage').forEach(p => p.classList.toggle('is-active', p.dataset.hlsub === k));
+    if (k === 'feed') renderHlFeed();
+  }
+  const HL_THUMBS = [
+    { title:'Messi 任意球递击 入选 5 佳', dur:'00:34', like:'12.4K' },
+    { title:'门将魔性 5 连扑 选手生涯代表作', dur:'01:12', like:'8.6K' },
+    { title:'东亚德比 中鲜千里躺送果阁', dur:'00:48', like:'6.1K' },
+    { title:'狂欢节 后阶段: 巴西球迷街头狂欢', dur:'00:22', like:'4.9K' }
+  ];
+  function renderHlStrip() {
+    const m = document.getElementById('hlStrip');
+    if (!m) return;
+    m.innerHTML = HL_THUMBS.map((h, i) =>
+      '<div class="hl-thumb" onclick="WC.subHl(\'feed\')">'
+      + '<div class="hl-thumb__cover">VIDEO<span class="hl-thumb__dur">' + h.dur + '</span><span class="hl-thumb__play">▶</span></div>'
+      + '<div class="hl-thumb__title">' + h.title + '</div>'
+      + '<div class="hl-thumb__like">❤ ' + h.like + '</div></div>'
+    ).join('');
+  }
+  function renderHlFeed() {
+    const m = document.getElementById('hlFeed');
+    if (!m || m.dataset.rendered) return;
+    let html = '';
+    for (let i = 0; i < 8; i++) {
+      const t = HL_THUMBS[i % HL_THUMBS.length];
+      html += '<div class="hl-feed-card" onclick="WC.subHl(\'watch\')">'
+        + '<div class="hl-feed-card__cover">VIDEO ' + (i+1) + '<span class="hl-thumb__dur">' + t.dur + '</span></div>'
+        + '<div class="hl-feed-card__body">'
+        +   '<div class="hl-feed-card__title">' + t.title + '</div>'
+        +   '<div style="margin-bottom:6px;"><span class="hl-feed-card__tag">[TBD: 作者 ' + (i+1) + ']</span><span class="hl-feed-card__tag">[TBD: 国家]</span></div>'
+        +   '<div class="hl-feed-card__meta"><span>❤ ' + t.like + ' · 💬 <span class="tbd">[TBD]</span></span><span>' + t.dur + '</span></div>'
+        + '</div></div>';
+    }
+    m.innerHTML = html;
+    m.dataset.rendered = '1';
+  }
+
+  // ---------- Global polish: TBD grouped index + unmet promises ----------
+  function collectTBDsGrouped() {
+    const nodes = document.querySelectorAll('.tbd');
+    const buckets = new Map();
+    nodes.forEach((n, i) => {
+      const module = n.closest('.module');
+      const page = n.closest('.page');
+      const onb = n.closest('.onb');
+      let tabKey, tabLabel, modLabel;
+      if (module) {
+        tabKey = page ? page.dataset.tab : '?';
+        tabLabel = 'Tab ' + tabKey;
+        modLabel = (module.querySelector('.module__title')?.textContent || module.id);
+      } else if (onb) {
+        tabKey = '1'; tabLabel = 'Tab 1'; modLabel = 'Onboarding';
+      } else {
+        tabKey = 'Z'; tabLabel = '全局 / 弹窗'; modLabel = 'Modal/Sheet';
+      }
+      if (!n.id) n.id = 'tbd-' + i;
+      const key = tabKey + '|' + tabLabel + '|' + modLabel;
+      if (!buckets.has(key)) buckets.set(key, { tab:tabKey, tabLabel, modLabel, items:[] });
+      const anchor = module ? module.id : (onb ? 'm1-onboarding' : n.id);
+      buckets.get(key).items.push({ text:n.textContent.trim(), anchor, tab:tabKey });
+    });
+    if (!buckets.size) {
+      tbdList.className = 'tbd-panel__empty';
+      tbdList.innerHTML = '// 暂无 [TBD] 标记';
+      appendUnmetPromises();
+      return;
+    }
+    const sorted = [...buckets.values()].sort((a, b) => a.tab.localeCompare(b.tab));
+    tbdList.className = '';
+    tbdList.innerHTML = '';
+    sorted.forEach(g => {
+      const wrap = document.createElement('div');
+      wrap.className = 'tbd-group';
+      wrap.innerHTML = '<div class="tbd-group__title">' + g.tabLabel + ' · ' + g.modLabel + ' · ' + g.items.length + '</div>';
+      const ul = document.createElement('ul');
+      ul.className = 'tbd-list';
+      g.items.forEach(it => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + it.anchor;
+        a.innerHTML = '<span>→ 跳转</span><span>' + it.text + '</span>';
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (it.tab !== 'Z') go(it.tab);
+          tbdPanel.classList.remove('is-open');
+          setTimeout(() => {
+            const t = document.getElementById(it.anchor);
+            const p = t && t.closest('.page');
+            if (t && p) p.scrollTop = t.offsetTop - 12;
+          }, 80);
+        });
+        li.appendChild(a); ul.appendChild(li);
+      });
+      wrap.appendChild(ul);
+      tbdList.appendChild(wrap);
+    });
+    appendUnmetPromises();
+  }
+  function appendUnmetPromises() {
+    const div = document.createElement('div');
+    div.className = 'tbd-promise';
+    div.innerHTML = '<h4>未实现承诺 · PRD 提及但本原型未画</h4><ul>'
+      + '<li>连胜日历模块(PRD 自标缺)</li>'
+      + '<li>限定礼物 完整内容 / 限量规则</li>'
+      + '<li>商业化-世界杯 子页真实跳转</li>'
+      + '<li>顶部资源索引 6 个链接(设计稿 / 交互稿 / 用例 / 多语言 / 数据上报 / 数据分析)</li>'
+      + '</ul>';
+    tbdList.appendChild(div);
+  }
+  WC.collectTBDs = collectTBDsGrouped;
+  tbdToggle.removeEventListener && tbdToggle.removeEventListener('click', () => {});
+  tbdToggle.onclick = () => {
+    const open = tbdPanel.classList.toggle('is-open');
+    tbdPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+    if (open) collectTBDsGrouped();
+  };
+
+  // Sheet: ensure backdrop click closes (parity with modal)
+  document.addEventListener('click', (e) => {
+    if (e.target === sheetEl) WC.closeSheet();
+  });
+
+  // Boot stage 4
+  renderLives();
+  renderHlStrip();
+  Object.assign(WC, {
+    liveAvatarClick, followLive, bookLive, openKoc,
+    subOrg, openGroupSheet, subHl
+  });
+
+  // Auto-open onboarding on first visit
+  if (!LS.get('hasFanId')) {
+    setTimeout(() => openOnb(1), 350);
+  }
+})();
+</script>
+<!-- Stage 4/4 完成。下一步:填补 [TBD] / 真实视觉 / 数值 -->
+</body>
+</html>
