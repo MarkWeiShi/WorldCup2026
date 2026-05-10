@@ -100,6 +100,12 @@
     border-radius: 44px;
     overflow: hidden;
   }
+  .device-screen.is-native-chat .top-bar,
+  .device-screen.is-native-chat .dynamic-island,
+  .device-screen.is-native-chat .tab-bar,
+  .device-screen.is-native-chat .store-fab { display: none; }
+  .device-screen.is-native-chat .pages { top: 0; bottom: 0; }
+  .device-screen.is-native-chat .home-indicator { background: var(--g0); }
   /* Dynamic Island placeholder */
   .dynamic-island {
     position: absolute;
@@ -285,11 +291,14 @@
     align-items: center;
     z-index: 40;
     overflow: visible;
-    transition: transform 220ms ease;
+    transition: transform 220ms ease, border-radius 220ms ease, box-shadow 220ms ease;
   }
   .tab-bar.is-drawer-lifted {
-    transform: translateY(calc(0px - var(--task-drawer-h)));
+    transform: translateY(calc(1px - var(--task-drawer-h)));
     z-index: 90;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -10px 28px rgba(0,0,0,0.08);
   }
   .tab {
     display: flex;
@@ -719,6 +728,14 @@
   .sheet-half.is-task-sheet .sheet-half__panel {
     height: var(--task-drawer-h);
     max-height: none;
+    padding-top: 10px;
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    box-shadow: none;
+  }
+  .sheet-half.is-task-sheet .sheet-half__title {
+    display: none;
   }
   .sheet-half__handle {
     width: 36px;
@@ -801,6 +818,7 @@
      Component Reference (below the phone, dev aid)
      ============================================================ */
   .legend {
+    display: none;
     width: var(--device-w);
     background: var(--g0);
     border: var(--hairline);
@@ -1369,6 +1387,7 @@
     position: relative; min-width: 100%; min-height: 124px; padding: 14px 12px;
     color: var(--g0); background: var(--g7); overflow: hidden;
     display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end;
+    cursor: pointer;
   }
   .vip-promo--life { background: var(--g6); }
   .vip-promo::before {
@@ -1446,6 +1465,224 @@
   .live-btn.is-live { background: var(--tbd); color: var(--g0); border-color: var(--tbd); }
   .live-btn.is-ended { background: var(--g2); color: var(--g4); border-color: var(--g2); cursor: not-allowed; }
   .live-btn.is-booked { background: var(--g7); color: var(--g0); }
+  .module__head-actions { display:flex; align-items:center; gap:8px; }
+  .module-more-btn {
+    border:0; background:transparent; padding:0; color:var(--g5);
+    font-size:11px; font-family:var(--font-sans); cursor:pointer; white-space:nowrap;
+  }
+  .live-showcase { width:100%; display:flex; flex-direction:column; gap:12px; }
+  .live-hero-card {
+    width:100%; border:var(--hairline); border-radius:8px; overflow:hidden;
+    background:var(--g0); cursor:pointer; text-align:left;
+  }
+  .live-video {
+    position:relative; aspect-ratio:16/9; background:
+      linear-gradient(90deg, rgba(0,0,0,0.08) 0 1px, transparent 1px 34px),
+      repeating-linear-gradient(135deg, var(--g1) 0, var(--g1) 10px, var(--g2) 10px, var(--g2) 20px);
+    border-bottom:var(--hairline); display:grid; place-items:center; overflow:hidden;
+  }
+  .live-video::before {
+    content:""; width:38px; height:38px; border-radius:50%;
+    border:2px solid var(--g7); background:rgba(255,255,255,0.72);
+  }
+  .live-video::after {
+    content:""; position:absolute; left:50%; top:50%; transform:translate(-38%, -50%);
+    border-left:11px solid var(--g7); border-top:7px solid transparent; border-bottom:7px solid transparent;
+  }
+  .live-video__tag,
+  .live-video__time {
+    position:absolute; top:8px; padding:2px 7px; border-radius:10px;
+    background:var(--g7); color:var(--g0); font-size:10px; font-weight:var(--weight-title);
+    font-family:ui-monospace, Menlo, monospace;
+  }
+  .live-video__tag { left:8px; }
+  .live-video__time { right:8px; background:rgba(0,0,0,0.62); }
+  .live-card-body {
+    display:grid; grid-template-columns:36px 1fr auto; gap:9px; align-items:center;
+    padding:10px;
+  }
+  .live-host-avatar {
+    width:36px; height:36px; border-radius:50%; background:var(--g1);
+    border:var(--hairline); display:grid; place-items:center; font-size:10px; font-weight:var(--weight-title);
+  }
+  .live-card-kicker { font-size:10px; color:var(--g5); font-family:ui-monospace, Menlo, monospace; }
+  .live-card-title { margin-top:2px; font-size:13px; font-weight:var(--weight-title); color:var(--g7); line-height:1.3; }
+  .live-card-meta { margin-top:3px; font-size:10px; color:var(--g5); }
+  .live-card-cta { font-size:11px; color:var(--g5); white-space:nowrap; }
+  .live-strip {
+    display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; scroll-snap-type:x proximity;
+  }
+  .live-strip::-webkit-scrollbar { display:none; }
+  .live-mini-card {
+    flex:0 0 132px; border:var(--hairline); border-radius:8px; background:var(--g0);
+    overflow:hidden; cursor:pointer; scroll-snap-align:start;
+  }
+  .live-mini-card .live-video { aspect-ratio:16/9; }
+  .live-mini-card .live-video::before { width:28px; height:28px; border-width:1px; }
+  .live-mini-card .live-video::after { border-left-width:8px; border-top-width:5px; border-bottom-width:5px; }
+  .live-mini-card__body { padding:8px; }
+  .live-mini-card__host { font-size:10px; color:var(--g5); font-family:ui-monospace, Menlo, monospace; }
+  .live-mini-card__title {
+    margin-top:3px; font-size:11px; font-weight:var(--weight-title); line-height:1.35;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .live-mini-card__time { margin-top:5px; font-size:10px; color:var(--g5); }
+  .live-hub-top {
+    margin:-4px -16px 14px; padding:14px 16px 16px; background:var(--g7); color:var(--g0);
+  }
+  .live-hub-nav { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:14px; }
+  .live-hub-back {
+    width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,0.35);
+    background:transparent; color:var(--g0); font-size:18px; cursor:pointer;
+  }
+  .live-hub-title { font-size:17px; font-weight:var(--weight-title); }
+  .live-hub-tabs { display:flex; gap:10px; justify-content:center; font-weight:var(--weight-title); color:rgba(255,255,255,0.45); }
+  .live-hub-tabs span { padding:4px 8px; border-radius:14px; }
+  .live-hub-tabs .is-active { background:var(--g0); color:var(--g7); }
+  .live-hub-filter { display:flex; gap:8px; overflow-x:auto; margin-bottom:12px; }
+  .live-hub-filter::-webkit-scrollbar { display:none; }
+  .live-hub-filter span {
+    flex:0 0 auto; padding:7px 12px; border-radius:16px; background:var(--g0); border:var(--hairline);
+    font-size:12px; color:var(--g6); font-weight:var(--weight-title);
+  }
+  .live-hub-filter .is-active { background:var(--g7); color:var(--g0); border-color:var(--g7); }
+  .live-hub-banner {
+    border:var(--hairline); border-radius:10px; padding:16px; margin-bottom:14px;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 26px),
+      var(--g0);
+  }
+  .live-hub-banner__title { font-size:20px; font-weight:var(--weight-title); letter-spacing:0; }
+  .live-hub-banner__sub { margin-top:6px; font-size:12px; color:var(--g5); line-height:1.45; }
+  .live-room-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .live-room-card {
+    min-height:190px; background:var(--g0); border:var(--hairline); border-radius:10px;
+    padding:10px; display:flex; flex-direction:column; cursor:pointer; overflow:hidden;
+  }
+  .live-room-card__top { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+  .live-room-lang, .live-room-tag {
+    display:inline-flex; align-items:center; justify-content:center; height:22px; padding:0 7px;
+    border-radius:12px; background:var(--g7); color:var(--g0); font-size:10px; font-weight:var(--weight-title);
+  }
+  .live-room-tag { background:var(--g1); color:var(--g7); border:var(--hairline); }
+  .live-room-signal { font-size:14px; letter-spacing:-2px; color:var(--g6); }
+  .live-room-avatar {
+    width:66px; height:66px; border-radius:50%; margin:18px auto 8px;
+    background:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 8px, var(--g2) 8px, var(--g2) 16px);
+    border:var(--hairline); display:grid; place-items:center; font-size:11px; font-weight:var(--weight-title);
+  }
+  .live-room-host { text-align:center; color:var(--g5); font-size:12px; margin-bottom:6px; }
+  .live-room-title { text-align:center; font-size:13px; font-weight:var(--weight-title); line-height:1.35; flex:1; }
+  .live-room-meta { margin-top:10px; display:flex; align-items:center; justify-content:space-between; font-size:11px; color:var(--g6); }
+  .live-room-hot { padding:2px 8px; border-radius:10px; background:var(--g7); color:var(--g0); font-size:10px; }
+  .circle-feed-top {
+    margin:-4px -16px 14px; padding:12px 16px 14px; background:var(--g7); color:var(--g0);
+  }
+  .circle-feed-nav { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .circle-feed-back {
+    width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,0.35);
+    background:transparent; color:var(--g0); font-size:18px; cursor:pointer; flex:none;
+  }
+  .circle-search {
+    flex:1; height:34px; border-radius:17px; background:rgba(255,255,255,0.12);
+    display:flex; align-items:center; gap:6px; padding:0 12px; color:rgba(255,255,255,0.7);
+    font-size:13px; min-width:0;
+  }
+  .circle-compose {
+    width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,0.35);
+    background:transparent; color:var(--g0); font-size:16px; cursor:pointer; flex:none;
+  }
+  .circle-filter { display:flex; gap:10px; overflow-x:auto; color:rgba(255,255,255,0.48); font-weight:var(--weight-title); }
+  .circle-filter::-webkit-scrollbar { display:none; }
+  .circle-filter span { flex:0 0 auto; padding:4px 8px; border-radius:14px; }
+  .circle-filter .is-active { background:var(--g0); color:var(--g7); }
+  .circle-topic-banner {
+    border:var(--hairline); border-radius:10px; padding:14px; margin-bottom:14px; background:
+      linear-gradient(90deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 26px),
+      var(--g0);
+  }
+  .circle-topic-banner__label { display:inline-block; padding:2px 8px; border-radius:12px; background:var(--g7); color:var(--g0); font-size:10px; font-weight:var(--weight-title); }
+  .circle-topic-banner__title { margin-top:8px; font-size:20px; font-weight:var(--weight-title); }
+  .circle-topic-banner__sub { margin-top:5px; font-size:12px; color:var(--g5); line-height:1.45; }
+  .circle-post-list { display:flex; flex-direction:column; gap:14px; }
+  .circle-post-card { background:var(--g0); border:var(--hairline); border-radius:10px; padding:12px; }
+  .circle-post-head { display:grid; grid-template-columns:42px 1fr auto; gap:9px; align-items:center; margin-bottom:10px; }
+  .circle-post-avatar {
+    width:42px; height:42px; border-radius:50%; background:var(--g1); border:var(--hairline);
+    display:grid; place-items:center; font-size:10px; font-weight:var(--weight-title);
+  }
+  .circle-post-name { font-size:13px; font-weight:var(--weight-title); }
+  .circle-post-meta { margin-top:2px; font-size:10px; color:var(--g5); font-family:ui-monospace, Menlo, monospace; }
+  .circle-follow { height:28px; padding:0 12px; border-radius:14px; border:1px solid var(--g7); background:var(--g7); color:var(--g0); font-size:11px; }
+  .circle-post-text { font-size:13px; line-height:1.55; color:var(--g7); margin-bottom:10px; }
+  .circle-post-text small { display:block; margin-top:6px; color:var(--g5); font-size:12px; line-height:1.5; }
+  .circle-photo-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; margin-bottom:10px; }
+  .circle-photo {
+    aspect-ratio:1; border-radius:6px; border:var(--hairline); background:
+      repeating-linear-gradient(135deg, var(--g1) 0, var(--g1) 8px, var(--g2) 8px, var(--g2) 16px);
+    display:grid; place-items:center; color:var(--g5); font-size:10px; overflow:hidden;
+  }
+  .circle-tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .circle-tags span { padding:4px 9px; border-radius:14px; background:var(--g1); border:var(--hairline); color:var(--g6); font-size:11px; }
+  .circle-post-actions { display:flex; justify-content:space-between; color:var(--g5); font-size:11px; border-top:var(--hairline); padding-top:9px; }
+  .meetup-top {
+    margin:-4px -16px 14px; padding:12px 16px 14px; background:var(--g7); color:var(--g0);
+  }
+  .meetup-nav { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+  .meetup-back {
+    width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,0.35);
+    background:transparent; color:var(--g0); font-size:18px; cursor:pointer;
+  }
+  .meetup-title { font-size:17px; font-weight:var(--weight-title); }
+  .meetup-map-btn {
+    height:30px; padding:0 10px; border-radius:15px; border:1px solid rgba(255,255,255,0.35);
+    background:transparent; color:var(--g0); font-size:11px; cursor:pointer;
+  }
+  .meetup-kicker { font-size:11px; color:rgba(255,255,255,0.62); line-height:1.45; }
+  .meetup-region-tabs { display:flex; gap:8px; overflow-x:auto; margin-bottom:12px; }
+  .meetup-region-tabs::-webkit-scrollbar { display:none; }
+  .meetup-region-tabs span {
+    flex:0 0 auto; padding:7px 11px; border-radius:16px; border:var(--hairline);
+    background:var(--g0); color:var(--g6); font-size:12px; font-weight:var(--weight-title);
+  }
+  .meetup-region-tabs .is-active { background:var(--g7); color:var(--g0); border-color:var(--g7); }
+  .meetup-country { margin-bottom:14px; }
+  .meetup-country__head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .meetup-country__title { font-size:14px; font-weight:var(--weight-title); }
+  .meetup-country__meta { font-size:11px; color:var(--g5); }
+  .meetup-card-list { display:flex; flex-direction:column; gap:10px; }
+  .meetup-card {
+    display:grid; grid-template-columns:92px 1fr; gap:10px; align-items:stretch;
+    background:var(--g0); border:var(--hairline); border-radius:10px; overflow:hidden;
+  }
+  .meetup-card__image {
+    min-height:96px; border:0; border-right:var(--hairline); background:
+      repeating-linear-gradient(135deg, var(--g1) 0, var(--g1) 8px, var(--g2) 8px, var(--g2) 16px);
+    display:grid; place-items:center; color:var(--g5); font-size:10px; cursor:pointer;
+  }
+  .meetup-card__body { padding:10px 10px 10px 0; min-width:0; }
+  .meetup-card__city { font-size:13px; font-weight:var(--weight-title); display:flex; justify-content:space-between; gap:8px; }
+  .meetup-card__city small { font-size:10px; color:var(--g5); font-weight:var(--weight-body); white-space:nowrap; }
+  .meetup-card__match { margin-top:4px; font-size:11px; color:var(--g6); line-height:1.35; }
+  .meetup-card__meta { margin-top:6px; font-size:10px; color:var(--g5); line-height:1.45; }
+  .meetup-card__actions { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; }
+  .meetup-card__actions button { height:28px; border-radius:14px; font-size:11px; cursor:pointer; }
+  .meetup-detail { display:flex; flex-direction:column; gap:10px; }
+  .meetup-detail__cover {
+    height:120px; border-radius:8px; border:var(--hairline); background:
+      repeating-linear-gradient(135deg, var(--g1) 0, var(--g1) 10px, var(--g2) 10px, var(--g2) 20px);
+    display:grid; place-items:center; color:var(--g5); font-size:11px;
+  }
+  .meetup-detail__title { font-size:16px; font-weight:var(--weight-title); }
+  .meetup-detail__meta { font-size:12px; color:var(--g6); line-height:1.6; }
+  .meetup-detail__rules { background:var(--g1); border-radius:8px; padding:10px; font-size:11px; color:var(--g6); line-height:1.6; }
+  .meetup-form { display:flex; flex-direction:column; gap:9px; }
+  .meetup-form label { display:flex; flex-direction:column; gap:4px; font-size:11px; color:var(--g6); font-weight:var(--weight-title); }
+  .meetup-form input, .meetup-form select, .meetup-form textarea {
+    width:100%; border:var(--hairline); border-radius:8px; background:var(--g0);
+    padding:9px 10px; font-family:var(--font-sans); font-size:12px; color:var(--g7);
+  }
+  .meetup-form textarea { min-height:62px; resize:none; }
 
   .org-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .org-cell { background: var(--g0); border: var(--hairline); border-radius: var(--radius); padding: 14px 8px; text-align: center; cursor: pointer; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
@@ -1467,7 +1704,126 @@
   .group-row__flag { width: 32px; height: 32px; border-radius: 6px; background: var(--g0); border: var(--hairline); }
   .group-row__name { font-size: 12px; font-weight: var(--weight-title); }
   .group-row__meta { font-size: 10px; color: var(--g5); margin-top: 2px; }
-  .group-row__count { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--g6); }
+  .group-row__enter { width: 46px; height: 26px; border: 1px solid var(--g7); border-radius: 13px; background: var(--g0); color: var(--g7); font-size: 11px; font-weight: var(--weight-title); }
+
+  .group-chat-page {
+    padding: 0;
+    background: #111;
+    color: var(--g0);
+    overflow: hidden;
+  }
+  .group-chat-shell {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 18px 18px;
+    background: #111;
+  }
+  .chat-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 28px;
+    color: var(--g0);
+    font-size: 20px;
+    font-weight: var(--weight-title);
+    letter-spacing: 0;
+  }
+  .chat-status__icons { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--g0); }
+  .chat-status__battery { width: 26px; height: 13px; border: 2px solid var(--g0); border-radius: 5px; position: relative; }
+  .chat-status__battery::before { content:""; position:absolute; right:-5px; top:3px; width:3px; height:5px; border-radius:2px; background:var(--g0); }
+  .chat-status__battery::after { content:""; position:absolute; inset:2px; width:15px; border-radius:3px; background:var(--g0); }
+  .group-chat-head {
+    height: 66px;
+    display: grid;
+    grid-template-columns: 38px 1fr 42px 34px;
+    align-items: center;
+    gap: 8px;
+  }
+  .group-chat-back,
+  .group-chat-action {
+    border: 0;
+    background: transparent;
+    color: var(--g0);
+    cursor: pointer;
+    padding: 0;
+    font-family: var(--font-sans);
+  }
+  .group-chat-back { font-size: 42px; line-height: 1; text-align: left; }
+  .group-chat-action { font-size: 28px; line-height: 1; }
+  .group-chat-title { min-width: 0; }
+  .group-chat-title__name {
+    font-size: 23px;
+    font-weight: var(--weight-title);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .group-chat-title__sub { margin-top: 4px; font-size: 15px; color: rgba(255,255,255,0.46); }
+  .group-chat-log {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    padding: 30px 10px 16px;
+    color: rgba(255,255,255,0.48);
+    font-size: 17px;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .group-chat-notice { max-width: 300px; }
+  .group-chat-notice b,
+  .group-chat-system b { color: var(--g0); font-weight: var(--weight-title); }
+  .group-chat-rule {
+    max-width: 310px;
+    font-size: 16px;
+    color: rgba(255,255,255,0.42);
+  }
+  .group-chat-system {
+    max-width: 310px;
+    color: rgba(255,255,255,0.42);
+    font-size: 16px;
+  }
+  .group-chat-input {
+    flex: none;
+    padding-bottom: 14px;
+  }
+  .chat-compose {
+    display: grid;
+    grid-template-columns: 1fr 34px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .chat-compose__field {
+    height: 54px;
+    border-radius: 28px;
+    background: #2d2d2d;
+    color: rgba(255,255,255,0.54);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    font-size: 22px;
+  }
+  .chat-compose__mic {
+    width: 34px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    color: var(--g0);
+    font-size: 28px;
+  }
+  .chat-tools {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    align-items: center;
+    justify-items: center;
+    color: var(--g0);
+    font-size: 28px;
+  }
+  .chat-tool { width: 34px; height: 34px; display: grid; place-items: center; }
 
   .hl-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
   .hl-strip::-webkit-scrollbar { display: none; }
@@ -1486,6 +1842,53 @@
   .hl-feed-card__title { font-size: 12px; font-weight: var(--weight-title); margin-bottom: 6px; }
   .hl-feed-card__meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--g5); }
   .hl-feed-card__tag { display: inline-block; padding: 1px 6px; border-radius: 3px; background: var(--g1); color: var(--g6); font-size: 10px; margin-right: 4px; }
+  .highlight-entry-card {
+    width:100%; display:grid; grid-template-columns:112px 1fr auto; gap:10px; align-items:center;
+    border:var(--hairline); border-radius:10px; background:var(--g0); padding:10px;
+    text-align:left; cursor:pointer;
+  }
+  .highlight-entry-cover {
+    height:78px; border-radius:8px; background-image:repeating-linear-gradient(45deg, var(--g4) 0, var(--g4) 8px, var(--g5) 8px, var(--g5) 16px);
+    color:var(--g0); display:grid; place-items:center; position:relative; overflow:hidden;
+  }
+  .highlight-entry-cover::after {
+    content:"▶"; position:absolute; right:6px; bottom:6px; width:24px; height:24px; border-radius:50%;
+    background:rgba(0,0,0,0.5); color:var(--g0); display:grid; place-items:center; font-size:10px;
+  }
+  .highlight-entry__kicker { font-size:10px; color:var(--g5); font-family:ui-monospace, Menlo, monospace; }
+  .highlight-entry__title { margin-top:3px; font-size:14px; font-weight:var(--weight-title); line-height:1.35; }
+  .highlight-entry__meta { margin-top:5px; font-size:11px; color:var(--g5); }
+  .highlight-page-top {
+    margin:-4px -16px 14px; padding:12px 16px 14px; background:var(--g7); color:var(--g0);
+  }
+  .highlight-page-nav { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+  .highlight-page-back {
+    width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,0.35);
+    background:transparent; color:var(--g0); font-size:18px; cursor:pointer;
+  }
+  .highlight-page-title { font-size:17px; font-weight:var(--weight-title); }
+  .highlight-page-action {
+    height:30px; padding:0 10px; border-radius:15px; border:1px solid rgba(255,255,255,0.35);
+    background:transparent; color:var(--g0); font-size:11px; cursor:pointer;
+  }
+  .highlight-page-desc { font-size:11px; color:rgba(255,255,255,0.62); line-height:1.45; }
+  .highlight-filter { display:flex; gap:8px; overflow-x:auto; margin-bottom:12px; }
+  .highlight-filter::-webkit-scrollbar { display:none; }
+  .highlight-filter span {
+    flex:0 0 auto; padding:7px 11px; border-radius:16px; border:var(--hairline);
+    background:var(--g0); color:var(--g6); font-size:12px; font-weight:var(--weight-title);
+  }
+  .highlight-filter .is-active { background:var(--g7); color:var(--g0); border-color:var(--g7); }
+  .highlight-watch-player {
+    aspect-ratio:9/16; border-radius:12px; background-image:repeating-linear-gradient(45deg, var(--g4) 0, var(--g4) 10px, var(--g5) 10px, var(--g5) 20px);
+    color:var(--g0); display:grid; place-items:center; position:relative; overflow:hidden; margin-bottom:12px;
+  }
+  .highlight-watch-player::after {
+    content:"▶"; width:42px; height:42px; border-radius:50%; background:rgba(0,0,0,0.45);
+    display:grid; place-items:center; font-size:14px;
+  }
+  .highlight-watch-title { font-size:16px; font-weight:var(--weight-title); line-height:1.35; margin-bottom:6px; }
+  .highlight-watch-meta { font-size:11px; color:var(--g5); line-height:1.5; }
 
   /* TBD panel grouped layout */
   .tbd-group { margin-bottom: 12px; }
@@ -1560,28 +1963,6 @@
             <h2 class="page-header__title">入场</h2>
           </div>
 
-          <article class="module" id="m1-onboarding">
-            <div class="module__head">
-              <div class="module__title">Onboarding 3 步</div>
-              <div class="module__anchor">#m1-onboarding</div>
-            </div>
-            <div class="module__body module__body--fill">
-              <div class="card" style="padding:14px;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                  <div style="width:40px; height:40px; border-radius:8px; background:var(--g7); color:var(--g0); display:grid; place-items:center; font-size:11px; font-weight:600; flex-shrink:0;">3 步</div>
-                  <div style="flex:1; min-width:0;">
-                    <div style="font-weight:600; font-size:13px;">手动进入 · FAN ID 配置</div>
-                    <div style="font-size:11px; color:var(--g5); margin-top:2px;">主队球星 → 领取球迷证 → 玩法导览</div>
-                  </div>
-                  <button class="btn-secondary" style="height:32px; padding:0 12px; font-size:12px;" onclick="WC.openOnb(1)">预览</button>
-                </div>
-                <div style="margin-top:10px; font-size:11px; color:var(--g4); padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
-                  点击顶部房子图标或右侧预览进入；完成后更新 FAN ID。调试按钮见 [TBD] 面板。
-                </div>
-              </div>
-            </div>
-          </article>
-
           <article class="module" id="m1-fanid">
             <div class="module__head">
               <div class="module__title">球迷证 FAN ID</div>
@@ -1591,18 +1972,18 @@
               <div class="fanid-resident">
                 <div class="fanid-resident__inner">
                   <div class="fanid-resident__top">
-                    <div class="fanid-avatar">头像</div>
+                    <div class="fanid-avatar">ARG</div>
                     <div class="fanid-info" style="flex:1; min-width:0;">
-                      <div class="fanid-info__star" id="fanidStarLabel">支持球星 · [TBD: 未选择]</div>
-                      <div class="fanid-info__name" id="fanidName">[TBD: 未选择主队]</div>
+                      <div class="fanid-info__star" id="fanidStarLabel">支持球星 · #10 Messi</div>
+                      <div class="fanid-info__name" id="fanidName">阿根廷 · 蓝白军团</div>
                       <div class="fanid-info__stats">
-                        <div class="fanid-stat--clickable" onclick="WC.modal({title:'GOAL 贡献',html:'<span class=&quot;tbd&quot;>[TBD: GOAL 来源/消耗则明]</span>'})">
+                        <div class="fanid-stat--clickable" onclick="WC.modal({title:'GOAL 贡献',html:'直播间停留 +260<br>世界杯话题帖 +420<br>射门助力 +680<br>焦点竞猜 +500'})">
                           <div class="fanid-stat-label">贡献 GOAL</div>
-                          <div class="fanid-stat-value">0</div>
+                          <div class="fanid-stat-value">1860</div>
                         </div>
-                        <div class="fanid-stat--clickable" onclick="WC.modal({title:'历史最高排名',html:'<span class=&quot;tbd&quot;>[TBD: 最高排名计算则明]</span>'})">
+                        <div class="fanid-stat--clickable" onclick="WC.modal({title:'历史最高排名',html:'阿根廷球迷榜最高第 128 名<br>本周目标: 冲进 TOP 100'})">
                           <div class="fanid-stat-label">最高排名</div>
-                          <div class="fanid-stat-value">9999+</div>
+                          <div class="fanid-stat-value">128</div>
                         </div>
                       </div>
                     </div>
@@ -1978,19 +2359,13 @@
           <article class="module" id="m4-live">
             <div class="module__head">
               <div class="module__title">正在直播 · ON AIR</div>
-              <div class="module__anchor">#m4-live</div>
+              <div class="module__head-actions">
+                <button class="module-more-btn" type="button" onclick="WC.openLiveHub()">更多 ›</button>
+                <div class="module__anchor">#m4-live</div>
+              </div>
             </div>
-            <div class="module__body module__body--fill">
-              <div class="col-head" style="border:0; padding:0; color:var(--g6); margin-bottom:8px;">节目单 · 开播中置顶 · 已结束置底</div>
+            <div class="module__body module__body--fill" onclick="WC.openLiveHub()" data-prd-label="Tab 4 · ON AIR 入口模块 → Tab 4.1 直播语聊聚合页">
               <div id="liveList"></div>
-              <button class="card" style="width:100%; margin-top:12px; background:var(--g7); color:var(--g0); padding:14px; border:0; cursor:pointer; display:flex; align-items:center; gap:12px;" onclick="WC.openKoc()">
-                <div style="width:36px; height:36px; border-radius:50%; background:var(--g0); color:var(--g7); display:grid; place-items:center; font-weight:600; font-size:11px;">KOC</div>
-                <div style="flex:1; min-width:0; text-align:left;">
-                  <div style="font-weight:600; font-size:13px;">球迷 KOC 招募</div>
-                  <div style="font-size:11px; opacity:.8; margin-top:2px;">报名成为世界杯官方推荐主播</div>
-                </div>
-                <div style="font-size:18px; opacity:.7;">›</div>
-              </button>
             </div>
           </article>
 
@@ -2003,13 +2378,13 @@
               <div class="subpage-stack">
                 <div class="subpage is-active" data-orgsub="home">
                   <div class="org-grid">
-                    <button class="org-cell" onclick="WC.toast(\'跳主 app 动态 tab·默认筛选世界杯主题·[TBD: 筛选规则]\')">
+                    <button class="org-cell" onclick="WC.openCircleFeed()" data-prd-label="Tab 4 · FAN CLUB / CIRCLE 世界杯圈子 → Tab 4.2 动态世界杯话题页">
                       <div class="org-cell__icon">CIR</div>
                       <div class="org-cell__title">CIRCLE</div>
                       <div class="org-cell__sub">世界杯圈子</div>
                       <div class="org-cell__arrow">›</div>
                     </button>
-                    <button class="org-cell" onclick="WC.subOrg(\'meetup\')">
+                    <button class="org-cell" onclick="WC.openMeetupPage()" data-prd-label="Tab 4 · FAN CLUB / MEETUP 线下观赛 → Tab 4.3 Meetup 二级页">
                       <div class="org-cell__icon">MTP</div>
                       <div class="org-cell__title">MEETUP</div>
                       <div class="org-cell__sub">线下观赛</div>
@@ -2023,16 +2398,6 @@
                     </button>
                   </div>
                 </div>
-                <div class="subpage" data-orgsub="meetup">
-                  <div class="subpage__head">
-                    <button class="subpage__back" onclick="WC.subOrg(\'home\')">‹</button>
-                    <div class="subpage__title">MEETUP · 城市列表</div>
-                  </div>
-                  <div class="city-grid" id="cityGrid"></div>
-                  <div style="font-size:11px; color:var(--g4); margin-top:10px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
-                    <span class="tbd">[TBD: 城市排序]</span> · <span class="tbd">[TBD: 满员态]</span> · <span class="tbd">[TBD: 详情页字段]</span> · <span class="tbd">[TBD: 报名表单字段]</span>
-                  </div>
-                </div>
               </div>
             </div>
           </article>
@@ -2040,42 +2405,186 @@
           <article class="module" id="m4-highlights">
             <div class="module__head">
               <div class="module__title">HIGHLIGHTS · 精彩集锦</div>
-              <div class="module__anchor">#m4-highlights</div>
-            </div>
-            <div class="module__body module__body--fill">
-              <div class="subpage-stack">
-                <div class="subpage is-active" data-hlsub="home">
-                  <div class="pk-section-head">
-                    <div class="pk-section-head__title">今日集锦</div>
-                    <div class="pk-section-head__more" onclick="WC.subHl(\'feed\')">更多集锦 ›</div>
-                  </div>
-                  <div class="hl-strip" id="hlStrip"></div>
-                  <div style="font-size:11px; color:var(--g4); margin-top:8px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
-                    <span class="tbd">[TBD: 缩略图数量]</span> · <span class="tbd">[TBD: 素材来源]</span> · <span class="tbd">[TBD: 标签体系]</span> · <span class="tbd">[TBD: 审核]</span> · <span class="tbd">[TBD: 排序]</span> · <span class="tbd">[TBD: 状态规则]</span> · <span class="tbd">[TBD: 互动数值与任务]</span>
-                  </div>
-                </div>
-                <div class="subpage" data-hlsub="feed">
-                  <div class="subpage__head">
-                    <button class="subpage__back" onclick="WC.subHl(\'home\')">‹</button>
-                    <div class="subpage__title">短视频集合页</div>
-                  </div>
-                  <div class="hl-feed" id="hlFeed"></div>
-                  <div style="font-size:11px; color:var(--g4); margin-top:6px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
-                    <span class="tbd">[TBD: 列表排序]</span> · <span class="tbd">[TBD: 分页]</span> · <span class="tbd">[TBD: 互动字段]</span>
-                  </div>
-                </div>
-                <div class="subpage" data-hlsub="watch">
-                  <div class="subpage__head">
-                    <button class="subpage__back" onclick="WC.subHl(\'feed\')">‹</button>
-                    <div class="subpage__title">观看视频页</div>
-                  </div>
-                  <div class="placeholder-video" style="height:240px; border-radius:8px; margin-bottom:10px;">视频播放 placeholder</div>
-                  <div style="font-size:13px; font-weight:var(--weight-title); margin-bottom:4px;">[TBD: 视频标题]</div>
-                  <div style="font-size:11px; color:var(--g5); line-height:1.5;"><span class="tbd">[TBD: 观看页字段 · A 全屏 / B 信息流详情]</span></div>
-                </div>
+              <div class="module__head-actions">
+                <button class="module-more-btn" type="button" onclick="WC.openHighlightsFeed()">更多集锦 ›</button>
+                <div class="module__anchor">#m4-highlights</div>
               </div>
             </div>
+            <div class="module__body module__body--fill">
+              <button class="highlight-entry-card" type="button" onclick="WC.openHighlightsFeed()" data-prd-label="Tab 4 · HIGHLIGHTS 精彩集锦入口卡 → Tab 4.4 短视频集合页">
+                <div class="highlight-entry-cover">VIDEO</div>
+                <div>
+                  <div class="highlight-entry__kicker">TODAY · 2026 WORLD CUP</div>
+                  <div class="highlight-entry__title">今日精彩集锦</div>
+                  <div class="highlight-entry__meta">进球、扑救、球迷瞬间 · 12.4K 观看</div>
+                </div>
+                <div class="live-card-cta">进入 ›</div>
+              </button>
+            </div>
           </article>
+        </section>
+
+        <!-- ============== TAB 4.1 — 直播语聊聚合页 ============== -->
+        <section class="page live-hub-page" data-tab="4-live" data-parent-tab="4" data-screen-label="Tab 4.1 直播语聊聚合页" data-prd-label="Tab 4.1 · 直播语聊聚合页 · 由 Tab 4 ON AIR 入口进入">
+          <div class="live-hub-top">
+            <div class="live-hub-nav">
+              <button class="live-hub-back" type="button" onclick="WC.go('4')" aria-label="返回媒体页">‹</button>
+              <div class="live-hub-title">直播语聊聚合页</div>
+              <button class="top-bar__btn" type="button" onclick="WC.toast('发起世界杯直播语聊 · [TBD: 创建权限]')" aria-label="发起直播">▶</button>
+            </div>
+            <div class="live-hub-tabs" data-prd-label="Tab 4.1 · 聚合页顶部频道">
+              <span>语聊</span>
+              <span class="is-active">直播</span>
+              <span>课程</span>
+            </div>
+          </div>
+
+          <div class="live-hub-filter" data-prd-label="Tab 4.1 · 直播语聊筛选">
+            <span class="is-active">All</span>
+            <span>英语</span>
+            <span>中文</span>
+            <span>西语</span>
+            <span>葡语</span>
+          </div>
+
+          <div class="live-hub-banner" onclick="WC.toast('跳世界杯共看计划 · [TBD: 运营活动页]')" role="button" tabindex="0">
+            <div class="live-hub-banner__title">世界杯共看计划</div>
+            <div class="live-hub-banner__sub">翻译并点亮赛程, 和全球球迷一起看球。</div>
+          </div>
+
+          <div class="live-room-grid" id="liveHubGrid" data-prd-label="Tab 4.1 · 世界杯直播语聊房卡片"></div>
+        </section>
+
+        <!-- ============== TAB 4.2 — 动态世界杯话题页 ============== -->
+        <section class="page circle-feed-page" data-tab="4-circle" data-parent-tab="4" data-screen-label="Tab 4.2 动态世界杯话题页" data-prd-label="Tab 4.2 · App 动态标签 · 由 Tab 4 FAN CLUB/CIRCLE 入口进入">
+          <div class="circle-feed-top">
+            <div class="circle-feed-nav">
+              <button class="circle-feed-back" type="button" onclick="WC.go('4')" aria-label="返回媒体页">‹</button>
+              <div class="circle-search"><span>⌕</span><span>世界杯话题</span></div>
+              <button class="circle-compose" type="button" onclick="WC.toast('发布世界杯动态 · [TBD: 发帖入口]')" aria-label="发布动态">✎</button>
+            </div>
+            <div class="circle-filter" data-prd-label="Tab 4.2 · 动态频道筛选">
+              <span>最新</span>
+              <span>世界杯</span>
+              <span class="is-active">推荐</span>
+              <span>互助</span>
+              <span>附近</span>
+              <span>自拍</span>
+              <span>关注</span>
+            </div>
+          </div>
+
+          <div class="circle-topic-banner" onclick="WC.toast('跳世界杯话题广场 · [TBD: 话题页路由]')" role="button" tabindex="0" data-prd-label="Tab 4.2 · 世界杯主题标签 Banner">
+            <span class="circle-topic-banner__label">#热门话题</span>
+            <div class="circle-topic-banner__title">HelloTalk 世界杯话题广场</div>
+            <div class="circle-topic-banner__sub">晒主队、聊赛程、找同好, 用多语言记录你的 2026 世界杯。</div>
+          </div>
+
+          <div class="circle-post-list" id="circleFeedList" data-prd-label="Tab 4.2 · 世界杯动态信息流"></div>
+        </section>
+
+        <!-- ============== TAB 4.3 — 线下观赛 Meetup 二级页 ============== -->
+        <section class="page meetup-page" data-tab="4-meetup" data-parent-tab="4" data-screen-label="Tab 4.3 线下观赛 Meetup" data-prd-label="Tab 4.3 · Meetup 二级页 · 由 Tab 4 FAN CLUB/MEETUP 入口进入">
+          <div class="meetup-top">
+            <div class="meetup-nav">
+              <button class="meetup-back" type="button" onclick="WC.go('4')" aria-label="返回媒体页">‹</button>
+              <div class="meetup-title">世界杯 Meetup</div>
+              <button class="meetup-map-btn" type="button" onclick="WC.toast('地图筛选 · [TBD: 城市定位]')">地图</button>
+            </div>
+            <div class="meetup-kicker">按国家和城市组织线下观赛。点击城市图片进入详情，点击报名进入表单。</div>
+          </div>
+
+          <div class="meetup-region-tabs" data-prd-label="Tab 4.3 · 国家 / 城市筛选">
+            <span class="is-active">全部</span>
+            <span>中国</span>
+            <span>美国</span>
+            <span>墨西哥</span>
+            <span>日本</span>
+            <span>欧洲</span>
+          </div>
+
+          <div id="meetupList" data-prd-label="Tab 4.3 · 各城市 Meetup 入口卡"></div>
+        </section>
+
+        <!-- ============== TAB 4.4 — 短视频集合页 ============== -->
+        <section class="page highlights-feed-page" data-tab="4-highlights" data-parent-tab="4" data-screen-label="Tab 4.4 短视频集合页" data-prd-label="Tab 4.4 · 短视频集合页 · 由 Tab 4 HIGHLIGHTS 入口进入">
+          <div class="highlight-page-top">
+            <div class="highlight-page-nav">
+              <button class="highlight-page-back" type="button" onclick="WC.go('4')" aria-label="返回媒体页">‹</button>
+              <div class="highlight-page-title">短视频集合页</div>
+              <button class="highlight-page-action" type="button" onclick="WC.toast('筛选集锦 · [TBD: 筛选条件]')">筛选</button>
+            </div>
+            <div class="highlight-page-desc">世界杯进球、扑救、看台、赛后瞬间都会汇总在这里。</div>
+          </div>
+
+          <div class="highlight-filter" data-prd-label="Tab 4.4 · 短视频集合页筛选">
+            <span class="is-active">今日</span>
+            <span>进球</span>
+            <span>扑救</span>
+            <span>球迷</span>
+            <span>赛后</span>
+          </div>
+
+          <div class="hl-feed" id="hlFeed" data-prd-label="Tab 4.4 · 短视频集合列表"></div>
+        </section>
+
+        <!-- ============== TAB 4.4.1 — 观看视频页 ============== -->
+        <section class="page highlight-watch-page" data-tab="4-highlights-watch" data-parent-tab="4" data-screen-label="Tab 4.4.1 观看视频页" data-prd-label="Tab 4.4.1 · 观看视频页 · 由 Tab 4.4 短视频集合页进入">
+          <div class="highlight-page-top">
+            <div class="highlight-page-nav">
+              <button class="highlight-page-back" type="button" onclick="WC.openHighlightsFeed()" aria-label="返回短视频集合页">‹</button>
+              <div class="highlight-page-title">观看视频页</div>
+              <button class="highlight-page-action" type="button" onclick="WC.toast('分享集锦 · [TBD: 分享渠道]')">分享</button>
+            </div>
+            <div class="highlight-page-desc">三级页面: 播放视频、展示标题、互动数据与任务入口。</div>
+          </div>
+
+          <div class="highlight-watch-player" id="highlightWatchPlayer">VIDEO</div>
+          <div class="highlight-watch-title" id="highlightWatchTitle">世界杯精彩集锦</div>
+          <div class="highlight-watch-meta" id="highlightWatchMeta">观看 12.4K · 点赞 2.1K · 评论 [TBD]</div>
+        </section>
+
+        <!-- ============== TAB 4.5 — App 群聊页 ============== -->
+        <section class="page group-chat-page" data-tab="4-group-chat" data-parent-tab="4" data-screen-label="Tab 4.5 App 群聊页" data-prd-label="Tab 4.5 · App 群聊页 · 由 Tab 4 FAN CLUB/GROUP 进入 · 后台按国家随机分配球迷群并做人数动态平衡">
+          <div class="group-chat-shell">
+            <div class="chat-status">
+              <span>22:58</span>
+              <span class="chat-status__icons"><span>▮▮▮</span><span>⌁</span><span class="chat-status__battery"></span></span>
+            </div>
+
+            <header class="group-chat-head">
+              <button class="group-chat-back" type="button" onclick="WC.go('4')" aria-label="返回媒体页">‹</button>
+              <div class="group-chat-title">
+                <div class="group-chat-title__name" id="groupChatTitle">阿根廷球迷会</div>
+                <div class="group-chat-title__sub" id="groupChatMembers">群成员 (242)</div>
+              </div>
+              <button class="group-chat-action" type="button" onclick="WC.toast('搜索群聊 · [TBD: 搜索入口]')" aria-label="搜索">⌕</button>
+              <button class="group-chat-action" type="button" onclick="WC.toast('聊天设置 · [TBD: 群设置]')" aria-label="更多">···</button>
+            </header>
+
+            <main class="group-chat-log" data-prd-label="Tab 4.5 · 群聊系统消息 · 活动随机分配入群">
+              <div class="group-chat-notice">你通过 <b>世界杯活动</b> 随机分配加入了群聊</div>
+              <div class="group-chat-rule">系统会根据国家偏好、群容量和活跃度动态分配球迷群；人数平衡由后台配置。</div>
+              <div class="group-chat-system"><b>Raina Jin</b> 通过世界杯活动加入了群聊</div>
+              <div class="group-chat-system"><b>pera</b> 通过世界杯活动加入了群聊</div>
+              <div class="group-chat-system"><b>Tank</b> 通过世界杯活动加入了群聊</div>
+            </main>
+
+            <footer class="group-chat-input" data-prd-label="Tab 4.5 · App 群聊输入栏">
+              <div class="chat-compose">
+                <div class="chat-compose__field">请输入...</div>
+                <div class="chat-compose__mic">♩</div>
+              </div>
+              <div class="chat-tools" aria-hidden="true">
+                <span class="chat-tool">＋</span>
+                <span class="chat-tool">▧</span>
+                <span class="chat-tool">☺</span>
+                <span class="chat-tool">□</span>
+                <span class="chat-tool">文</span>
+                <span class="chat-tool">≡</span>
+              </div>
+            </footer>
+          </div>
         </section>
 
         <!-- ============== TAB 5 — 商店 ============== -->
@@ -2093,7 +2602,7 @@
             <div class="module__body module__body--fill">
               <div class="vip-carousel" data-vip-carousel>
                 <div class="vip-carousel__track">
-                  <div class="vip-promo">
+                  <div class="vip-promo" onclick="WC.openSku('year')" data-prd-label="Tab 5 · VIP YEAR PASS 卡片 → 年卡 SKU 半窗">
                     <div>
                       <div class="vip-promo__kicker">VIP YEAR PASS</div>
                       <div class="vip-promo__title">年卡限时 7 折</div>
@@ -2103,11 +2612,11 @@
                         <span class="vip-promo__old">原价 ¥488</span>
                       </div>
                     </div>
-                    <button class="vip-promo__btn" onclick="WC.openSku('year')">立即抢购</button>
+                    <button class="vip-promo__btn" onclick="event.stopPropagation(); WC.openSku('year')">立即抢购</button>
                     <div class="vip-promo__timer" data-vip-countdown>优惠仅剩 09:56</div>
                     <div class="vip-promo__ball" aria-hidden="true"></div>
                   </div>
-                  <div class="vip-promo vip-promo--life">
+                  <div class="vip-promo vip-promo--life" onclick="WC.openSku('lifetime')" data-prd-label="Tab 5 · VIP LIFETIME 卡片 → 终身卡 SKU 半窗">
                     <div>
                       <div class="vip-promo__kicker">VIP LIFETIME</div>
                       <div class="vip-promo__title">终身 VIP 限时 7 折</div>
@@ -2117,7 +2626,7 @@
                         <span class="vip-promo__old">原价 ¥1051</span>
                       </div>
                     </div>
-                    <button class="vip-promo__btn" onclick="WC.openSku('lifetime')">立即抢购</button>
+                    <button class="vip-promo__btn" onclick="event.stopPropagation(); WC.openSku('lifetime')">立即抢购</button>
                   </div>
                 </div>
                 <div class="vip-carousel__dots" aria-hidden="true">
@@ -2126,26 +2635,8 @@
                 </div>
               </div>
 
-              <div class="pkg-card">
-                <div class="pkg-card__title">年卡赠送礼包 <small>购买年卡赠送</small></div>
-                <div class="pkg-go">
-                  <div class="pkg-go__icon">GO</div>
-                  <div>
-                    <div style="font-size:11px; color:var(--g5);">GO 值赠送</div>
-                    <div class="pkg-go__num"><span class="tbd">[TBD: GO 数值]</span></div>
-                  </div>
-                </div>
-                <div class="pkg-cosmetic-grid">
-                  <div class="pkg-cosmetic"><b>主题</b>应用</div>
-                  <div class="pkg-cosmetic"><b>铭牌</b>身份</div>
-                  <div class="pkg-cosmetic"><b>气泡</b>聊天</div>
-                  <div class="pkg-cosmetic"><b>挂件</b>头像</div>
-                  <div class="pkg-cosmetic"><b>背景</b>profile</div>
-                </div>
-              </div>
-
-              <div class="cosmetic-shop">
-                <div class="cosmetic-shop__banner">装扮商城 · 轮播 placeholder · <span class="tbd">[TBD: 主推装扮]</span></div>
+              <div class="cosmetic-shop" data-prd-label="Tab 5 · 装扮商城入口 · 主推装扮/分类/商城路由">
+                <div class="cosmetic-shop__banner">装扮商城 · 世界杯主题装扮</div>
                 <div class="cosmetic-shop__cats">
                   <div class="cosmetic-cat">主题</div>
                   <div class="cosmetic-cat">铭牌</div>
@@ -2153,7 +2644,7 @@
                   <div class="cosmetic-cat">挂件</div>
                   <div class="cosmetic-cat">背景</div>
                 </div>
-                <button class="btn-primary cosmetic-shop__cta" onclick="WC.toast('跳商城 · [TBD: 装扮商城路由]')">去商城</button>
+                <button class="btn-primary cosmetic-shop__cta" onclick="WC.toast('跳装扮商城')">去商城</button>
               </div>
             </div>
           </article>
@@ -2164,10 +2655,10 @@
               <div class="module__anchor">#m5-team</div>
             </div>
             <div class="module__body module__body--fill">
-              <button class="card" style="width:100%; text-align:left; background:var(--g0); border:var(--hairline); padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px;" onclick="WC.openCollection()">
+              <button class="card" style="width:100%; text-align:left; background:var(--g0); border:var(--hairline); padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px;" onclick="WC.openCollection()" data-prd-label="Tab 5 · COLLECTION 球队限定礼物套系入口 · 礼物清单/分类规则/GOAL 兑换价格/兑换流程">
                 <div style="flex:1; min-width:0;">
                   <div style="font-weight:var(--weight-title); font-size:14px;">球队限定礼物套系</div>
-                  <div style="font-size:11px; color:var(--g5); margin-top:4px;">按球队组合定制礼物 · <span class="tbd">[TBD: 礼物总数]</span></div>
+                  <div style="font-size:11px; color:var(--g5); margin-top:4px;">按球队组合定制礼物 · 12 款套系</div>
                   <div style="display:flex; gap:6px; margin-top:8px;">
                     <div style="width:32px; height:32px; border-radius:6px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px); border:var(--hairline);"></div>
                     <div style="width:32px; height:32px; border-radius:6px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 4px, var(--g2) 4px, var(--g2) 8px); border:var(--hairline);"></div>
@@ -2178,9 +2669,6 @@
                 </div>
                 <div style="font-size:20px; color:var(--g4);">›</div>
               </button>
-              <div style="font-size:11px; color:var(--g4); margin-top:8px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
-                <span class="tbd">[TBD: 礼物清单]</span> · <span class="tbd">[TBD: 分类规则]</span> · <span class="tbd">[TBD: GOAL 兑换价格]</span> · <span class="tbd">[TBD: 兑换流程]</span>
-              </div>
             </div>
           </article>
 
@@ -2190,11 +2678,11 @@
               <div class="module__anchor">#m5-gift</div>
             </div>
             <div class="module__body module__body--fill">
-              <button class="card" style="width:100%; text-align:left; background:var(--g0); border:var(--hairline); padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px;" onclick="WC.toast('待补充模块')">
+              <button class="card" style="width:100%; text-align:left; background:var(--g0); border:var(--hairline); padding:14px; cursor:pointer; display:flex; align-items:center; gap:12px;" onclick="WC.toast('跳限定礼物')" data-prd-label="Tab 5 · LIMITED EDITION 限定礼物入口">
                 <div style="width:48px; height:48px; border-radius:8px; background-image:repeating-linear-gradient(45deg, var(--g1) 0, var(--g1) 6px, var(--g2) 6px, var(--g2) 12px); border:var(--hairline); flex:none;"></div>
                 <div style="flex:1; min-width:0;">
                   <div style="font-weight:var(--weight-title); font-size:14px;">限定礼物入口</div>
-                  <div style="font-size:11px; color:var(--g5); margin-top:4px;"><span class="tbd">[TBD: 全部待补充]</span></div>
+                  <div style="font-size:11px; color:var(--g5); margin-top:4px;">世界杯限时礼物与兑换入口</div>
                 </div>
                 <div style="font-size:20px; color:var(--g4);">›</div>
               </button>
@@ -2294,8 +2782,8 @@
           <span class="tab__num tab__num--hidden" aria-hidden="true">4</span>
           <span class="tab__icon tab__icon--media" aria-hidden="true"></span><span class="tab__label">媒体</span>
         </button>
-        <button class="task-dock" id="taskDock" type="button" data-prd-label="Global · 应援任务常驻入口 · 嵌入底部 Tab 栏" aria-label="打开应援任务">
-          <span>应援任务</span><span class="task-dock__arrow" aria-hidden="true">↑</span>
+        <button class="task-dock" id="taskDock" type="button" data-prd-label="Global · 应援任务 MATCH TASK · 嵌入底部 Tab 栏" aria-label="打开应援任务 MATCH TASK">
+          <span>应援任务 MATCH TASK</span><span class="task-dock__arrow" aria-hidden="true">↑</span>
         </button>
       </nav>
 
@@ -2316,7 +2804,7 @@
   <!-- Component reference legend (dev aid; outside the device) -->
   <div class="legend">
     <h4>Stage 4 · 已填充模块</h4>
-    Tab 4 · <code>ON AIR</code> <code>FAN CLUB</code> <code>HIGHLIGHTS</code>&nbsp;·&nbsp;
+    Tab 4 · <code>ON AIR</code> <code>LIVE HUB</code> <code>CIRCLE FEED</code> <code>MEETUP</code> <code>FAN CLUB</code> <code>GROUP CHAT</code> <code>HIGHLIGHTS</code>&nbsp;·&nbsp;
     全局·<code>[TBD] 分组索引</code> <code>未实现承诺</code>
     <br><br>
     <h4>Stage 3 · 已填充模块</h4>
@@ -2331,7 +2819,7 @@
     <h4>JS API</h4>
     <code>WC.go(n)</code> · <code>WC.toast(msg)</code> · <code>WC.modal()</code> ·
     <code>WC.sheet()</code> · <code>WC.openOnb(step)</code> ·
-    <code>WC.openGlobe()</code> · <code>WC.pkShoot(n)</code> ·
+    <code>WC.openGlobe()</code> · <code>WC.openLiveHub()</code> · <code>WC.openCircleFeed()</code> · <code>WC.openMeetupPage()</code> · <code>WC.openGroupChat(country)</code> · <code>WC.openHighlightsFeed()</code> · <code>WC.pkShoot(n)</code> ·
     <code>WC.subGo(k)</code> · <code>WC.openMoreEvents()</code>
   </div>
 </div>
@@ -2346,14 +2834,17 @@
   const pages = document.querySelectorAll('.page');
   const tabs = document.querySelectorAll('.tab');
   const tabBar = document.querySelector('.tab-bar');
+  const deviceScreen = document.querySelector('.device-screen');
   const fanidEntry = document.getElementById('fanidEntry');
   const storeFab = document.getElementById('storeFab');
 
   function go(n) {
     n = String(n);
     pages.forEach(p => p.classList.toggle('is-active', p.dataset.tab === n));
+    if (deviceScreen) deviceScreen.classList.toggle('is-native-chat', n === '4-group-chat');
+    const parentTab = n.indexOf('-') > -1 ? n.split('-')[0] : n;
     tabs.forEach(t => {
-      const active = t.dataset.go === n;
+      const active = t.dataset.go === parentTab;
       t.classList.toggle('is-active', active);
       t.setAttribute('aria-selected', active ? 'true' : 'false');
     });
@@ -2711,26 +3202,33 @@
     const c = onbState.country, p = onbState.player;
     const sl = document.getElementById('fanidStarLabel');
     const nm = document.getElementById('fanidName');
-    if (sl) sl.textContent = p ? ('支持球星 · #' + p.num + ' ' + p.name) : '支持球星 · [TBD: 未选择]';
-    if (nm) nm.textContent = c ? c.name : '[TBD: 未选择主队]';
+    if (sl) sl.textContent = p ? ('支持球星 · #' + p.num + ' ' + p.name) : '支持球星 · #10 Messi';
+    if (nm) nm.textContent = c ? c.name : '阿根廷 · 蓝白军团';
   }
 
   // ---------- Tasks ----------
   const TASK_DATA = {
     daily: [
-      { icon:'语聊', desc:'语聊房 + 直播间停留时长', progress:'10/20 分钟', goal:'+5', extra:'TBD' },
-      { icon:'发帖', desc:'发布世界杯话题帖子', progress:'0/1', goal:'+8', extra:'TBD' },
-      { icon:'互动', desc:'对世界杯帖子点赞/评论', progress:'3/5', goal:'+3', extra:'TBD' }
+      { icon:'语聊', desc:'每日在直播间/语聊房达20分钟', progress:'0/20 分钟', goal:'+5' },
+      { icon:'福袋', desc:'每日发福袋累计消耗199币', progress:'0/199 币', goal:'+8' },
+      { icon:'宝箱', desc:'每日参与开宝箱瓜分奖励1次', progress:'0/1', goal:'+6' },
+      { icon:'礼物', desc:'在直播间/语聊房累计赠送HT币礼物', progress:'累计 0 HT币', goal:'+10' },
+      { icon:'话题', desc:'带话题 #世界杯 发布帖文', progress:'0/1 · ≥25字+1图+无违规', goal:'+8' },
+      { icon:'点赞', desc:'带话题 #世界杯 的帖文, 点赞≥30', progress:'0/3', goal:'+6' },
+      { icon:'讨论', desc:'发布高质量讨论帖', progress:'0/1 · ≥15字', goal:'+5' },
+      { icon:'广告', desc:'看广告', progress:'0/1', goal:'+3' },
+      { icon:'商城', desc:'在商城购买装扮, 累计购买HT币装扮', progress:'累计 0 HT币', goal:'+8' },
+      { icon:'曝光', desc:'每日参与开屏曝光1次', progress:'0/1', goal:'+5' },
+      { icon:'推广', desc:'购买超级曝光&帖文推广累计消耗HT币', progress:'累计 0 HT币', goal:'+10' }
     ],
     once: [
-      { icon:'认证', desc:'激活球迷证 FAN ID', progress:'已完成', goal:'+20', extra:'TBD', done:true },
-      { icon:'分享', desc:'分享 H5 给好友', progress:'0/1', goal:'+10', extra:'TBD' },
-      { icon:'入场', desc:'首次发出 1 次人浪', progress:'0/1', goal:'+10', extra:'TBD' }
+      { icon:'分享', desc:'分享活动页面至动态', progress:'0/1', goal:'+10' },
+      { icon:'VIP', desc:'购买VIP', progress:'0/1', goal:'+20' },
+      { icon:'词包', desc:'HelloWords 世界杯词包打卡', progress:'0/1', goal:'+8' },
+      { icon:'AI', desc:'在 Language Ai 聊世界杯话题', progress:'0/1', goal:'+8' }
     ],
     multi: [
-      { icon:'人浪', desc:'累计发出人浪', progress:'累计 0 次', goal:'+1/次', extra:'TBD' },
-      { icon:'教练', desc:'担任教练成功传球', progress:'累计 0 次', goal:'+1/次', extra:'TBD' },
-      { icon:'竞猜', desc:'参与焦点赛事竞猜', progress:'累计 0 次', goal:'+2/次', extra:'TBD' }
+      { icon:'送礼', desc:'在信息流帖文送礼, 累计赠送HT币礼物', progress:'累计 0 HT币', goal:'+1/次' }
     ]
   };
   function buildTaskGroupsHtml(isSheet) {
@@ -2748,7 +3246,6 @@
           + '<div class="task-body"><div class="task-desc">' + it.desc + '</div><div class="task-progress">' + it.progress + '</div></div>'
           + '<div class="task-rewards">'
           +   '<div class="task-reward">GOAL ' + it.goal + '</div>'
-          +   '<div class="task-reward"><span class="tbd">[TBD: HT 币/RMB]</span></div>'
           +   '<div class="task-status ' + (it.done?'done':'pending') + '">' + (it.done?'已完成':'待完成') + '</div>'
           + '</div></div>';
       });
@@ -3354,6 +3851,9 @@
   }
 
   // ---------- Tab 5 store ----------
+  // PRD flow: Tab 5 商店 / VIP SALES carousel card -> VIP SKU half-sheet.
+  // SKU half-sheet structure: purchase summary -> sku-specific gift pack -> confirm purchase -> payment / entitlement delivery.
+  // Year pass and lifetime pass intentionally use different gift pack payloads for PRD reverse mapping.
   function initVipCarousel() {
     document.querySelectorAll('[data-vip-carousel]').forEach(carousel => {
       const track = carousel.querySelector('.vip-carousel__track');
@@ -3383,9 +3883,52 @@
   }
 
   function openSku(kind) {
+    const data = kind === 'year'
+      ? {
+          title: 'VIP 年卡购买',
+          code: 'VIP YEAR PASS',
+          name: '年卡限时 7 折',
+          gift: '得世界杯年卡限定礼包',
+          now: '¥336',
+          old: '原价 ¥488',
+          pack: '年卡赠送礼包',
+          packSub: '购买年卡赠送',
+          go: 'GO 2026',
+          items: [['主题','世界杯年卡'], ['铭牌','年卡身份'], ['气泡','聊天'], ['挂件','头像'], ['背景','profile']]
+        }
+      : {
+          title: 'VIP 终身卡购买',
+          code: 'VIP LIFETIME',
+          name: '终身 VIP 限时 7 折',
+          gift: '得世界杯终身专属礼包',
+          now: '¥736',
+          old: '原价 ¥1051',
+          pack: '终身卡赠送礼包',
+          packSub: '购买终身卡赠送',
+          go: 'GO 8888',
+          items: [['主题','终身专属'], ['铭牌','终身身份'], ['气泡','聊天'], ['挂件','头像'], ['背景','profile']]
+        };
+    const giftGrid = data.items.map(it => '<div class="pkg-cosmetic"><b>' + it[0] + '</b>' + it[1] + '</div>').join('');
     WC.sheet({
-      title: kind === 'year' ? '年卡 SKU 选择' : '终身卡 SKU 选择',
-      html: '<div style="display:flex; flex-direction:column; gap:8px;"><div style="padding:12px; background:var(--g1); border-radius:6px;"><b>SKU 1</b> · <span class="tbd">[TBD]</span></div><div style="padding:12px; background:var(--g1); border-radius:6px;"><b>SKU 2</b> · <span class="tbd">[TBD]</span></div><div style="padding:12px; background:var(--g1); border-radius:6px;"><b>SKU 3</b> · <span class="tbd">[TBD]</span></div><button class="btn-primary" style="margin-top:6px;" onclick="WC.toast(\'跳支付·[TBD]\')">去支付</button></div>'
+      title: data.title,
+      html: '<div style="display:flex; flex-direction:column; gap:10px;" data-prd-label="Tab 5 · VIP SKU 半窗 · ' + data.code + '">'
+        + '<div style="padding:14px; border-radius:10px; background:var(--g7); color:var(--g0); position:relative; overflow:hidden;">'
+        +   '<div style="position:absolute; inset:0; opacity:.12; background-image:repeating-linear-gradient(-18deg, transparent 0 12px, var(--g0) 12px 14px);"></div>'
+        +   '<div style="position:relative;">'
+        +     '<div style="font-size:11px; font-weight:var(--weight-title); letter-spacing:.06em; opacity:.78;">' + data.code + '</div>'
+        +     '<div style="margin-top:5px; font-size:20px; line-height:1.08; font-weight:var(--weight-title);">' + data.name + '</div>'
+        +     '<div style="margin-top:4px; font-size:12px; opacity:.88;">' + data.gift + '</div>'
+        +     '<div style="margin-top:10px; display:flex; align-items:baseline; gap:8px;"><span style="font-family:ui-monospace,Menlo,monospace; font-size:28px; font-weight:var(--weight-title);">' + data.now + '</span><span style="font-family:ui-monospace,Menlo,monospace; font-size:12px; opacity:.7; text-decoration:line-through;">' + data.old + '</span></div>'
+        +   '</div>'
+        + '</div>'
+        + '<div class="pkg-card" data-prd-label="Tab 5 · ' + data.pack + ' · SKU 半窗赠送包">'
+        +   '<div class="pkg-card__title">' + data.pack + '<small>' + data.packSub + '</small></div>'
+        +   '<div class="pkg-go"><div class="pkg-go__icon">GO</div><div><div style="font-size:11px; color:var(--g5);">GO 值赠送</div><div class="pkg-go__num">' + data.go + '</div></div></div>'
+        +   '<div class="pkg-cosmetic-grid">' + giftGrid + '</div>'
+        + '</div>'
+        + '<button class="btn-primary" style="height:38px;" onclick="WC.toast(\'跳支付 · ' + data.name + '\')">确认购买</button>'
+        + '<div style="font-size:11px; color:var(--g5); line-height:1.5;">支付成功后自动发放 VIP 权益与世界杯礼包；礼包内容按当前 SKU 区分。</div>'
+        + '</div>'
     });
   }
   function openCollection() {
@@ -3423,13 +3966,14 @@
   // STAGE 4 — Tab 4 (Media) + Global Polish
   // ============================================================
 
-  // ---------- Live program list ----------
+  // ---------- Live entrance and Tab 4.1 aggregation page ----------
+  // PRD mapping: Tab 4 · ON AIR is an entrance module; every card opens Tab 4.1 · 直播语聊聚合页.
   const LIVES = [
-    { name:'Ana M.',     country:'🇦🇷 ARG', topic:'与Messi聊下月决赛!', time:'现在', state:'live',     followed:false, booked:false, inRoom:true  },
-    { name:'Hiro T.',    country:'🇯🇵 JPN', topic:'梦中门将: J联赛青训上升',  time:'现在', state:'live',     followed:true,  booked:false, inRoom:true  },
-    { name:'Lukas W.',   country:'🇩🇪 GER', topic:'拜仁德魔术师的主场吹咨',     time:'19:30', state:'upcoming', followed:false, booked:false, inRoom:false },
-    { name:'Sofia R.',   country:'🇪🇸 ESP', topic:'走路去你家看世界杯',     time:'21:00', state:'upcoming', followed:false, booked:false, inRoom:false },
-    { name:'Diego F.',   country:'🇧🇷 BRA', topic:'桑巴与几内亚问颗决不兑质!',     time:'15:00 (已结束)', state:'ended', followed:false, booked:false, inRoom:false }
+    { name:'Ana M.', country:'ARG', tag:'赛前预测', topic:'阿根廷决赛前夜: 阵容与点球', match:'ARG VS FRA', time:'现在', state:'live', viewers:'12.8K', title:'与 Messi 聊决赛前夜', host:'Ana M.' },
+    { name:'Hiro T.', country:'JPN', tag:'战术复盘', topic:'日本蓝武士: 高位逼抢怎么打', match:'JPN VS GER', time:'现在', state:'live', viewers:'8.4K', title:'亚洲球队战术复盘', host:'Hiro T.' },
+    { name:'Lukas W.', country:'GER', tag:'门将教室', topic:'门将视角拆解世界杯扑救', match:'GER VS ESP', time:'19:30', state:'upcoming', viewers:'3.2K', title:'门将如何读点球', host:'Lukas W.' },
+    { name:'Sofia R.', country:'ESP', tag:'观赛派对', topic:'西班牙球迷赛前一起聊', match:'ESP VS BRA', time:'21:00', state:'upcoming', viewers:'2.7K', title:'马德里观赛派对', host:'Sofia R.' },
+    { name:'Diego F.', country:'BRA', tag:'桑巴看台', topic:'巴西边路爆点与冠军路', match:'BRA VS ARG', time:'回放', state:'ended', viewers:'15.6K', title:'桑巴进攻夜谈', host:'Diego F.' }
   ];
   function sortLives() {
     return [...LIVES].sort((a, b) => {
@@ -3441,103 +3985,221 @@
   function renderLives() {
     const m = document.getElementById('liveList');
     if (!m) return;
-    m.innerHTML = '';
-    sortLives().forEach((l, i) => {
-      const realIdx = LIVES.indexOf(l);
-      const row = document.createElement('div');
-      row.className = 'live-row';
-      let stateBtn = '';
-      if (l.state === 'live') stateBtn = '<button class="live-btn is-live" onclick="WC.toast(\'跳房间·' + l.name + '\')">开播中</button>';
-      else if (l.state === 'ended') stateBtn = '<button class="live-btn is-ended" disabled>已结束</button>';
-      else stateBtn = '<button class="live-btn ' + (l.booked?'is-booked':'') + '" onclick="WC.bookLive(' + realIdx + ')">' + (l.booked?'已预约':'预约') + '</button>';
-      row.innerHTML =
-        '<div class="live-avatar ' + (l.state==='live'?'live-on':(l.inRoom?'in-room':'')) + '" onclick="WC.liveAvatarClick(' + realIdx + ')"></div>'
-        + '<div class="live-meta">'
-        +   '<div class="live-meta__top">' + l.name + '<small>' + l.country + '</small></div>'
-        +   '<div class="live-meta__topic">' + l.topic + '</div>'
-        +   '<div class="live-meta__time">' + l.time + '</div>'
-        + '</div>'
-        + '<div class="live-actions">'
-        +   '<button class="live-btn ' + (l.followed?'is-followed':'') + '" onclick="WC.followLive(' + realIdx + ', this)">' + (l.followed?'已关注':'关注 +') + '</button>'
-        +   stateBtn
-        + '</div>';
-      m.appendChild(row);
-    });
+    const sorted = sortLives();
+    const hero = sorted[0];
+    const strip = sorted.slice(1);
+    m.innerHTML =
+      '<div class="live-showcase">'
+      +   '<button class="live-hero-card" type="button" onclick="WC.openLiveHub()" data-prd-label="Tab 4 · ON AIR 主直播入口 → Tab 4.1">'
+      +     '<div class="live-video"><span class="live-video__tag">' + (hero.state === 'live' ? 'LIVE' : 'NEXT') + '</span><span class="live-video__time">' + hero.time + '</span></div>'
+      +     '<div class="live-card-body">'
+      +       '<div class="live-host-avatar">' + hero.country + '</div>'
+      +       '<div><div class="live-card-kicker">' + hero.name + ' · ' + hero.match + '</div><div class="live-card-title">' + hero.topic + '</div><div class="live-card-meta">主播 ' + hero.host + ' · ' + hero.viewers + ' 人正在看</div></div>'
+      +       '<div class="live-card-cta">进入 ›</div>'
+      +     '</div>'
+      +   '</button>'
+      +   '<div class="live-strip" data-prd-label="Tab 4 · ON AIR 横滑直播入口 → Tab 4.1">'
+      +     strip.map(l =>
+              '<button class="live-mini-card" type="button" onclick="WC.openLiveHub()">'
+              + '<div class="live-video"><span class="live-video__tag">' + l.tag + '</span><span class="live-video__time">' + l.time + '</span></div>'
+              + '<div class="live-mini-card__body"><div class="live-mini-card__host">' + l.name + ' · ' + l.country + '</div><div class="live-mini-card__title">' + l.title + '</div><div class="live-mini-card__time">' + l.match + '</div></div>'
+              + '</button>'
+            ).join('')
+      +   '</div>'
+      + '</div>';
+  }
+  function openLiveHub() {
+    go('4-live');
+    renderLiveHubRooms();
   }
   function liveAvatarClick(i) {
-    const l = LIVES[i];
-    toast(l.inRoom ? '跳房间 · ' + l.name + ' · [TBD: 在房点击行为 A/B]' : '跳 profile · ' + l.name);
+    openLiveHub();
   }
   function followLive(i, btn) {
-    LIVES[i].followed = !LIVES[i].followed;
-    btn.classList.toggle('is-followed', LIVES[i].followed);
-    btn.textContent = LIVES[i].followed ? '已关注' : '关注 +';
+    openLiveHub();
   }
   function bookLive(i) {
-    LIVES[i].booked = true;
-    toast('🌟 成功预约 ' + LIVES[i].name + ' 的房间!开播时你将收到特别提醒~');
-    renderLives();
+    openLiveHub();
   }
-  function openKoc() {
-    WC.sheet({
-      title:'球迷 KOC 招募',
-      html:'<div style="font-size:12px; color:var(--g6); line-height:1.7;"><span class="tbd">[TBD: 招募文案]</span></div>'
-        + '<div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">'
-        +   '<div style="padding:10px; background:var(--g1); border-radius:6px;"><b>昵称</b><div class="tbd">[TBD: 表单字段]</div></div>'
-        +   '<div style="padding:10px; background:var(--g1); border-radius:6px;"><b>国籍 / 语种</b><div class="tbd">[TBD]</div></div>'
-        +   '<div style="padding:10px; background:var(--g1); border-radius:6px;"><b>主播经验 / 资料</b><div class="tbd">[TBD]</div></div>'
-        + '</div>'
-        + '<button class="btn-primary" style="margin-top:10px; width:100%;" onclick="WC.toast(\'提交报名·[TBD: 报名名单去向]\')">提交报名</button>'
-    });
-  }
-
-  // ---------- FAN CLUB sub-pages ----------
-  function subOrg(k) {
-    document.querySelectorAll('#m4-org .subpage').forEach(p => p.classList.toggle('is-active', p.dataset.orgsub === k));
-    if (k === 'meetup') renderCities();
-  }
-  const CITIES = ['北京','上海','广州','深圳','成都','杭州'];
-  function renderCities() {
-    const m = document.getElementById('cityGrid');
+  const LIVE_ROOMS = [
+    { lang:'EN', tag:'赛前预测', host:'Ana M.', country:'ARG', title:'Argentina final night talk', views:'12.8K', hot:true },
+    { lang:'JP', tag:'战术复盘', host:'Hiro T.', country:'JPN', title:'Blue Samurai pressing room', views:'8.4K', hot:true },
+    { lang:'ZH', tag:'球迷共看', host:'Kiana', country:'CHN', title:'决赛夜一起看球聊天', views:'6.1K', hot:false },
+    { lang:'ES', tag:'看台派对', host:'Sofia R.', country:'ESP', title:'Madrid fan watch party', views:'4.5K', hot:false },
+    { lang:'PT', tag:'桑巴看台', host:'Diego F.', country:'BRA', title:'Brazil attack preview', views:'15.6K', hot:true },
+    { lang:'DE', tag:'门将教室', host:'Lukas W.', country:'GER', title:'Penalty keeper analysis', views:'3.2K', hot:false }
+  ];
+  function renderLiveHubRooms() {
+    const m = document.getElementById('liveHubGrid');
     if (!m || m.dataset.rendered) return;
-    m.innerHTML = CITIES.map(c =>
-      '<div class="city-card"><div class="city-card__img" onclick="WC.toast(\'跳 Meetup 详情 · ' + c + '\')">' + c + '</div>'
-      + '<div class="city-card__body"><div class="city-card__name">' + c + ' · 世界杯观赛</div>'
-      + '<div class="city-card__meta"><span class="tbd">[TBD: 时间/地点/人数]</span></div>'
-      + '<button class="city-card__btn" onclick="WC.toast(\'跳报名表单 · ' + c + '\')">报名</button></div></div>'
+    m.innerHTML = LIVE_ROOMS.map(r =>
+      '<button class="live-room-card" type="button" onclick="WC.toast(\'跳直播语聊房 · ' + r.host + ' · [TBD: 房间路由]\')" data-prd-label="Tab 4.1 · 直播语聊房卡片">'
+      + '<div class="live-room-card__top"><span class="live-room-lang">' + r.lang + '</span><span class="live-room-tag">' + r.tag + '</span><span class="live-room-signal">|||</span></div>'
+      + '<div class="live-room-avatar">' + r.country + '</div>'
+      + '<div class="live-room-host">' + r.host + '</div>'
+      + '<div class="live-room-title">' + r.title + '</div>'
+      + '<div class="live-room-meta"><span>' + r.views + ' 观看</span>' + (r.hot ? '<span class="live-room-hot">Hot</span>' : '<span>LIVE</span>') + '</div>'
+      + '</button>'
     ).join('');
     m.dataset.rendered = '1';
   }
-  function openGroupSheet() {
-    const groups = ['阿根廷','巴西','德国','西班牙','日本','法国'];
-    let html = '<div class="group-list">';
-    groups.forEach(g => {
-      html += '<div class="group-row" onclick="WC.toast(\'跳 HT 群聊 · ' + g + ' 球迷群\')"><div class="group-row__flag"></div><div><div class="group-row__name">' + g + ' 球迷群</div><div class="group-row__meta"><span class="tbd">[TBD: 简介 / 群规]</span></div></div><div class="group-row__count">128 / <span class="tbd">[TBD]</span></div></div>';
-    });
-    html += '</div><div style="font-size:11px; color:var(--g4); margin-top:10px; padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;"><span class="tbd">[TBD: 群卡片字段]</span> · <span class="tbd">[TBD: 人数上限]</span> · <span class="tbd">[TBD: 满员策略]</span> · <span class="tbd">[TBD: 国家清单 A 同 48 国 / B 单独配置]</span></div>';
-    WC.sheet({ title:'球迷群 · GROUP', html });
+  function openKoc() {
+    openLiveHub();
   }
 
-  // ---------- HIGHLIGHTS ----------
-  function subHl(k) {
-    document.querySelectorAll('#m4-highlights .subpage').forEach(p => p.classList.toggle('is-active', p.dataset.hlsub === k));
-    if (k === 'feed') renderHlFeed();
+  // ---------- FAN CLUB sub-pages ----------
+  function openCircleFeed() {
+    go('4-circle');
+    renderCircleFeed();
   }
+  const CIRCLE_POSTS = [
+    {
+      name:'Kaiya', country:'USA', meta:'EN ⇄ CN · 推荐',
+      text:'I finally picked my World Cup team for 2026. Argentina or Japan? I need one reason from fans before kickoff.',
+      trans:'我终于要选 2026 世界杯主队了。阿根廷还是日本? 开赛前给我一个理由。',
+      tags:['#2026世界杯','#主队选择','#球迷求建议'],
+      photos:6, actions:'12.4K 看过 · 326 评论 · 88 收藏'
+    },
+    {
+      name:'Miguel', country:'MEX', meta:'ES ⇄ EN · 附近',
+      text:'Mexico City watch party list is growing. Who wants a bilingual table for the opening match?',
+      trans:'墨西哥城观赛局名单增加中。揭幕战有人想拼一个双语桌吗?',
+      tags:['#开幕战','#线下观赛','#双语看球'],
+      photos:3, actions:'8.9K 看过 · 145 评论 · 52 收藏'
+    },
+    {
+      name:'Lina', country:'KOR', meta:'KR ⇄ JP · 互助',
+      text:'I made a match calendar for Korea, Japan and Australia games. Comment your timezone and I will convert it.',
+      trans:'我整理了韩国、日本、澳大利亚的赛程。留言你的时区, 我帮你换算。',
+      tags:['#赛程换算','#亚洲球队','#互助'],
+      photos:4, actions:'6.2K 看过 · 201 评论 · 31 收藏'
+    }
+  ];
+  function renderCircleFeed() {
+    const m = document.getElementById('circleFeedList');
+    if (!m || m.dataset.rendered) return;
+    m.innerHTML = CIRCLE_POSTS.map((p, idx) =>
+      '<article class="circle-post-card" data-prd-label="Tab 4.2 · 世界杯动态 Po 文 ' + (idx + 1) + '">'
+      + '<div class="circle-post-head">'
+      +   '<div class="circle-post-avatar">' + p.country + '</div>'
+      +   '<div><div class="circle-post-name">' + p.name + '</div><div class="circle-post-meta">' + p.meta + '</div></div>'
+      +   '<button class="circle-follow" type="button" onclick="WC.toast(\'关注 ' + p.name + ' · [TBD: 关注态]\')">关注</button>'
+      + '</div>'
+      + '<div class="circle-post-text">' + p.text + '<small>' + p.trans + '</small></div>'
+      + '<div class="circle-photo-grid">'
+      +   Array.from({ length:p.photos }).map((_, i) => '<div class="circle-photo">IMG ' + (i + 1) + '</div>').join('')
+      + '</div>'
+      + '<div class="circle-tags">' + p.tags.map(t => '<span>' + t + '</span>').join('') + '</div>'
+      + '<div class="circle-post-actions"><span>' + p.actions + '</span><span>赞 · 评论 · 分享</span></div>'
+      + '</article>'
+    ).join('');
+    m.dataset.rendered = '1';
+  }
+  function openMeetupPage() {
+    go('4-meetup');
+    renderMeetups();
+  }
+  const MEETUPS = [
+    { country:'中国', city:'上海', level:'S 级', title:'浦东决赛夜双语观赛', match:'ARG VS BRA', time:'7/19 · 20:00', venue:'浦东足球酒馆', capacity:'80 / 120', host:'HelloTalk 上海球迷会', fee:'免费 RSVP' },
+    { country:'中国', city:'成都', level:'A 级', title:'春熙路半决赛看球局', match:'FRA VS GER', time:'7/15 · 19:30', venue:'太古里运动餐吧', capacity:'52 / 80', host:'成都多语种足球社', fee:'¥39 饮品券' },
+    { country:'美国', city:'Los Angeles', level:'S 级', title:'LA World Cup watch night', match:'USA VS MEX', time:'7/12 · 18:00', venue:'Koreatown Sports Bar', capacity:'96 / 140', host:'HT West Coast Fans', fee:'Free RSVP' },
+    { country:'墨西哥', city:'Mexico City', level:'S 级', title:'CDMX bilingual opener', match:'MEX VS CAN', time:'6/11 · 19:00', venue:'Roma Norte Fan Hall', capacity:'110 / 150', host:'Mexico City Hosts', fee:'Free RSVP' },
+    { country:'日本', city:'Tokyo', level:'A 级', title:'涩谷蓝武士战术夜', match:'JPN VS ESP', time:'7/02 · 21:00', venue:'Shibuya Football Cafe', capacity:'44 / 60', host:'Tokyo Blue Fans', fee:'¥1000 套餐' },
+    { country:'欧洲', city:'Berlin', level:'A 级', title:'Berlin keeper analysis meetup', match:'GER VS NED', time:'7/08 · 20:30', venue:'Mitte Match Room', capacity:'38 / 60', host:'HT Berlin Club', fee:'Free RSVP' }
+  ];
+  function renderMeetups() {
+    const m = document.getElementById('meetupList');
+    if (!m || m.dataset.rendered) return;
+    const countries = [...new Set(MEETUPS.map(x => x.country))];
+    m.innerHTML = countries.map(country => {
+      const items = MEETUPS.filter(x => x.country === country);
+      return '<section class="meetup-country" data-prd-label="Tab 4.3 · ' + country + ' Meetup 分组">'
+        + '<div class="meetup-country__head"><div class="meetup-country__title">' + country + '</div><div class="meetup-country__meta">' + items.length + ' 城市 · ' + items.length * 2 + ' 场次</div></div>'
+        + '<div class="meetup-card-list">'
+        + items.map(it => {
+            const idx = MEETUPS.indexOf(it);
+            return '<article class="meetup-card" data-prd-label="Tab 4.3 · 城市 Meetup 入口卡">'
+              + '<button class="meetup-card__image" type="button" onclick="WC.openMeetupDetail(' + idx + ')" aria-label="查看 ' + it.city + ' Meetup 详情">CITY IMG</button>'
+              + '<div class="meetup-card__body">'
+              +   '<div class="meetup-card__city">' + it.city + '<small>' + it.level + '</small></div>'
+              +   '<div class="meetup-card__match">' + it.title + '<br>' + it.match + '</div>'
+              +   '<div class="meetup-card__meta">' + it.time + ' · ' + it.venue + '<br>' + it.capacity + ' · ' + it.fee + '</div>'
+              +   '<div class="meetup-card__actions"><button class="btn-secondary" type="button" onclick="WC.openMeetupDetail(' + idx + ')">详情</button><button class="btn-primary" type="button" onclick="WC.openMeetupSignup(' + idx + ')">报名</button></div>'
+              + '</div></article>';
+          }).join('')
+        + '</div></section>';
+    }).join('');
+    m.dataset.rendered = '1';
+  }
+  function openMeetupDetail(i) {
+    const it = MEETUPS[i];
+    if (!it) return;
+    WC.sheet({
+      title:'Meetup 详情 · ' + it.city,
+      html:'<div class="meetup-detail" data-prd-label="Tab 4.3.1 · Meetup 详情弹窗">'
+        + '<div class="meetup-detail__cover">CITY PHOTO · ' + it.city + '</div>'
+        + '<div class="meetup-detail__title">' + it.title + '</div>'
+        + '<div class="meetup-detail__meta">国家 / 城市: ' + it.country + ' · ' + it.city + '<br>比赛: ' + it.match + '<br>时间: ' + it.time + '<br>地点: ' + it.venue + '<br>容量: ' + it.capacity + '<br>费用: ' + it.fee + '</div>'
+        + '<div class="meetup-detail__rules"><b>活动说明</b><br>1. 提前 15 分钟签到, 主持人会组织同城破冰。<br>2. 支持多语言桌牌, 可选择中文 / 英语 / 当地语言。<br>3. 报名后生成 Meetup 入场码, 具体规则可后续接 PRD 字段。</div>'
+        + '<button class="btn-primary" style="width:100%; height:38px;" onclick="WC.openMeetupSignup(' + i + ')">报名这个 Meetup</button>'
+        + '</div>'
+    });
+  }
+  function openMeetupSignup(i) {
+    const it = MEETUPS[i];
+    if (!it) return;
+    WC.sheet({
+      title:'Meetup 报名表 · ' + it.city,
+      html:'<form class="meetup-form" data-prd-label="Tab 4.3.2 · Meetup 报名表" onsubmit="event.preventDefault(); WC.toast(\'报名已提交 · ' + it.city + ' Meetup\'); WC.closeSheet();">'
+        + '<label>选择活动<input value="' + it.city + ' · ' + it.title + '" readonly></label>'
+        + '<label>昵称<input placeholder="例如: MoonGrant"></label>'
+        + '<label>联系方式<input placeholder="邮箱 / HT ID / 手机号"></label>'
+        + '<label>同行人数<select><option>1 人</option><option>2 人</option><option>3 人</option><option>4 人</option></select></label>'
+        + '<label>语言偏好<select><option>中文</option><option>English</option><option>Español</option><option>Português</option><option>日本語</option></select></label>'
+        + '<label>备注<textarea placeholder="主队、过敏信息、是否愿意做主持等"></textarea></label>'
+        + '<button class="btn-primary" type="submit" style="height:38px;">提交报名</button>'
+        + '<div style="font-size:11px; color:var(--g5); line-height:1.5;">提交后展示报名成功态, 并可补充入场码 / 审核 / 取消报名规则。</div>'
+        + '</form>'
+    });
+  }
+  function openGroupSheet() {
+    const groups = ['阿根廷','巴西','德国','西班牙','日本','法国'];
+    const groupMeta = {
+      '阿根廷': '赛前阵容讨论 · 决赛约看球',
+      '巴西': '桑巴球迷聊天 · 进攻复盘',
+      '德国': '战术分析 · 门将扑救讨论',
+      '西班牙': '控球流派 · 赛后复盘',
+      '日本': '蓝武士应援 · 亚洲球队互助',
+      '法国': '冠军阵容 · 球星话题'
+    };
+    let html = '<div class="group-list" data-prd-label="Tab 4 · FAN CLUB / GROUP 半屏弹窗 · 群卡片字段/简介群规/人数上限/满员策略/国家清单">';
+    groups.forEach(g => {
+      html += '<div class="group-row" data-prd-label="Tab 4 · GROUP 群卡片 · ' + g + ' · 后台随机分配该国家球迷群 · 人数动态平衡后台配置" onclick="WC.openGroupChat(\'' + g + '\')"><div class="group-row__flag"></div><div><div class="group-row__name">' + g + ' 球迷群</div><div class="group-row__meta">' + groupMeta[g] + '</div></div><button class="group-row__enter" type="button">进入</button></div>';
+    });
+    html += '</div>';
+    WC.sheet({ title:'球迷群 · GROUP', html });
+  }
+  function openGroupChat(country) {
+    country = country || '阿根廷';
+    const title = document.getElementById('groupChatTitle');
+    const members = document.getElementById('groupChatMembers');
+    if (title) title.textContent = country + '球迷会';
+    if (members) members.textContent = '群成员 (242)';
+    closeSheet();
+    go('4-group-chat');
+  }
+
+  // ---------- HIGHLIGHTS page flow ----------
+  // PRD mapping: Tab 4 HIGHLIGHTS entry card -> Tab 4.4 collection -> Tab 4.4.1 watch page.
   const HL_THUMBS = [
     { title:'Messi 任意球递击 入选 5 佳', dur:'00:34', like:'12.4K' },
     { title:'门将魔性 5 连扑 选手生涯代表作', dur:'01:12', like:'8.6K' },
     { title:'东亚德比 中鲜千里躺送果阁', dur:'00:48', like:'6.1K' },
     { title:'狂欢节 后阶段: 巴西球迷街头狂欢', dur:'00:22', like:'4.9K' }
   ];
-  function renderHlStrip() {
-    const m = document.getElementById('hlStrip');
-    if (!m) return;
-    m.innerHTML = HL_THUMBS.map((h, i) =>
-      '<div class="hl-thumb" onclick="WC.subHl(\'feed\')">'
-      + '<div class="hl-thumb__cover">VIDEO<span class="hl-thumb__dur">' + h.dur + '</span><span class="hl-thumb__play">▶</span></div>'
-      + '<div class="hl-thumb__title">' + h.title + '</div>'
-      + '<div class="hl-thumb__like">❤ ' + h.like + '</div></div>'
-    ).join('');
+  function openHighlightsFeed() {
+    go('4-highlights');
+    renderHlFeed();
   }
   function renderHlFeed() {
     const m = document.getElementById('hlFeed');
@@ -3545,7 +4207,7 @@
     let html = '';
     for (let i = 0; i < 8; i++) {
       const t = HL_THUMBS[i % HL_THUMBS.length];
-      html += '<div class="hl-feed-card" onclick="WC.subHl(\'watch\')">'
+      html += '<div class="hl-feed-card" onclick="WC.openHighlightWatch(' + (i % HL_THUMBS.length) + ')" data-prd-label="Tab 4.4 · 短视频卡片 → Tab 4.4.1">'
         + '<div class="hl-feed-card__cover">VIDEO ' + (i+1) + '<span class="hl-thumb__dur">' + t.dur + '</span></div>'
         + '<div class="hl-feed-card__body">'
         +   '<div class="hl-feed-card__title">' + t.title + '</div>'
@@ -3555,6 +4217,16 @@
     }
     m.innerHTML = html;
     m.dataset.rendered = '1';
+  }
+  function openHighlightWatch(i) {
+    const h = HL_THUMBS[i] || HL_THUMBS[0];
+    go('4-highlights-watch');
+    const title = document.getElementById('highlightWatchTitle');
+    const meta = document.getElementById('highlightWatchMeta');
+    const player = document.getElementById('highlightWatchPlayer');
+    if (title) title.textContent = h.title;
+    if (meta) meta.innerHTML = '观看 ' + h.like + ' · 时长 ' + h.dur + ' · 评论 <span class="tbd">[TBD]</span>';
+    if (player) player.textContent = 'VIDEO · ' + h.dur;
   }
 
   // ---------- Global polish: TBD grouped index + unmet promises ----------
@@ -3639,10 +4311,11 @@
   // Boot stage 4
   initVipCarousel();
   renderLives();
-  renderHlStrip();
   Object.assign(WC, {
-    liveAvatarClick, followLive, bookLive, openKoc,
-    subOrg, openGroupSheet, subHl
+    openLiveHub, renderLiveHubRooms, liveAvatarClick, followLive, bookLive, openKoc,
+    openCircleFeed, renderCircleFeed,
+    openMeetupPage, renderMeetups, openMeetupDetail, openMeetupSignup,
+    openGroupSheet, openGroupChat, openHighlightsFeed, renderHlFeed, openHighlightWatch
   });
 
   // Onboarding is now opened manually from the Tab 1 Home button.
