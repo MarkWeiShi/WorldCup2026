@@ -42,8 +42,9 @@
     --device-h: 852px;
     --safe-top: 54px;
     --safe-bottom: 34px;
-    --tabbar-h: 64px;
+    --tabbar-h: 32px;
     --topbar-h: 44px;
+    --task-drawer-h: 430px;
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -272,45 +273,155 @@
     right: 0;
     bottom: 0;
     height: calc(var(--tabbar-h) + var(--safe-bottom));
-    padding-bottom: var(--safe-bottom);
+    padding: 0 48px var(--safe-bottom);
     background: var(--g0);
     border-top: var(--hairline);
     display: grid;
+    grid-template-areas:
+      "tab1 tab2 tab3"
+      "task task task";
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 18px 14px;
+    align-items: center;
     z-index: 40;
+    overflow: visible;
+    transition: transform 220ms ease;
+  }
+  .tab-bar.is-drawer-lifted {
+    transform: translateY(calc(0px - var(--task-drawer-h)));
+    z-index: 90;
   }
   .tab {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 4px;
     cursor: pointer;
     user-select: none;
-    background: transparent;
-    border: 0;
+    width: 44px;
+    height: 44px;
+    justify-self: center;
+    transform: translateY(-24px);
+    background: var(--g0);
+    border: 1px solid var(--g2);
+    border-radius: 9px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
     padding: 0;
     font-family: var(--font-sans);
-    color: var(--g4);
-    transition: background 120ms ease;
+    color: var(--g7);
+    transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 140ms ease;
   }
-  .tab__num {
-    font-size: 13px;
-    font-weight: var(--weight-body);
-    line-height: 1;
+  .tab:nth-of-type(1) { grid-area: tab1; }
+  .tab:nth-of-type(2) { grid-area: tab2; }
+  .tab:nth-of-type(3) { grid-area: tab3; }
+  .tab:active { transform: translateY(-24px) scale(0.96); }
+  .tab__icon {
+    width: 19px;
+    height: 15px;
+    display: block;
+    position: relative;
+    color: currentColor;
+    flex: none;
+  }
+  .tab__icon--stand {
+    border-bottom: 2px solid currentColor;
+    background: repeating-linear-gradient(0deg, transparent 0 4px, currentColor 4px 5px);
+  }
+  .tab__icon--stand::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: -2px;
+    height: 6px;
+    border: 2px solid currentColor;
+    border-bottom: 0;
+    border-radius: 10px 10px 0 0;
+  }
+  .tab__icon--pitch {
+    border: 2px solid currentColor;
+    border-radius: 4px;
+  }
+  .tab__icon--pitch::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    border-left: 1px solid currentColor;
+  }
+  .tab__icon--pitch::after {
+    content: "";
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid currentColor;
+    border-radius: 50%;
+  }
+  .tab__icon--media {
+    border: 2px solid currentColor;
+    border-radius: 4px;
+  }
+  .tab__icon--media::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 3px;
+    border-left: 7px solid currentColor;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
   }
   .tab__label {
-    font-size: 11px;
+    font-size: 9px;
     line-height: 1;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
+    font-weight: var(--weight-title);
+  }
+  .tab__num--hidden {
+    display: none;
   }
   .tab.is-active {
-    background: var(--g2);
-    color: var(--g7);
+    background: var(--g7);
+    border-color: var(--g7);
+    color: var(--g0);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.22);
   }
-  .tab.is-active .tab__num,
-  .tab.is-active .tab__label {
+  .task-dock {
+    grid-area: task;
+    align-self: stretch;
+    justify-self: stretch;
+    margin: 0 -48px;
+    height: 14px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--g7);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px 0 24px;
+    font-size: 10px;
     font-weight: var(--weight-title);
+    box-shadow: none;
+    cursor: pointer;
+    z-index: 0;
+    font-family: var(--font-sans);
+  }
+  .task-dock:active { background: var(--g1); }
+  .task-dock__arrow {
+    width: auto;
+    height: auto;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    display: inline-block;
+    font-size: 11px;
+    line-height: 1;
+    font-family: ui-monospace, Menlo, monospace;
   }
   .store-fab {
     position: absolute;
@@ -577,21 +688,38 @@
   /* Half sheet */
   .sheet-half {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 50%;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    background: rgba(0,0,0,0);
+    pointer-events: none;
+    transition: background 180ms ease;
+    z-index: 85;
+    overflow: hidden;
+  }
+  .sheet-half.is-open {
+    background: rgba(0,0,0,0.18);
+    pointer-events: auto;
+  }
+  .sheet-half__panel {
+    width: 100%;
+    max-height: 58%;
     background: var(--g0);
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
     border-top: var(--hairline);
+    padding: 16px;
+    padding-bottom: calc(var(--safe-bottom) + 14px);
+    overflow-y: auto;
     transform: translateY(100%);
     transition: transform 220ms ease;
-    z-index: 85;
-    padding: 16px;
-    overflow-y: auto;
+    box-shadow: 0 -10px 28px rgba(0,0,0,0.08);
   }
-  .sheet-half.is-open { transform: translateY(0); }
+  .sheet-half.is-open .sheet-half__panel { transform: translateY(0); }
+  .sheet-half.is-task-sheet .sheet-half__panel {
+    height: var(--task-drawer-h);
+    max-height: none;
+  }
   .sheet-half__handle {
     width: 36px;
     height: 4px;
@@ -799,6 +927,17 @@
   .task-status { font-size:10px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; padding:2px 6px; border-radius:3px; }
   .task-status.done { color:var(--g4); background:var(--g1); }
   .task-status.pending { color:var(--g0); background:var(--g7); }
+  .task-sheet { padding-top:2px; }
+  .task-sheet .task-group { margin-bottom:10px; }
+  .task-sheet .task-group__title { margin-bottom:5px; }
+  .task-sheet .task-list { gap:5px; }
+  .task-sheet .task-card { padding:7px 8px; gap:8px; }
+  .task-sheet .task-icon { width:30px; height:30px; border-radius:7px; font-size:10px; }
+  .task-sheet .task-desc { font-size:12px; }
+  .task-sheet .task-progress { font-size:10px; margin-top:2px; }
+  .task-sheet .task-rewards { gap:2px; }
+  .task-sheet .task-reward { font-size:9px; padding:1px 5px; }
+  .task-sheet .task-status { font-size:9px; padding:1px 5px; }
 
   /* --- Wave / banner module (Tab 2) --- */
   .wave-zone { position:relative; height:240px; border-radius:10px; overflow:hidden; border:var(--hairline); background:var(--g6); background-image:repeating-linear-gradient(0deg, var(--g6) 0, var(--g6) 6px, var(--g5) 6px, var(--g5) 12px); color:var(--g0); }
@@ -814,22 +953,36 @@
   .wave-stats { display:flex; flex-direction:column; font-size:10px; background:rgba(0,0,0,0.55); border-radius:6px; padding:4px 8px; line-height:1.4; font-family:ui-monospace,Menlo,monospace; }
   .wave-stats span:first-child { color:var(--g3); }
 
-  /* --- Coach 9-grid + global world --- */
+  /* --- Coach tactical pitch + global world --- */
   .coach-card { background:var(--g0); border:var(--hairline); border-radius:10px; overflow:hidden; }
-  .coach-head { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border-bottom:var(--hairline); }
-  .coach-head__left { display:flex; flex-direction:column; gap:4px; }
-  .coach-head__title { font-size:13px; font-weight:600; }
-  .coach-head__stats { display:flex; gap:12px; font-size:10px; color:var(--g5); }
-  .coach-head__stat b { color:var(--g7); font-family:ui-monospace,Menlo,monospace; font-weight:600; }
-  .coach-head__stat--dim b { color:var(--g4); }
-  .coach-pitch-btn { background:transparent; border:var(--hairline); color:var(--g7); height:28px; padding:0 12px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; }
-  .coach-pitch { position:relative; background:var(--g6); background-image: radial-gradient(ellipse at center, rgba(255,255,255,0.06) 0%, transparent 70%), repeating-linear-gradient(90deg, var(--g6) 0, var(--g6) 24px, var(--g5) 24px, var(--g5) 48px); }
-  .coach-grid { display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr; aspect-ratio:4/3; gap:1px; background:var(--g2); }
-  .coach-cell { background:rgba(255,255,255,0.04); display:grid; place-items:center; cursor:pointer; color:rgba(255,255,255,0.6); font-family:ui-monospace,Menlo,monospace; font-size:11px; position:relative; border:0; }
-  .coach-cell:active { background:rgba(255,255,255,0.18); }
-  .coach-cell::before { content:""; position:absolute; width:24px; height:24px; border:1px solid rgba(255,255,255,0.28); border-radius:4px; }
-  .coach-feedback { padding:12px; display:flex; gap:10px; align-items:center; border-top:var(--hairline); }
-  .coach-feedback__mic { width:34px; height:34px; border-radius:50%; border:var(--hairline); background:var(--g1); display:grid; place-items:center; font-size:14px; flex-shrink:0; }
+  .coach-scorebar { margin:10px 10px 8px; height:54px; border-radius:10px; border:1px solid var(--g7); background:linear-gradient(90deg,var(--g7) 0%,var(--g6) 38%,var(--g5) 62%,var(--g7) 100%); color:var(--g0); display:grid; grid-template-columns:64px 1fr 64px; align-items:center; position:relative; overflow:hidden; }
+  .coach-scorebar::before { content:""; position:absolute; inset:0; background:repeating-linear-gradient(90deg,rgba(255,255,255,0.1) 0,rgba(255,255,255,0.1) 1px,transparent 1px,transparent 16px); pointer-events:none; }
+  .coach-side { position:relative; z-index:1; justify-self:center; min-width:42px; height:26px; border-radius:14px; border:1px solid rgba(255,255,255,0.72); display:grid; place-items:center; font-size:12px; font-weight:var(--weight-title); background:rgba(0,0,0,0.28); }
+  .coach-score { position:relative; z-index:1; display:flex; justify-content:center; align-items:center; gap:8px; font-family:ui-monospace,Menlo,monospace; font-size:34px; line-height:1; font-weight:800; letter-spacing:0; text-shadow:0 2px 8px rgba(0,0,0,0.35); }
+  .coach-time { width:max-content; margin:0 auto 10px; padding:3px 14px; border-radius:14px; background:var(--g7); color:var(--g0); font-family:ui-monospace,Menlo,monospace; font-size:12px; font-weight:700; }
+  .coach-meta { display:grid; grid-template-columns:auto 1fr auto auto; gap:8px; align-items:center; padding:0 10px 10px; color:var(--g5); font-size:10px; }
+  .coach-meta b { color:var(--g7); font-family:ui-monospace,Menlo,monospace; font-weight:700; }
+  .coach-pitch-btn { background:var(--g7); border:1px solid var(--g7); color:var(--g0); height:26px; padding:0 12px; border-radius:13px; font-size:11px; font-weight:600; cursor:pointer; }
+  .coach-field { margin:0 10px 10px; aspect-ratio:1.34; border:2px solid var(--g1); border-radius:10px; overflow:hidden; position:relative; background:linear-gradient(90deg,rgba(255,255,255,0.08) 0 20%,rgba(255,255,255,0.02) 20% 40%,rgba(255,255,255,0.1) 40% 60%,rgba(255,255,255,0.03) 60% 80%,rgba(255,255,255,0.08) 80%),var(--g6); box-shadow:inset 0 0 0 1px rgba(0,0,0,0.28); }
+  .coach-field::before { content:""; position:absolute; inset:0; background:linear-gradient(90deg,transparent calc(50% - 1px),rgba(255,255,255,0.8) calc(50% - 1px),rgba(255,255,255,0.8) calc(50% + 1px),transparent calc(50% + 1px)),linear-gradient(0deg,transparent calc(33.33% - 1px),rgba(255,255,255,0.16) calc(33.33% - 1px),rgba(255,255,255,0.16) calc(33.33% + 1px),transparent calc(33.33% + 1px),transparent calc(66.66% - 1px),rgba(255,255,255,0.16) calc(66.66% - 1px),rgba(255,255,255,0.16) calc(66.66% + 1px),transparent calc(66.66% + 1px)); pointer-events:none; }
+  .coach-field::after { content:""; position:absolute; width:80px; height:80px; left:50%; top:50%; transform:translate(-50%,-50%); border:2px solid rgba(255,255,255,0.78); border-radius:50%; pointer-events:none; }
+  .coach-box { position:absolute; top:26%; bottom:26%; width:34px; border:2px solid rgba(255,255,255,0.72); pointer-events:none; }
+  .coach-box--left { left:-2px; border-left:0; }
+  .coach-box--right { right:-2px; border-right:0; }
+  .coach-goal { position:absolute; top:42%; width:5px; height:16%; border:2px solid rgba(255,255,255,0.82); pointer-events:none; }
+  .coach-goal--left { left:-2px; border-left:0; }
+  .coach-goal--right { right:-2px; border-right:0; }
+  .coach-player { position:absolute; width:9px; height:9px; border-radius:50%; z-index:2; box-shadow:0 1px 4px rgba(0,0,0,0.45); }
+  .coach-player--home { background:var(--g0); border:1px solid var(--g7); }
+  .coach-player--away { background:var(--g7); border:1px solid var(--g0); }
+  .coach-ball-marker { position:absolute; left:18%; bottom:15%; width:24px; height:24px; z-index:3; border-radius:50%; background:radial-gradient(circle at 35% 35%,var(--g0) 0 28%,var(--g7) 29% 34%,var(--g0) 35% 60%,var(--g7) 61% 66%,var(--g0) 67%); border:1px solid var(--g5); box-shadow:0 2px 8px rgba(0,0,0,0.42); pointer-events:none; }
+  .coach-grid { position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr; z-index:4; }
+  .coach-cell { border:1px dashed rgba(255,255,255,0.14); background:transparent; cursor:pointer; color:transparent; position:relative; }
+  .coach-cell:active,
+  .coach-cell.is-active { background:rgba(255,255,255,0.12); }
+  .coach-cell.is-active::after { content:""; position:absolute; width:18px; height:18px; left:50%; top:50%; transform:translate(-50%,-50%); border:2px solid var(--g0); border-radius:50%; box-shadow:0 0 0 2px rgba(0,0,0,0.35); }
+  .coach-feedback { padding:0 10px 12px; display:flex; gap:10px; align-items:center; }
+  .coach-feedback__mic { width:34px; height:34px; border-radius:50%; border:var(--hairline); background:var(--g1); display:grid; place-items:center; font-size:11px; font-weight:700; flex-shrink:0; }
   .coach-feedback__main { flex:1; min-width:0; }
   .coach-feedback__text { font-size:12px; color:var(--g6); line-height:1.4; min-height:32px; }
   .coach-feedback__progress { display:flex; gap:6px; margin-top:6px; }
@@ -1517,23 +1670,40 @@
             </div>
             <div class="module__body module__body--fill">
               <div class="coach-card">
-                <div class="coach-head">
-                  <div class="coach-head__left">
-                    <button class="coach-pitch-btn">入场</button>
-                    <div class="coach-head__stats">
-                      <div class="coach-head__stat coach-head__stat--dim">历史 GOAL <b><span class="tbd">[TBD]</span></b></div>
-                      <div class="coach-head__stat">可消耗 <b id="coachGoal">128</b></div>
-                    </div>
-                  </div>
-                  <button class="coach-feedback__globe" onclick="WC.openGlobe()" title="环球世界">🌍</button>
+                <div class="coach-scorebar" aria-label="教练玩法比分">
+                  <div class="coach-side">我方</div>
+                  <div class="coach-score"><span>0</span><b>:</b><span>0</span></div>
+                  <div class="coach-side">敌方</div>
                 </div>
-                <div class="coach-pitch">
+                <div class="coach-time">5' / 90'</div>
+                <div class="coach-meta">
+                  <button class="coach-pitch-btn">入场</button>
+                  <span>历史 GOAL <b><span class="tbd">[TBD]</span></b></span>
+                  <span>可消耗 <b id="coachGoal">128</b></span>
+                  <button class="coach-feedback__globe" onclick="WC.openGlobe()" title="环球世界">环球</button>
+                </div>
+                <div class="coach-field" aria-label="九宫格调度球场">
+                  <div class="coach-box coach-box--left"></div>
+                  <div class="coach-box coach-box--right"></div>
+                  <div class="coach-goal coach-goal--left"></div>
+                  <div class="coach-goal coach-goal--right"></div>
+                  <span class="coach-player coach-player--home" style="left:18%; top:18%;"></span>
+                  <span class="coach-player coach-player--home" style="left:31%; top:40%;"></span>
+                  <span class="coach-player coach-player--home" style="left:42%; top:56%;"></span>
+                  <span class="coach-player coach-player--home" style="left:54%; top:34%;"></span>
+                  <span class="coach-player coach-player--home" style="left:67%; top:63%;"></span>
+                  <span class="coach-player coach-player--away" style="left:23%; top:58%;"></span>
+                  <span class="coach-player coach-player--away" style="left:36%; top:27%;"></span>
+                  <span class="coach-player coach-player--away" style="left:49%; top:47%;"></span>
+                  <span class="coach-player coach-player--away" style="left:61%; top:21%;"></span>
+                  <span class="coach-player coach-player--away" style="left:78%; top:43%;"></span>
+                  <div class="coach-ball-marker"></div>
                   <div class="coach-grid" id="coachGrid"></div>
                 </div>
                 <div class="coach-feedback">
-                  <div class="coach-feedback__mic">🎙</div>
+                  <div class="coach-feedback__mic">调度</div>
                   <div class="coach-feedback__main">
-                    <div class="coach-feedback__text" id="coachText">点击九宫格调度球队·每次扣 1 GOAL</div>
+                    <div class="coach-feedback__text" id="coachText">点击球场九宫格调度球队 · 每次扣 1 GOAL</div>
                     <div class="coach-feedback__progress">
                       <div class="coach-ball" id="coachBall0">铜</div>
                       <div class="coach-ball" id="coachBall1">银</div>
@@ -2103,21 +2273,29 @@
 
       <!-- Half sheet (reusable) -->
       <div class="sheet-half" id="sheet" aria-hidden="true">
-        <div class="sheet-half__handle"></div>
-        <h3 class="sheet-half__title" id="sheetTitle">Half Sheet 标题</h3>
-        <div id="sheetBody"><span class="tbd">[TBD: 阶段 2-4 填充内容]</span></div>
+        <div class="sheet-half__panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+          <div class="sheet-half__handle"></div>
+          <h3 class="sheet-half__title" id="sheetTitle">Half Sheet 标题</h3>
+          <div id="sheetBody"><span class="tbd">[TBD: 阶段 2-4 填充内容]</span></div>
+        </div>
       </div>
 
       <!-- Tab Bar -->
       <nav class="tab-bar" role="tablist">
-        <button class="tab" data-go="2" role="tab" aria-selected="false">
-          <span class="tab__num">2</span><span class="tab__label">看台</span>
+        <button class="tab" data-go="2" data-tab-code="Tab 2" data-prd-label="Tab 2 · 看台" role="tab" aria-selected="false">
+          <span class="tab__num tab__num--hidden" aria-hidden="true">2</span>
+          <span class="tab__icon tab__icon--stand" aria-hidden="true"></span><span class="tab__label">看台</span>
         </button>
-        <button class="tab is-active" data-go="3" role="tab" aria-selected="true">
-          <span class="tab__num">3</span><span class="tab__label">球场</span>
+        <button class="tab is-active" data-go="3" data-tab-code="Tab 3" data-prd-label="Tab 3 · 球场" role="tab" aria-selected="true">
+          <span class="tab__num tab__num--hidden" aria-hidden="true">3</span>
+          <span class="tab__icon tab__icon--pitch" aria-hidden="true"></span><span class="tab__label">球场</span>
         </button>
-        <button class="tab" data-go="4" role="tab" aria-selected="false">
-          <span class="tab__num">4</span><span class="tab__label">媒体</span>
+        <button class="tab" data-go="4" data-tab-code="Tab 4" data-prd-label="Tab 4 · 媒体" role="tab" aria-selected="false">
+          <span class="tab__num tab__num--hidden" aria-hidden="true">4</span>
+          <span class="tab__icon tab__icon--media" aria-hidden="true"></span><span class="tab__label">媒体</span>
+        </button>
+        <button class="task-dock" id="taskDock" type="button" data-prd-label="Global · 应援任务常驻入口 · 嵌入底部 Tab 栏" aria-label="打开应援任务">
+          <span>应援任务</span><span class="task-dock__arrow" aria-hidden="true">↑</span>
         </button>
       </nav>
 
@@ -2167,6 +2345,7 @@
   // ============================================================
   const pages = document.querySelectorAll('.page');
   const tabs = document.querySelectorAll('.tab');
+  const tabBar = document.querySelector('.tab-bar');
   const fanidEntry = document.getElementById('fanidEntry');
   const storeFab = document.getElementById('storeFab');
 
@@ -2234,13 +2413,18 @@
   const sheetBody = document.getElementById('sheetBody');
   function openSheet(opts) {
     opts = opts || {};
+    const isTaskSheet = opts.kind === 'task';
     sheetTitle.textContent = opts.title || '';
     sheetBody.innerHTML = opts.html || '<span class="tbd">[TBD]</span>';
+    sheetEl.classList.toggle('is-task-sheet', isTaskSheet);
+    if (tabBar) tabBar.classList.toggle('is-drawer-lifted', isTaskSheet);
     sheetEl.classList.add('is-open');
     sheetEl.setAttribute('aria-hidden', 'false');
   }
   function closeSheet() {
     sheetEl.classList.remove('is-open');
+    sheetEl.classList.remove('is-task-sheet');
+    if (tabBar) tabBar.classList.remove('is-drawer-lifted');
     sheetEl.setAttribute('aria-hidden', 'true');
   }
 
@@ -2310,6 +2494,7 @@
     closeModal: closeModal,
     sheet: openSheet,
     closeSheet: closeSheet,
+    openTaskSheet: openTaskSheet,
     collectTBDs: collectTBDs
   };
 
@@ -2352,6 +2537,7 @@
   const COACH_FAIL = ['被断球','传球失误','受伤','犯规','被铲断','拼抢失败'];
   const COACH_SUCCESS = ['大脚解围','短传渗透','禁区妙传','任意球','角球','界外球'];
   const COACH_JACKPOT = ['远射进球','头球得分','抢点得分','挑射进球','抽射远角','推射近角'];
+  const COACH_ZONES = ['左路后场','中路后场','右路后场','左路推进','中路组织','右路突破','左翼压上','禁区前沿','右翼压上'];
   const TASK_TARGETS = ['语聊房','直播间聚合','发帖页','个人动态','话题讨论','商城','VIP 促销 H5','开屏曝光 H5','加热中心'];
 
   // LocalStorage helpers
@@ -2547,19 +2733,17 @@
       { icon:'竞猜', desc:'参与焦点赛事竞猜', progress:'累计 0 次', goal:'+2/次', extra:'TBD' }
     ]
   };
-  function renderTasks() {
-    const mount = document.getElementById('taskMount');
-    if (!mount) return;
+  function buildTaskGroupsHtml(isSheet) {
     const groups = [
       { key:'daily', title:'每日任务', hint:'每日 0:00 重置', items: TASK_DATA.daily },
       { key:'once',  title:'一次性任务', hint:'完成后消失', items: TASK_DATA.once },
       { key:'multi', title:'不限次任务', hint:'累计计数',  items: TASK_DATA.multi }
     ];
-    let html = '';
+    let html = isSheet ? '<div class="task-sheet" data-prd-label="Global · 应援任务半屏弹窗">' : '';
     groups.forEach(g => {
-      html += '<div class="task-group"><div class="task-group__title"><span>' + g.title + '</span><span class="task-group__hint">' + g.hint + '</span></div><div class="task-list">';
+      html += '<div class="task-group" data-task-group="' + g.key + '"><div class="task-group__title"><span>' + g.title + '</span><span class="task-group__hint">' + g.hint + '</span></div><div class="task-list">';
       g.items.forEach(it => {
-        html += '<div class="task-card" onclick="WC.clickTask()">'
+        html += '<div class="task-card' + (isSheet ? ' task-card--sheet' : '') + '" onclick="WC.clickTask()">'
           + '<div class="task-icon">' + it.icon + '</div>'
           + '<div class="task-body"><div class="task-desc">' + it.desc + '</div><div class="task-progress">' + it.progress + '</div></div>'
           + '<div class="task-rewards">'
@@ -2570,7 +2754,36 @@
       });
       html += '</div></div>';
     });
-    mount.innerHTML = html;
+    return html + (isSheet ? '</div>' : '');
+  }
+  function renderTasks() {
+    const mount = document.getElementById('taskMount');
+    if (!mount) return;
+    mount.innerHTML = buildTaskGroupsHtml(false);
+  }
+  function openTaskSheet() {
+    WC.sheet({
+      kind: 'task',
+      title: '应援任务 MATCH TASK',
+      html: buildTaskGroupsHtml(true)
+    });
+  }
+  function setupTaskDock() {
+    const dock = document.getElementById('taskDock');
+    if (!dock) return;
+    let startY = 0;
+    dock.addEventListener('click', openTaskSheet);
+    const swipeTarget = tabBar || dock;
+    swipeTarget.addEventListener('touchstart', (e) => {
+      startY = e.touches[0].clientY;
+    }, { passive:true });
+    swipeTarget.addEventListener('touchend', (e) => {
+      if (startY && e.changedTouches[0].clientY - startY < -18) {
+        e.preventDefault();
+        openTaskSheet();
+      }
+      startY = 0;
+    }, { passive:false });
   }
   let _taskIdx = 0;
   function clickTask() {
@@ -2615,8 +2828,8 @@
     });
   }
 
-  // ---------- Coach 9-grid ----------
-  const coach = { successCount:0, text:'点击九宫格调度球队 · 每次扣 1 GOAL', goal: 128, earned: 0 };
+  // ---------- Coach tactical pitch ----------
+  const coach = { successCount:0, text:'点击球场九宫格调度球队 · 每次扣 1 GOAL', goal: 128, earned: 0, activeZone: -1 };
   function buildCoachGrid() {
     const grid = document.getElementById('coachGrid');
     if (!grid) return;
@@ -2624,6 +2837,8 @@
     for (let i = 0; i < 9; i++) {
       const c = document.createElement('button');
       c.className = 'coach-cell';
+      c.setAttribute('aria-label', COACH_ZONES[i] + '调度');
+      c.title = COACH_ZONES[i];
       c.addEventListener('click', () => coachClick(i));
       grid.appendChild(c);
     }
@@ -2637,16 +2852,20 @@
     }
     const g = document.getElementById('coachGoal');
     if (g) g.textContent = coach.goal;
+    document.querySelectorAll('.coach-cell').forEach((cell, i) => {
+      cell.classList.toggle('is-active', i === coach.activeZone);
+    });
   }
-  function coachClick() {
+  function coachClick(i) {
     if (coach.goal <= 0) { toast('GOAL 不足'); return; }
     coach.goal -= 1;
+    coach.activeZone = i;
     const r = Math.random();
     let pool, prefix;
     if (r < 0.4) { pool = COACH_FAIL; prefix = '失败 · '; }
     else if (r < 0.85) { pool = COACH_SUCCESS; prefix = '成功 · '; }
     else { pool = COACH_JACKPOT; prefix = '抽中 · '; }
-    coach.text = prefix + pool[Math.floor(Math.random() * pool.length)];
+    coach.text = COACH_ZONES[i] + ' · ' + prefix + pool[Math.floor(Math.random() * pool.length)];
     if (prefix !== '失败 · ') {
       coach.successCount += 1;
       if (coach.successCount >= 3) {
@@ -2775,7 +2994,7 @@
   WC.resetOnboarding = function() {
     LS.del('hasFanId');
     onbState.country = null; onbState.player = null; onbState.continent = 'eu';
-    coach.successCount = 0; coach.earned = 0; coach.goal = 128; coach.text = '点击九宫格调度球队 · 每次扣 1 GOAL';
+    coach.successCount = 0; coach.earned = 0; coach.goal = 128; coach.activeZone = -1; coach.text = '点击球场九宫格调度球队 · 每次扣 1 GOAL';
     globeState.owned.clear(); globeState.unlocked.clear();
     refreshFanId(); refreshCoach();
     toast('已重置 · 刷新或预览即可重启 Onboarding');
@@ -2788,6 +3007,7 @@
   refreshRank();
   refreshFanId();
   renderTasks();
+  setupTaskDock();
   setupWave();
 
   // ============================================================
