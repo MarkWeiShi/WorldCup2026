@@ -230,7 +230,6 @@
     margin: 4px 0 0;
     line-height: 1.2;
   }
-
   /* Module placeholder */
   .module {
     margin: 0 0 14px;
@@ -928,6 +927,16 @@
 
   /* Penalty kick stage */
   .pk-stage { background: var(--g1); border: var(--hairline); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
+  .pk-stage--entry {
+    cursor: pointer;
+    background: var(--g0);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .pk-stage--entry .pk-goal { height: 112px; }
+  .pk-entry__hint {
+    margin-top: 10px; font-size: 11px; color: var(--g5); line-height: 1.5;
+    background: var(--g1); border-radius: 6px; padding: 8px 10px;
+  }
   .pk-goal {
     height: 90px; border-radius: 6px;
     background-image:
@@ -946,7 +955,7 @@
   .pk-meta { display:flex; justify-content:space-between; align-items:center; margin: 10px 0 8px; font-size: 12px; }
   .pk-meta__help { width: 22px; height: 22px; border-radius: 50%; background: var(--g0); border: var(--hairline); display:grid; place-items:center; cursor:pointer; }
   .pk-power {
-    height: 16px; border-radius: 8px; background: linear-gradient(90deg, #f4d2cf 0%, #e88a83 50%, #b73127 100%);
+    height: 16px; border-radius: 8px; background: linear-gradient(90deg, var(--g2) 0%, var(--g4) 50%, var(--g7) 100%);
     position: relative; overflow: hidden; margin: 6px 0 12px;
   }
   .pk-power__pointer {
@@ -957,6 +966,90 @@
   .pk-power.is-stopped .pk-power__pointer { animation-paused: paused; animation: none; }
   .pk-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .pk-actions .btn-primary, .pk-actions .btn-secondary { height: 38px; }
+  .shoot-page__body { display: flex; flex-direction: column; gap: 12px; }
+  .shoot-scene {
+    background: var(--g1); border: var(--hairline); border-radius: var(--radius);
+    padding: 10px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .shoot-scene__gifts {
+    background: var(--g0); border: var(--hairline); border-radius: 8px; padding: 8px;
+  }
+  .shoot-scene__label {
+    font-size: 10px; color: var(--g5); letter-spacing: 0.08em; font-weight: var(--weight-title);
+    margin-bottom: 6px; text-transform: uppercase;
+  }
+  .shoot-scene .gift-strip { margin-bottom: 0; }
+  .shoot-field {
+    position: relative; min-height: 230px; border-radius: 8px; overflow: hidden;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,0.5) 0 1px, transparent 1px 48px),
+      linear-gradient(0deg, rgba(0,0,0,0.08) 0 1px, transparent 1px 42px),
+      var(--g2);
+    border: var(--hairline);
+  }
+  .shoot-field__goal {
+    position: absolute; left: 18px; right: 18px; top: 14px; height: 94px;
+    border: 4px solid var(--g0); border-bottom: 0; border-radius: 4px 4px 0 0;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.7) 0 2px, transparent 2px 18px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.55) 0 2px, transparent 2px 18px);
+    box-shadow: inset 0 0 0 1px var(--g5), 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .shoot-field__keeper {
+    position: absolute; left: 50%; top: 92px; width: 54px; height: 78px;
+    transform: translateX(-50%); color: var(--g7);
+  }
+  .shoot-field__keeper::before {
+    content: ""; position: absolute; left: 18px; top: 0; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--g0); border: 2px solid var(--g7);
+  }
+  .shoot-field__keeper::after {
+    content: ""; position: absolute; left: 8px; top: 20px; width: 38px; height: 42px;
+    border-radius: 12px 12px 8px 8px; background: var(--g0); border: 2px solid var(--g7);
+    box-shadow:
+      -24px 8px 0 -8px var(--g0),
+      24px 8px 0 -8px var(--g0),
+      -8px 42px 0 -10px var(--g0),
+      8px 42px 0 -10px var(--g0);
+  }
+  .shoot-field__ball {
+    position: absolute; left: 50%; bottom: 34px; width: 28px; height: 28px;
+    transform: translateX(-50%); border-radius: 50%; background: var(--g0); border: 2px solid var(--g7);
+  }
+  .shoot-field__ball::before, .shoot-field__ball::after {
+    content: ""; position: absolute; left: 5px; right: 5px; top: 12px; border-top: 2px solid var(--g7);
+    transform: rotate(30deg);
+  }
+  .shoot-field__ball::after { transform: rotate(-30deg); }
+  .shoot-meter {
+    background: var(--g0); border: var(--hairline); border-radius: 8px; padding: 10px;
+  }
+  .shoot-meter__top { display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:8px; }
+  .probability-panel {
+    background: var(--g7); color: var(--g0); border-radius: 12px; padding: 12px; border: var(--hairline);
+  }
+  .probability-panel__title {
+    text-align:center; font-weight:var(--weight-title); font-size:13px; margin-bottom:8px;
+  }
+  .probability-panel__desc { font-size:11px; line-height:1.5; opacity:0.82; margin-bottom:10px; }
+  .probability-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+  .probability-cell {
+    background: var(--g0); color: var(--g7); border-radius: 6px; padding: 6px 4px;
+    text-align:center; font-size:10px; font-family:ui-monospace, Menlo, monospace;
+  }
+  .probability-cell b { display:block; font-size:11px; margin-bottom:4px; }
+  .shoot-surprise {
+    display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
+  }
+  .shoot-surprise__ball {
+    width:42px; height:42px; border-radius:50%; border:2px solid var(--g7); background:var(--g0);
+    position:relative;
+  }
+  .shoot-surprise__ball::before, .shoot-surprise__ball::after {
+    content:""; position:absolute; left:8px; right:8px; top:19px; border-top:2px solid var(--g7);
+    transform:rotate(30deg);
+  }
+  .shoot-surprise__ball::after { transform:rotate(-30deg); }
 
   /* Reward exchange list */
   .exchange-head { display:flex; justify-content:space-between; align-items:center; margin: 12px 0 8px; font-size: 12px; }
@@ -1522,29 +1615,19 @@
               <div class="subpage-stack">
                 <!-- ===== 子页 A · 进球助力 ===== -->
                 <div class="subpage is-active" data-sub="goal">
-                  <div class="col-head" style="border:0; padding:0; color:var(--g6); margin-bottom:8px;">活动指定礼物 · 不同价值对应射门次数</div>
-                  <div class="gift-strip" id="giftStrip"></div>
-
-                  <div class="pk-stage">
+                  <div class="pk-stage pk-stage--entry" onclick="WC.openShootPage()" role="button" tabindex="0" aria-label="进入射门玩法">
                     <div class="pk-goal"></div>
                     <div class="pk-meta">
-                      <button class="pk-meta__help" id="pkHelp" title="概率公示">?</button>
-                      <span>剩余射门次数 <b id="pkRemain" class="mono">[TBD]</b></span>
+                      <button class="pk-meta__help" title="概率公式" onclick="event.stopPropagation(); WC.pkHelp()">?</button>
+                      <span>剩余射门次数 <b id="pkRemainEntry" class="mono">[TBD]</b></span>
                     </div>
                     <div class="pk-power" id="pkPower"><span class="pk-power__pointer" id="pkPointer"></span></div>
                     <div class="pk-actions">
-                      <button class="btn-secondary" onclick="WC.pkShoot(1)">射门 1 次</button>
-                      <button class="btn-primary" onclick="WC.pkShoot(10)">射门 10 次</button>
+                      <button class="btn-secondary" onclick="event.stopPropagation(); WC.openShootPage()">射门 1 次</button>
+                      <button class="btn-primary" onclick="event.stopPropagation(); WC.openShootPage()">射门 10 次</button>
                     </div>
+                    <div class="pk-entry__hint">点击进入完整射门玩法 · 查看活动礼物、兑换奖励与概率公式</div>
                   </div>
-
-                  <div class="exchange-head">
-                    <span>奖励兑换</span>
-                    <span>道具余额 <b id="pkProps">[TBD]</b></span>
-                  </div>
-                  <div class="exchange-list" id="exchangeList"></div>
-
-                  <button class="ranking-entry-btn" onclick="WC.subGo('rank')">活力榜单 →</button>
                 </div>
 
                 <!-- ===== 子页 B · 活力榜单 ===== -->
@@ -1650,6 +1733,66 @@
                 结果反馈 · 按北京时间,当天结束的比赛 → 次日 11:00 am 自动导入。<br>
                 <button class="btn-secondary" style="height:28px; padding:0 12px; font-size:11px; margin-top:6px;" onclick="WC.simulateBetResult()">模拟首次进入 · 弹结果</button>
                 · <span class="tbd">[TBD: 关注上限]</span> · <span class="tbd">[TBD: 中奖奖励内容]</span>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- ============== TAB 3 子页 — 射门助力玩法 ============== -->
+        <section class="page" data-tab="3-shoot" data-screen-label="Tab 3 子页 · 射门助力玩法">
+          <div class="subpage__head">
+            <button class="subpage__back" onclick="WC.go('3')">‹</button>
+            <div class="subpage__title">3.1 射门助力玩法</div>
+          </div>
+
+          <article class="module" id="m3-shoot">
+            <div class="module__body module__body--fill">
+              <div class="shoot-page__body">
+                <div class="shoot-scene">
+                  <div class="shoot-scene__gifts">
+                    <div class="shoot-scene__label">活动指定礼物 · 不同价值对应射门次数</div>
+                    <div class="gift-strip" id="giftStrip"></div>
+                  </div>
+
+                  <div class="shoot-field">
+                    <div class="shoot-field__goal"></div>
+                    <div class="shoot-field__keeper"></div>
+                    <div class="shoot-field__ball"></div>
+                  </div>
+
+                  <div class="shoot-meter">
+                    <div class="shoot-meter__top">
+                      <button class="pk-meta__help" onclick="WC.pkHelp()" title="概率公式">?</button>
+                      <span>剩余射门次数 <b id="pkRemain" class="mono">[TBD]</b></span>
+                    </div>
+                    <div class="pk-power"><span class="pk-power__pointer"></span></div>
+                    <div class="pk-actions">
+                      <button class="btn-secondary" onclick="WC.pkShoot(1)">射门 1 次</button>
+                      <button class="btn-primary" onclick="WC.pkShoot(10)">射门 10 次</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="probability-panel">
+                  <div class="probability-panel__title">概率公式</div>
+                  <div class="probability-panel__desc">用不同力度射门，进球成功的概率不同；力度越接近中间区间，稳定性越高。</div>
+                  <div class="probability-grid">
+                    <div class="probability-cell"><b>0~30</b>25%</div>
+                    <div class="probability-cell"><b>30~50</b>40%</div>
+                    <div class="probability-cell"><b>50~70</b>50%</div>
+                    <div class="probability-cell"><b>70~85</b>40%</div>
+                    <div class="probability-cell"><b>85~100</b>25%</div>
+                    <div class="probability-cell"><b>10 连射</b>+5%</div>
+                  </div>
+                </div>
+
+                <div class="exchange-head">
+                  <span>奖励兑换</span>
+                  <span>道具余额 <b id="pkProps">[TBD]</b></span>
+                </div>
+                <div class="exchange-list" id="exchangeList"></div>
+
+                <button class="ranking-entry-btn" onclick="WC.go('3'); WC.subGo('rank')">活力榜单 →</button>
               </div>
             </div>
           </article>
@@ -1999,7 +2142,8 @@
     全局·<code>[TBD] 分组索引</code> <code>未实现承诺</code>
     <br><br>
     <h4>Stage 3 · 已填充模块</h4>
-    Tab 3 · <code>进球助力</code> <code>活力榜单</code> <code>焦点竞猜</code>&nbsp;·&nbsp;
+    Tab 3 · <code>进球助力入口</code> <code>活力榜单</code> <code>焦点竞猜</code>&nbsp;·&nbsp;
+    Tab 3.1 · <code>射门助力玩法</code>&nbsp;·&nbsp;
     Tab 5 · <code>VIP SALES</code> <code>COLLECTION</code> <code>LIMITED</code>
     <br><br>
     <h4>Stage 2 · 已填充模块</h4>
@@ -2036,6 +2180,9 @@
     });
     if (fanidEntry) fanidEntry.classList.toggle('is-active', n === '1');
     if (storeFab) storeFab.classList.toggle('is-active', n === '5');
+    if (n === '3') {
+      document.querySelectorAll('#m3-goal .subpage').forEach(p => p.classList.toggle('is-active', p.dataset.sub === 'goal'));
+    }
     // Reset scroll on activated page
     const active = document.querySelector('.page.is-active');
     if (active) active.scrollTop = 0;
@@ -2665,8 +2812,12 @@
     m.innerHTML = GIFTS.map(g =>
       '<div class="gift-card"><div class="gift-card__icon">img</div><div class="gift-card__name">' + g.name + '</div><div class="gift-card__price"><span class="tbd">' + g.price + '</span></div><div class="gift-card__rule"><span class="tbd">[TBD: ' + g.rule + ']</span></div></div>'
     ).join('');
-    document.getElementById('pkRemain').textContent = pkState.remain;
-    document.getElementById('pkProps').textContent = pkState.props;
+    const remain = document.getElementById('pkRemain');
+    const remainEntry = document.getElementById('pkRemainEntry');
+    const props = document.getElementById('pkProps');
+    if (remain) remain.textContent = pkState.remain;
+    if (remainEntry) remainEntry.textContent = pkState.remain;
+    if (props) props.textContent = pkState.props;
   }
   function renderExchange() {
     const m = document.getElementById('exchangeList');
@@ -2679,7 +2830,19 @@
     ).join('');
   }
   function pkHelp() {
-    WC.modal({ title:'概率公示', html:'<div style="font-size:12px; color:var(--g6); line-height:1.7;">力度 vs 进球成功率:<br><span class="tbd">[TBD: 力度-成功率对照表]</span><br>· 低力度: 安全区<br>· 中力度: 平衡区<br>· 高力度: 冲击区</div>' });
+    WC.modal({
+      title:'概率公式',
+      html:'<div style="font-size:12px; color:var(--g6); line-height:1.7;">'
+        + '<div style="margin-bottom:10px;">力度区间决定单次射门成功率，命中中段区间概率最高。</div>'
+        + '<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">'
+        + '<div style="background:var(--g1); border-radius:6px; padding:8px; text-align:center;"><b>0~30</b><br>25%</div>'
+        + '<div style="background:var(--g1); border-radius:6px; padding:8px; text-align:center;"><b>30~50</b><br>40%</div>'
+        + '<div style="background:var(--g1); border-radius:6px; padding:8px; text-align:center;"><b>50~70</b><br>50%</div>'
+        + '<div style="background:var(--g1); border-radius:6px; padding:8px; text-align:center;"><b>70~85</b><br>40%</div>'
+        + '<div style="background:var(--g1); border-radius:6px; padding:8px; text-align:center;"><b>85~100</b><br>25%</div>'
+        + '<div style="background:var(--g1); border-radius:6px; padding:8px; text-align:center;"><b>10 连射</b><br>+5%</div>'
+        + '</div></div>'
+    });
   }
   function pkShoot(n) {
     if (pkState.remain < n) {
@@ -2731,6 +2894,24 @@
   }
 
   // ---------- Sub-page switcher (Tab 3 within m3-goal) ----------
+  function showShootSurprise() {
+    setTimeout(() => {
+      WC.modal({
+        title:'送你一个特别惊喜!',
+        html:'<div class="shoot-surprise">'
+          + '<div class="shoot-surprise__ball"></div>'
+          + '<div style="font-size:16px; font-weight:var(--weight-title);">射门*1</div>'
+          + '<button class="btn-primary" style="min-width:96px;" onclick="WC.closeModal()">去射门</button>'
+          + '</div>'
+      });
+    }, 180);
+  }
+  function openShootPage() {
+    go('3-shoot');
+    renderGifts();
+    renderExchange();
+    showShootSurprise();
+  }
   function subGo(k) {
     document.querySelectorAll('#m3-goal .subpage').forEach(p => p.classList.toggle('is-active', p.dataset.sub === k));
     if (k === 'rank') renderActivityRank();
@@ -3008,11 +3189,10 @@
   renderGifts();
   renderExchange();
   renderPkCards();
-  document.getElementById('pkHelp').addEventListener('click', pkHelp);
 
   // expose
   Object.assign(WC, {
-    pkShoot, exClick, exConfirm,
+    pkHelp, pkShoot, exClick, exConfirm, openShootPage,
     subGo, rkPage, rankAvatarClick,
     pkBet, pkBetConfirm, focusBet, focusBetConfirm,
     openBetRecord, openMoreEvents, simulateBetResult,
