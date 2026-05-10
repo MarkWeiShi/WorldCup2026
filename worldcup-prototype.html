@@ -144,12 +144,19 @@
     z-index: 30;
   }
   .top-bar__title {
+    position: absolute;
+    left: 56px;
+    right: 56px;
+    text-align: center;
     font-size: 15px;
     font-weight: var(--weight-title);
     color: var(--g7);
     letter-spacing: 0.02em;
+    pointer-events: none;
   }
   .top-bar__btn {
+    position: relative;
+    z-index: 1;
     width: 28px;
     height: 28px;
     border-radius: 50%;
@@ -163,6 +170,23 @@
     justify-content: center;
     cursor: pointer;
     user-select: none;
+  }
+  .top-bar__home svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+  }
+  .top-bar__fanid {
+    width: 48px;
+    border-radius: 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .top-bar__fanid.is-active {
+    background: var(--g7);
+    color: var(--g0);
+    border-color: var(--g7);
   }
   .top-bar__btn:active { background: var(--g2); }
 
@@ -253,7 +277,7 @@
     background: var(--g0);
     border-top: var(--hairline);
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     z-index: 40;
   }
   .tab {
@@ -289,6 +313,41 @@
   .tab.is-active .tab__label {
     font-weight: var(--weight-title);
   }
+  .store-fab {
+    position: absolute;
+    right: 16px;
+    bottom: calc(var(--tabbar-h) + var(--safe-bottom) + 16px);
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: var(--hairline);
+    background: var(--g0);
+    color: var(--g7);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+    z-index: 42;
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    padding: 8px 0 7px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+  }
+  .store-fab svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+  .store-fab__label {
+    font-size: 10px;
+    line-height: 1;
+    font-weight: var(--weight-title);
+  }
+  .store-fab.is-active {
+    background: var(--g7);
+    color: var(--g0);
+    border-color: var(--g7);
+  }
+  .store-fab:active { transform: translateY(1px); }
 
   /* ============================================================
      Reusable components
@@ -1058,13 +1117,47 @@
   .me-row__star.is-followed { background: var(--g7); color: var(--g0); border-color: var(--g7); }
 
   /* ----- Tab 5 styles ----- */
-  .vip-card { background: var(--g7); color: var(--g0); border-radius: var(--radius); padding: 14px 12px; margin-bottom: 12px; }
-  .vip-card--lifetime { background: linear-gradient(135deg, var(--g6) 0%, var(--g7) 100%); }
-  .vip-card__eyebrow { font-size: 10px; opacity: 0.7; letter-spacing: 0.1em; }
-  .vip-card__title { font-size: 16px; font-weight: var(--weight-title); margin: 4px 0 8px; }
-  .vip-card__row { display: flex; justify-content: space-between; align-items: center; }
-  .vip-card__price { font-family: ui-monospace, Menlo, monospace; font-size: 16px; font-weight: var(--weight-title); }
-  .vip-card__btn { background: var(--g0); color: var(--g7); border: 0; height: 32px; padding: 0 16px; border-radius: 16px; font-weight: var(--weight-title); font-size: 12px; cursor: pointer; }
+  .vip-carousel { position: relative; overflow: hidden; margin-bottom: 12px; border-radius: var(--radius); border: var(--hairline); background: var(--g7); }
+  .vip-carousel__track { display: flex; transition: transform 260ms ease; }
+  .vip-promo {
+    position: relative; min-width: 100%; min-height: 124px; padding: 14px 12px;
+    color: var(--g0); background: var(--g7); overflow: hidden;
+    display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end;
+  }
+  .vip-promo--life { background: var(--g6); }
+  .vip-promo::before {
+    content: ""; position: absolute; inset: 0; opacity: 0.12;
+    background-image: repeating-linear-gradient(-18deg, transparent 0 12px, var(--g0) 12px 14px);
+  }
+  .vip-promo > * { position: relative; z-index: 1; }
+  .vip-promo > div:first-child { min-width: 0; }
+  .vip-promo__kicker { font-size: 11px; font-weight: var(--weight-title); letter-spacing: 0.06em; opacity: 0.78; }
+  .vip-promo__title { margin-top: 4px; font-size: 20px; line-height: 1.08; font-weight: var(--weight-title); }
+  .vip-promo__gift { margin-top: 4px; font-size: 12px; opacity: 0.88; }
+  .vip-promo__price { margin-top: 8px; display: flex; align-items: baseline; gap: 8px; }
+  .vip-promo__now { font-family: ui-monospace, Menlo, monospace; font-size: 28px; font-weight: var(--weight-title); letter-spacing: 0; }
+  .vip-promo__old { font-family: ui-monospace, Menlo, monospace; font-size: 12px; opacity: 0.7; text-decoration: line-through; }
+  .vip-promo__timer {
+    position: absolute; top: 12px; right: 12px; padding: 4px 8px; border-radius: 999px;
+    background: var(--g0); color: var(--g7); font-size: 10px; font-family: ui-monospace, Menlo, monospace;
+  }
+  .vip-promo__ball {
+    position: absolute; right: 16px; top: 40px; width: 42px; height: 42px; border-radius: 50%;
+    border: 2px solid var(--g0); opacity: 0.9;
+    background: radial-gradient(circle at 50% 50%, var(--g0) 0 5px, transparent 6px), transparent;
+  }
+  .vip-promo__ball::before, .vip-promo__ball::after {
+    content: ""; position: absolute; left: 8px; right: 8px; top: 19px; border-top: 2px solid var(--g0);
+    transform: rotate(32deg); opacity: 0.85;
+  }
+  .vip-promo__ball::after { transform: rotate(-32deg); }
+  .vip-promo__btn {
+    align-self: end; min-width: 82px; height: 34px; border-radius: 18px; border: 0;
+    background: var(--g0); color: var(--g7); font-size: 12px; font-weight: var(--weight-title); cursor: pointer;
+  }
+  .vip-carousel__dots { position: absolute; right: 12px; bottom: 8px; display: flex; gap: 5px; z-index: 2; }
+  .vip-carousel__dot { width: 5px; height: 5px; border-radius: 50%; border: 0; padding: 0; background: rgba(255,255,255,0.38); cursor: pointer; }
+  .vip-carousel__dot.is-active { width: 14px; border-radius: 4px; background: var(--g0); }
 
   .pkg-card { background: var(--g0); border: var(--hairline); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; }
   .pkg-card__title { font-size: 12px; font-weight: var(--weight-title); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
@@ -1184,8 +1277,15 @@
 
       <!-- Top Bar -->
       <header class="top-bar" role="banner">
+        <button class="top-bar__btn top-bar__home" type="button" onclick="WC.openOnb(1)" aria-label="进入 FAN ID 配置" title="FAN ID 配置">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M3 10.5 12 3l9 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5.5 9.5V20h13V9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9.5 20v-6h5v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
         <div class="top-bar__title">2026 世界杯 X HelloTalk</div>
-        <button class="top-bar__btn" id="tbdToggle" aria-label="TBD index" title="TBD 索引">!</button>
+        <button class="top-bar__btn top-bar__fanid" id="fanidEntry" type="button" onclick="WC.go('1')" aria-label="打开入场页">FANID</button>
       </header>
 
       <!-- TBD Index Panel -->
@@ -1208,7 +1308,7 @@
       <main class="pages">
 
         <!-- ============== TAB 1 — 入场 ============== -->
-        <section class="page is-active" data-tab="1" data-screen-label="Tab 1 入场">
+        <section class="page" data-tab="1" data-screen-label="Tab 1 入场">
           <div class="page-header">
             <div class="page-header__eyebrow">Tab 1 · Entry</div>
             <h2 class="page-header__title">入场</h2>
@@ -1224,13 +1324,13 @@
                 <div style="display:flex; align-items:center; gap:10px;">
                   <div style="width:40px; height:40px; border-radius:8px; background:var(--g7); color:var(--g0); display:grid; place-items:center; font-size:11px; font-weight:600; flex-shrink:0;">3 步</div>
                   <div style="flex:1; min-width:0;">
-                    <div style="font-weight:600; font-size:13px;">首次进入 · 全屏引导</div>
+                    <div style="font-weight:600; font-size:13px;">手动进入 · FAN ID 配置</div>
                     <div style="font-size:11px; color:var(--g5); margin-top:2px;">主队球星 → 领取球迷证 → 玩法导览</div>
                   </div>
                   <button class="btn-secondary" style="height:32px; padding:0 12px; font-size:12px;" onclick="WC.openOnb(1)">预览</button>
                 </div>
                 <div style="margin-top:10px; font-size:11px; color:var(--g4); padding:8px 10px; background:var(--g1); border-radius:6px; line-height:1.5;">
-                  首次进入触发；<span class="mono">hasFanId=true</span> 后跳过。调试按钮见 [TBD] 面板。
+                  点击顶部房子图标或右侧预览进入；完成后更新 FAN ID。调试按钮见 [TBD] 面板。
                 </div>
               </div>
             </div>
@@ -1407,7 +1507,7 @@
         </section>
 
         <!-- ============== TAB 3 — 球场 ============== -->
-        <section class="page" data-tab="3" data-screen-label="Tab 3 球场">
+        <section class="page is-active" data-tab="3" data-screen-label="Tab 3 球场">
           <div class="page-header">
             <div class="page-header__eyebrow">Tab 3 · Pitch</div>
             <h2 class="page-header__title">球场</h2>
@@ -1678,21 +1778,38 @@
               <div class="module__anchor">#m5-vip</div>
             </div>
             <div class="module__body module__body--fill">
-              <div class="vip-card">
-                <div class="vip-card__eyebrow">VIP · YEAR PASS</div>
-                <div class="vip-card__title"><span class="tbd">[TBD: @钱淇 Kiana · 年卡标题]</span></div>
-                <div class="vip-card__row">
-                  <div class="vip-card__price"><span class="tbd">[TBD: 年卡价格]</span></div>
-                  <button class="vip-card__btn" onclick="WC.openSku('year')">购买</button>
+              <div class="vip-carousel" data-vip-carousel>
+                <div class="vip-carousel__track">
+                  <div class="vip-promo">
+                    <div>
+                      <div class="vip-promo__kicker">VIP YEAR PASS</div>
+                      <div class="vip-promo__title">年卡限时 7 折</div>
+                      <div class="vip-promo__gift">得世界杯限量礼包</div>
+                      <div class="vip-promo__price">
+                        <span class="vip-promo__now">¥336</span>
+                        <span class="vip-promo__old">原价 ¥488</span>
+                      </div>
+                    </div>
+                    <button class="vip-promo__btn" onclick="WC.openSku('year')">立即抢购</button>
+                    <div class="vip-promo__timer" data-vip-countdown>优惠仅剩 09:56</div>
+                    <div class="vip-promo__ball" aria-hidden="true"></div>
+                  </div>
+                  <div class="vip-promo vip-promo--life">
+                    <div>
+                      <div class="vip-promo__kicker">VIP LIFETIME</div>
+                      <div class="vip-promo__title">终身 VIP 限时 7 折</div>
+                      <div class="vip-promo__gift">得世界杯限量礼包</div>
+                      <div class="vip-promo__price">
+                        <span class="vip-promo__now">¥736</span>
+                        <span class="vip-promo__old">原价 ¥1051</span>
+                      </div>
+                    </div>
+                    <button class="vip-promo__btn" onclick="WC.openSku('lifetime')">立即抢购</button>
+                  </div>
                 </div>
-              </div>
-
-              <div class="vip-card vip-card--lifetime">
-                <div class="vip-card__eyebrow">VIP · LIFETIME</div>
-                <div class="vip-card__title"><span class="tbd">[TBD: @钱淇 Kiana · 终身卡标题]</span></div>
-                <div class="vip-card__row">
-                  <div class="vip-card__price"><span class="tbd">[TBD: 终身卡价格]</span></div>
-                  <button class="vip-card__btn" onclick="WC.openSku('lifetime')">购买</button>
+                <div class="vip-carousel__dots" aria-hidden="true">
+                  <button class="vip-carousel__dot is-active" type="button"></button>
+                  <button class="vip-carousel__dot" type="button"></button>
                 </div>
               </div>
 
@@ -1850,22 +1967,24 @@
 
       <!-- Tab Bar -->
       <nav class="tab-bar" role="tablist">
-        <button class="tab is-active" data-go="1" role="tab" aria-selected="true">
-          <span class="tab__num">1</span><span class="tab__label">入场</span>
-        </button>
-        <button class="tab" data-go="2" role="tab">
+        <button class="tab" data-go="2" role="tab" aria-selected="false">
           <span class="tab__num">2</span><span class="tab__label">看台</span>
         </button>
-        <button class="tab" data-go="3" role="tab">
+        <button class="tab is-active" data-go="3" role="tab" aria-selected="true">
           <span class="tab__num">3</span><span class="tab__label">球场</span>
         </button>
-        <button class="tab" data-go="4" role="tab">
+        <button class="tab" data-go="4" role="tab" aria-selected="false">
           <span class="tab__num">4</span><span class="tab__label">媒体</span>
         </button>
-        <button class="tab" data-go="5" role="tab">
-          <span class="tab__num">5</span><span class="tab__label">商店</span>
-        </button>
       </nav>
+
+      <button class="store-fab" id="storeFab" type="button" onclick="WC.go('5')" aria-label="打开商店">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6.5 8.5h11l-.8 11h-9.4l-.8-11Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M9 8.5V6.8a3 3 0 0 1 6 0v1.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="store-fab__label">商店</span>
+      </button>
 
       <!-- Home Indicator -->
       <div class="home-indicator"></div>
@@ -1904,6 +2023,8 @@
   // ============================================================
   const pages = document.querySelectorAll('.page');
   const tabs = document.querySelectorAll('.tab');
+  const fanidEntry = document.getElementById('fanidEntry');
+  const storeFab = document.getElementById('storeFab');
 
   function go(n) {
     n = String(n);
@@ -1913,6 +2034,8 @@
       t.classList.toggle('is-active', active);
       t.setAttribute('aria-selected', active ? 'true' : 'false');
     });
+    if (fanidEntry) fanidEntry.classList.toggle('is-active', n === '1');
+    if (storeFab) storeFab.classList.toggle('is-active', n === '5');
     // Reset scroll on activated page
     const active = document.querySelector('.page.is-active');
     if (active) active.scrollTop = 0;
@@ -1977,7 +2100,6 @@
   // ============================================================
   // [TBD] Index Panel
   // ============================================================
-  const tbdToggle = document.getElementById('tbdToggle');
   const tbdPanel = document.getElementById('tbdPanel');
   const tbdList = document.getElementById('tbdList');
 
@@ -2030,12 +2152,6 @@
     tbdList.innerHTML = '';
     tbdList.appendChild(ul);
   }
-
-  tbdToggle.addEventListener('click', () => {
-    const open = tbdPanel.classList.toggle('is-open');
-    tbdPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
-    if (open) collectTBDs();
-  });
 
   // ============================================================
   // Public API
@@ -2837,6 +2953,34 @@
   }
 
   // ---------- Tab 5 store ----------
+  function initVipCarousel() {
+    document.querySelectorAll('[data-vip-carousel]').forEach(carousel => {
+      const track = carousel.querySelector('.vip-carousel__track');
+      const slides = Array.from(carousel.querySelectorAll('.vip-promo'));
+      const dots = Array.from(carousel.querySelectorAll('.vip-carousel__dot'));
+      if (!track || slides.length < 2) return;
+      let page = 0;
+      const render = () => {
+        track.style.transform = 'translateX(-' + (page * 100) + '%)';
+        dots.forEach((dot, i) => dot.classList.toggle('is-active', i === page));
+      };
+      dots.forEach((dot, i) => dot.addEventListener('click', () => { page = i; render(); }));
+      setInterval(() => { page = (page + 1) % slides.length; render(); }, 3600);
+      render();
+    });
+
+    let remaining = 9 * 60 + 56;
+    const countdowns = document.querySelectorAll('[data-vip-countdown]');
+    const renderCountdown = () => {
+      const mm = Math.floor(remaining / 60).toString().padStart(2, '0');
+      const ss = (remaining % 60).toString().padStart(2, '0');
+      countdowns.forEach(el => { el.textContent = '优惠仅剩 ' + mm + ':' + ss; });
+      if (remaining > 0) remaining -= 1;
+    };
+    renderCountdown();
+    setInterval(renderCountdown, 1000);
+  }
+
   function openSku(kind) {
     WC.sheet({
       title: kind === 'year' ? '年卡 SKU 选择' : '终身卡 SKU 选择',
@@ -3086,12 +3230,6 @@
     tbdList.appendChild(div);
   }
   WC.collectTBDs = collectTBDsGrouped;
-  tbdToggle.removeEventListener && tbdToggle.removeEventListener('click', () => {});
-  tbdToggle.onclick = () => {
-    const open = tbdPanel.classList.toggle('is-open');
-    tbdPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
-    if (open) collectTBDsGrouped();
-  };
 
   // Sheet: ensure backdrop click closes (parity with modal)
   document.addEventListener('click', (e) => {
@@ -3099,6 +3237,7 @@
   });
 
   // Boot stage 4
+  initVipCarousel();
   renderLives();
   renderHlStrip();
   Object.assign(WC, {
@@ -3106,10 +3245,7 @@
     subOrg, openGroupSheet, subHl
   });
 
-  // Auto-open onboarding on first visit
-  if (!LS.get('hasFanId')) {
-    setTimeout(() => openOnb(1), 350);
-  }
+  // Onboarding is now opened manually from the Tab 1 Home button.
 })();
 </script>
 <!-- Stage 4/4 完成。下一步:填补 [TBD] / 真实视觉 / 数值 -->
